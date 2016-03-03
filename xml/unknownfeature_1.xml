@@ -71,16 +71,16 @@
  -->
 
 
-<feature id="134" name="follow_me">
-    FollowMe feature
+<feature id="134" name="unknown_feature_1">
+    UnknownFeature_1 feature
     <enums>
         <enum name="type">
-            Type of FollowMe
+            Type of UnknownFeature_1
             <value name="none">
-                No follow me
+                No unknown feature_1
             </value>
             <value name="look_at">
-                LookAt follow me type
+                LookAt unknown feature_1 type
             </value>
             <value name="geographic">
                 Follow the target keeping the same vector
@@ -91,37 +91,37 @@
         </enum>
         
         <enum name="anim_type">
-            Type of the current FollowMe animation
+            Type of the current UnknownFeature_1 animation
             <value name="none">
-                No current follow me animation
+                No current unknown feature_1 animation
             </value>
             <value name="spiral">
-                Current follow me animation is spiral
+                Current unknown feature_1 animation is spiral
             </value>
             <value name="swing">
-                Current follow me animation is swing
+                Current unknown feature_1 animation is swing
             </value>
             <value name="boomerang">
-                Current follow me animation is boomerang
+                Current unknown feature_1 animation is boomerang
             </value>
             <value name="candle">
-                Current follow me animation is candle
+                Current unknown feature_1 animation is candle
             </value>
             <value name="dolly_slide">
-                Current follow me animation is dolly slide
+                Current unknown feature_1 animation is dolly slide
             </value>
         </enum>
         
         <enum name="types_available">
-            Types of FollowMe available
+            Types of UnknownFeature_1 available
             <value name="none">
-                No follow me available
+                No unknown feature_1 available
             </value>
             <value name="look_at">
                 LookAt available, no other types
             </value>
             <value name="look_and_follow">
-                LookAt, Geographic and Relative follow me are available
+                LookAt, Geographic and Relative unknown feature_1 are available
             </value>
         </enum>
     </enums>
@@ -129,20 +129,20 @@
     <msgs>
         <evt name="availability" id="1">
             <comment 
-                title="FollowMe types availability"
-                desc="Get the FollowMe types you can run."
+                title="UnknownFeature_1 types availability"
+                desc="Get the UnknownFeature_1 types you can run."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="type" type="enum:types_available"/>
         </evt>
     
         <cmd name="geographic_run" id="2">
             <comment 
-                title="Begin or stop geographic type followMe"
-                desc="Begin or stop geographic type followMe (follow the leader keeping the same vector). \n
-                      Sending this command will stop other running followMe."
+                title="Begin or stop geographic type unknownFeature_1"
+                desc="Begin or stop geographic type unknownFeature_1 (follow the leader keeping the same vector). \n
+                      Sending this command will stop other running unknownFeature_1."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="start" type="u8">
-                1 to start geographic follow me process, 0 to stop it
+                1 to start geographic unknown feature_1 process, 0 to stop it
             </arg>
             <arg name="distance_is_default" type="u8">
                 0 if distance is set by user, 1 if set by current distance (in this case distance value is not used) 
@@ -168,12 +168,12 @@
         
         <cmd name="relative_run" id="3">
             <comment 
-                title="Begin or stop relative type followMe"
-                desc="Begin or stop relative type followMe (follow the leader keeping the same orientation to its direction).\n
-                      Sending this command will stop other running followMe."
+                title="Begin or stop relative type unknownFeature_1"
+                desc="Begin or stop relative type unknownFeature_1 (follow the leader keeping the same orientation to its direction).\n
+                      Sending this command will stop other running unknownFeature_1."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="start" type="u8">
-                1 to start relative follow me process, 0 to stop it
+                1 to start relative unknown feature_1 process, 0 to stop it
             </arg>
             <arg name="distance_is_default" type="u8">
                 0 if distance is set by user, 1 if set by current distance (in this case distance value is not used) (not used when arg start is at 0)
@@ -197,9 +197,9 @@
         
         <cmd name="look_at_run" id="4">
             <comment 
-                title="Begin or stop look at type followMe"
-                desc="Begin or stop look at type followMe (stare at the leader while hovering).\n
-                    Sending this command will stop other running followMe."
+                title="Begin or stop look at type unknownFeature_1"
+                desc="Begin or stop look at type unknownFeature_1 (stare at the leader while hovering).\n
+                    Sending this command will stop other running unknownFeature_1."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="start" type="u8">
                 1 to start look at process, 0 to stop it
@@ -208,7 +208,7 @@
         
         <evt name="run" id="5">
             <comment 
-                title="State of the FollowMe run"
+                title="State of the UnknownFeature_1 run"
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="type" type="enum:type"/>
         </evt>
@@ -265,7 +265,7 @@
             </arg>
         </evt>
         
-        <!-- FollowMe Animations -->
+        <!-- UnknownFeature_1 Animations -->
         <cmd name="spiral_anim_run" id="8">
             <comment 
                 title="Begin or stop a spiral animation"
@@ -433,8 +433,8 @@
         
         <evt name="anim_run" id="13">
             <comment 
-                title="State of the current FollowMe animation"
-                desc="State of the current FollowMe animation."
+                title="State of the current UnknownFeature_1 animation"
+                desc="State of the current UnknownFeature_1 animation."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/> 
             <arg name="type" type="enum:anim_type"/>
         </evt>
