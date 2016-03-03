@@ -118,7 +118,7 @@
         </cmd>
         <cmd name="UserTakeOff" id="3">
             Set drone in user take off state
-            Only used for PowerUp product
+            Only used for Unknown_Product_1 product
             <arg name="state" type="u8">
                 State of user take off mode
                 - 1 to enter in user take off.
@@ -126,7 +126,7 @@
             </arg>
         </cmd>
         <cmd name="Land" id="4">
-            Ask the PowerUp to land
+            Ask the Unknown_Product_1 to land
         </cmd>
     </class>
 
@@ -184,7 +184,7 @@
         
         <cmd name="FlyingStateChanged" id="3">
             Drone flying state changed
-            Only used for PowerUp
+            Only used for Unknown_Product_1
             <arg name="state" type="enum">
                 Drone flying state
                 <enum name="landed">
