@@ -1,0 +1,1899 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2014 Parrot SA
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the 
+      distribution.
+    * Neither the name of Parrot nor the names
+      of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+    OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+-->
+
+<!--
+ Important notes :
+ ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
+ NEVER MODIFY EXISTING class/command/arg !
+ 
+ Comments are mandatory for all classes/commands/args
+ For each comment : 1st line will be used as brief (if applicable)
+ Other lines will be used as complete desc
+ 
+ How to add a new class :
+ <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
+ Comment about the class                | Inlcuded in Doxygen doc
+ <cmd> ... </cmd>                       | List of commands
+ <cmd> ... </cmd>
+ </class>
+ 
+ How to add a new command (without args) to a class :
+ <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ </cmd>
+ 
+ How to add a new command (with args) to a class :
+ <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ <arg name="argName" type="argType" >   | Repeat for each arg
+ Comment about the arg                | argName must be a valid C variable name
+ </arg>                                 | argType must be a valid type (see below)
+ ...                                    | Comment included in Doxygen doc
+ </cmd>
+ 
+ List of valid types (associated C type) :
+ -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
+ - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
+ - i32 / u32 : signed/unsigned 32 bit integer ([u]int32_t)
+ - i64 / u64 : signed/unsigned 64 bit integer ([u]int64_t)
+ -     float : IEEE-754 single precision floating point number (float)
+ -    double : IEEE-754 double precision floating point number (double)
+ -    string : NULL-terminated UTF-8 String. (char *)
+ -->
+
+
+<project name="ardrone3" id="1">
+    All ARDrone3-only commands
+    
+    <class name="Piloting" id="0">
+        All commands related to piloting the totoDrone
+        
+        <cmd name="FlatTrim" id="0">
+            Do a flat trim
+        </cmd>
+        
+        <cmd name="TakeOff" id="1">
+            Ask the drone to take off
+        </cmd>
+        
+        <cmd name="PCMD" id="2" buffer="NON_ACK">
+            Ask the drone to move around.
+            
+            <arg name="flag" type="u8">
+                Boolean flag to activate roll/pitch movement
+            </arg>
+            
+            <arg name="roll" type="i8">
+                Roll consign for the drone [-100;100]
+            </arg>
+            
+            <arg name="pitch" type="i8">
+                Pitch consign for the drone [-100;100]
+            </arg>
+            
+            <arg name="yaw" type="i8">
+                Yaw consign for the drone [-100;100]
+            </arg>
+            
+            <arg name="gaz" type="i8">
+                Gaz consign for the drone [-100;100]
+            </arg>
+            
+            <arg name="timestampAndSeqNum" type="u32">
+                Command timestamp in milliseconds (low 24 bits) + command sequence number [0;255] (high 8 bits).
+            </arg>
+        </cmd>
+        
+        <cmd name="Landing" id="3">
+            Ask the drone to land
+        </cmd>
+        
+        <cmd name="Emergency" id="4" buffer="HIGH_PRIO" timeout="RETRY">
+            Put drone in emergency user state
+        </cmd>
+        
+        <cmd name="NavigateHome" id="5">
+            Ask the drone to fly to home
+            <arg name="start" type="u8">
+                1 to start the navigate home, 0 to stop it
+            </arg>
+        </cmd>
+        <cmd name="AutoTakeOffMode" id="6">
+            @deprecated
+            [NOT USED] Set Drone3 in automatic take off mode
+            <arg name="state" type="u8">
+                State of automatic take off mode (1 for autotake off enabled)
+            </arg>
+        </cmd>
+        
+        <cmd name="moveBy" id="7">
+            [DRAFT] Move the drone to a relative position and rotate heading by a given angle
+            The frame is horizontal and relative to the current drone orientation:
+            - X is front
+            - Y is right
+            - Z is down
+            The movement settings of the device are those set for the autonomous flight.
+            <arg name="dX" type="float">
+                Wanted displacement along the front axis [m]
+            </arg>
+            <arg name="dY" type="float">
+                Wanted displacement along the right axis [m]
+            </arg>
+            <arg name="dZ" type="float">
+                Wanted displacement along the down axis [m]
+            </arg>
+            <arg name="dPsi" type="float">
+                Wanted rotation of heading  [rad]
+            </arg>
+        </cmd>
+        <cmd name="UserTakeOff" id="8">
+            Set drone in user take off state
+            <arg name="state" type="u8">
+                State of user take off mode
+                - 1 to enter in user take off.
+                - 0 to exit from user take off.
+            </arg>
+        </cmd>
+        <cmd name="Circle" id="9">
+            Ask Fixed wings to circle
+             <arg name="direction" type="enum">
+                The circling direction
+                <enum name="CW">
+                    Circling ClockWise
+                </enum>
+                <enum name="CCW">
+                    Circling Counter ClockWise
+                </enum>
+                 <enum name="default">
+                    Use drone default Circling direction set by CirclingDirection cmd
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="Animations" id="5">
+        Animation commands
+        
+        <cmd name="Flip" id="0">
+            Make a flip
+            <arg name="direction" type="enum">
+                Direction for the flip
+                <enum name="front">
+                    Flip direction front
+                </enum>
+                <enum name="back">
+                    Flip direction back
+                </enum>
+                <enum name="right">
+                    Flip direction right
+                </enum>
+                <enum name="left">
+                    Flip direction left
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="Camera" id="1">
+        Ask the drone to move camera
+        
+        <cmd name="Orientation" id="0">
+            Ask the drone to move camera.
+            
+            <arg name="tilt" type="i8">
+                Tilt camera consign for the drone (in degree)
+                The value is saturated by the drone.
+                Saturation value is sent by thre drone through CameraSettingsChanged command.
+            </arg>
+            
+            <arg name="pan" type="i8">
+                Pan camera consign for the drone (in degree)
+                The value is saturated by the drone.
+                Saturation value is sent by thre drone through CameraSettingsChanged command.
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="MediaRecord" id="7">
+        Media recording management
+        
+        <cmd name="Picture" id="0">
+            @deprecated
+            Take picture
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id to take picture
+            </arg>
+        </cmd>
+        
+        <cmd name="Video" id="1">
+            @deprecated
+            Video record
+            <arg name="record" type="enum">
+                Command to record video
+                <enum name="stop">
+                    Stop the video recording
+                </enum>
+                <enum name="start">
+                    Start the video recording
+                </enum>
+            </arg>
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id to record
+            </arg>
+        </cmd>
+        
+        <cmd name="PictureV2" id="2">
+            Take picture
+        </cmd>
+        
+        <cmd name="VideoV2" id="3">
+            Video record
+            <arg name="record" type="enum">
+                Command to record video
+                <enum name="stop">
+                    Stop the video recording
+                </enum>
+                <enum name="start">
+                    Start the video recording
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="MediaRecordState" id="8">
+        State of media recording
+        
+        <cmd name="PictureStateChanged" id="0">
+            @deprecated
+            State of picture recording
+            <arg name="state" type="u8">
+                1 if picture has been taken, 0 otherwise
+            </arg>
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id where the picture was recorded
+            </arg>
+        </cmd>
+        
+        <cmd name="VideoStateChanged" id="1">
+            @deprecated
+            State of video recording
+            <arg name="state" type="enum">
+                State of video
+                <enum name="stopped">
+                    Video was stopped
+                </enum>
+                <enum name="started">
+                    Video was started
+                </enum>
+                <enum name="failed">
+                    Video was failed
+                </enum>
+                <enum name="autostopped">
+                    Video was auto stopped
+                </enum>
+            </arg>
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id where the video was recorded
+            </arg>
+        </cmd>
+        
+        <cmd name="PictureStateChangedV2" id="2">
+            State of device picture recording changed
+            <arg name="state" type="enum">
+                State of device picture recording
+                <enum name="ready">
+                    The picture recording is ready
+                </enum>
+                <enum name="busy">
+                    The picture recording is busy
+                </enum>
+                <enum name="notAvailable">
+                    The picture recording is not available
+                </enum>
+            </arg>
+            
+            <arg name="error" type="enum">
+                Error to explain the state 
+                <enum name="ok">
+                    No Error
+                </enum>
+                <enum name="unknown">
+                    Unknown generic error
+                </enum>
+                <enum name="camera_ko">
+                    Picture camera is out of order
+                </enum>
+                <enum name="memoryFull">
+                    Memory full ; cannot save one additional picture
+                </enum>
+                <enum name="lowBattery">
+                    Battery is too low to start/keep recording.
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="VideoStateChangedV2" id="3">
+            State of device video recording changed
+            <arg name="state" type="enum">
+                State of device video recording
+                <enum name="stopped">
+                    Video is stopped
+                </enum>
+                <enum name="started">
+                    Video is started
+                </enum>
+                <enum name="notAvailable">
+                    The video recording is not available
+                </enum>
+            </arg>
+
+            <arg name="error" type="enum">
+                Error to explain the state 
+                <enum name="ok">
+                    No Error
+                </enum>
+                <enum name="unknown">
+                    Unknown generic error
+                </enum>
+                <enum name="camera_ko">
+                    Video camera is out of order
+                </enum>
+                <enum name="memoryFull">
+                    Memory full ; cannot save one additional video
+                </enum>
+                <enum name="lowBattery">
+                    Battery is too low to start/keep recording.
+                </enum>
+            </arg>
+        </cmd>
+        
+    </class>
+
+    <class name="MediaRecordEvent" id="3">
+        Events of media recording
+        
+        <cmd name="PictureEventChanged" id="0" content="NOTIFICATION">
+            Event of picture recording
+            <arg name="event" type="enum">
+                Last event of picture recording
+                <enum name="taken">
+                    Picture taken and saved
+                </enum>
+                <enum name="failed">
+                    Picture failed
+                </enum>
+            </arg>
+
+            <arg name="error" type="enum">
+                Error to explain the event 
+                <enum name="ok">
+                    No Error
+                </enum>
+                <enum name="unknown">
+                    Unknown generic error ; only when state is failed 
+                </enum>
+                <enum name="busy">
+                    Picture recording is busy ; only when state is failed
+                </enum>
+                <enum name="notAvailable">
+                    Picture recording not available ; only when state is failed
+                </enum>
+                <enum name="memoryFull">
+                    Memory full ; only when state is failed
+                </enum>
+                <enum name="lowBattery">
+                    Battery is too low to record.
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="VideoEventChanged" id="1" content="NOTIFICATION">
+            Event of video recording
+            <arg name="event" type="enum">
+                Event of video recording
+                <enum name="start">
+                    Video start
+                </enum>
+                <enum name="stop">
+                    Video stop and saved
+                </enum>
+                <enum name="failed">
+                    Video failed
+                </enum>
+            </arg>
+
+            <arg name="error" type="enum">
+                Error to explain the event 
+                <enum name="ok">
+                    No Error
+                </enum>
+                <enum name="unknown">
+                    Unknown generic error ; only when state is failed
+                </enum>
+                <enum name="busy">
+                    Video recording is busy ; only when state is failed
+                </enum>
+                <enum name="notAvailable">
+                    Video recording not available ; only when state is failed
+                </enum>
+                <enum name="memoryFull">
+                    Memory full
+                </enum>
+                <enum name="lowBattery">
+                    Battery is too low to record.
+                </enum>
+                <enum name="autoStopped">
+                    Video was auto stopped
+                </enum>
+            </arg>
+        </cmd>
+        
+    </class>
+    
+    <class name="PilotingState" id="4">
+        State from drone
+        
+        <cmd name="FlatTrimChanged" id="0">
+            Drone acknowledges that flat trim was correctly processed
+        </cmd>
+        
+        <cmd name="FlyingStateChanged" id="1">
+            Drone flying state changed
+            <arg name="state" type="enum">
+                Drone flying state
+                <enum name="landed">
+                    Landed state
+                </enum>
+                <enum name="takingoff">
+                    Taking off state
+                </enum>
+                <enum name="hovering">
+                    Hovering / Circling (for fixed wings) state
+                </enum>
+                <enum name="flying">
+                    Flying state
+                </enum>
+                <enum name="landing">
+                    Landing state
+                </enum>
+                <enum name="emergency">
+                    Emergency state
+                </enum>
+                <enum name="usertakeoff">
+                    User take off state. Waiting for user action to take off.
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="AlertStateChanged" id="2">
+            Drone alert state changed
+            <arg name="state" type="enum">
+                Drone alert state
+                <enum name="none">
+                    No alert
+                </enum>
+                <enum name="user">
+                    User emergency alert
+                </enum>
+                <enum name="cut_out">
+                    Cut out alert
+                </enum>
+                <enum name="critical_battery">
+                    Critical battery alert
+                </enum>
+                <enum name="low_battery">
+                    Low battery alert
+                </enum>
+                <enum name="too_much_angle">
+                    The angle of the drone is too high
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="NavigateHomeStateChanged" id="3">
+            Navigating home state
+            <arg name="state" type="enum">
+                State of navigate home
+                <enum name="available">
+                    Navigate home is available
+                </enum>
+                <enum name="inProgress">
+                    Navigate home is in progress
+                </enum>
+                <enum name="unavailable">
+                    Navigate home is not available
+                </enum>
+                <enum name="pending">
+                    Navigate home has been received, but its process is pending
+                </enum>
+            </arg>
+            <arg name="reason" type="enum">
+                Reason of the state 
+                <enum name="userRequest">
+                    User requested a navigate home (available->inProgress)
+                </enum>
+                <enum name="connectionLost">
+                    Connection between controller and product lost (available->inProgress)
+                </enum>
+                <enum name="lowBattery">
+                    Low battery occurred (available->inProgress)
+                </enum>
+                <enum name="finished">
+                    Navigate home is finished (inProgress->available)
+                </enum>
+                <enum name="stopped">
+                    Navigate home has been stopped (inProgress->available)
+                </enum>
+                <enum name="disabled">
+                    Navigate home disabled by product (inProgress->unavailable or available->unavailable)
+                </enum>
+                <enum name="enabled">
+                    Navigate home enabled by product (unavailable->available)
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="PositionChanged" id="4">
+            Drone position changed
+            <arg name="latitude" type="double">
+                Latitude position in decimal degrees (500.0 if not available)
+            </arg>
+            <arg name="longitude" type="double">
+                Longitude position in decimal degrees (500.0 if not available)
+            </arg>
+            <arg name="altitude" type="double">
+                Altitude in meters (from GPS)
+            </arg>
+        </cmd>
+        <cmd name="SpeedChanged" id="5" buffer="NON_ACK">
+            Drone speed changed
+            <arg name="speedX" type="float">
+                Speed on the x axis (when drone moves forward, speed is > 0) (in m/s)
+            </arg>
+            <arg name="speedY" type="float">
+                Speed on the y axis (when drone moves to right, speed is > 0) (in m/s)
+            </arg>
+            <arg name="speedZ" type="float">
+                Speed on the z axis (when drone moves down, speed is > 0) (in m/s)
+            </arg>
+        </cmd>
+        <cmd name="AttitudeChanged" id="6" buffer="NON_ACK">
+            Drone attitude changed
+            <arg name="roll" type="float">
+                roll value (in radian)
+            </arg>
+            <arg name="pitch" type="float">
+                Pitch value (in radian)
+            </arg>
+            <arg name="yaw" type="float">
+                Yaw value (in radian)
+            </arg>
+        </cmd>
+        <cmd name="AutoTakeOffModeChanged" id="7">
+            @deprecated
+            Status of the drone3 automatic take off mode
+            <arg name="state" type="u8">
+                State of automatic take off mode (1 if enabled)
+            </arg>
+        </cmd>
+        <cmd name="AltitudeChanged" id="8" buffer="NON_ACK">
+            Drone altitude changed
+            <arg name="altitude" type="double">
+                Altitude in meters
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="PilotingEvent" id="34">
+        Events of Piloting
+        
+        <cmd name="moveByEnd" id="0" content="NOTIFICATION">
+            [NOT USED] End of relative displacement of the drone
+            The frame is horizontal and relative to the current drone orientation:
+            - X is front
+            - Y is right
+            - Z is down
+            <arg name="dX" type="float">
+                Distance traveled along the front axis [m]
+            </arg>
+            <arg name="dY" type="float">
+                Distance traveled along the right axis [m]
+            </arg>
+            <arg name="dZ" type="float">
+                Distance traveled along the down axis [m]
+            </arg>
+            <arg name="dPsi" type="float">
+                Applied angle on heading  [rad]
+            </arg>
+            <arg name="error" type="enum">
+                Error to explain the event 
+                <enum name="ok">
+                    No Error ; The relative displacement
+                </enum>
+                <enum name="unknown">
+                    Unknown generic error
+                </enum>
+                <enum name="busy">
+                    The Device is busy ; command moveBy ignored 
+                </enum>
+                <enum name="notAvailable">
+                    Command moveBy is not available ; command moveBy ignored 
+                </enum>
+                <enum name="interrupted">
+                    Command moveBy interrupted 
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="Network" id="13">
+        Network related commands
+        
+        <cmd name="WifiScan" id="0">
+            Launches wifi network scan
+            <arg name="band" type="enum">
+                The band(s) : 2.4 Ghz, 5 Ghz, or both
+               <enum name="2_4ghz">
+                    2.4 GHz band
+                </enum>
+                <enum name="5ghz">
+                    5 GHz band
+                </enum>
+                <enum name="all">
+                    Both 2.4 and 5 GHz bands
+                </enum>
+            </arg>
+        </cmd>
+
+        <cmd name="WifiAuthChannel" id="1">
+            Controller inquire the list of authorized wifi channels.
+        </cmd>
+        
+    </class>
+    
+    <class name="NetworkState" id="14">
+        Network state from Product
+        
+        <cmd name="WifiScanListChanged" id="0" type="MAP_ITEM">
+            One scanning result found
+            <arg name="ssid" type="string">
+                SSID of the AP
+            </arg>
+            <arg name="rssi" type="i16">
+                RSSI of the AP in dbm (negative value)
+            </arg>
+            <arg name="band" type="enum">
+                The band : 2.4 GHz or 5 GHz
+                <enum name="2_4ghz">
+                    2.4 GHz band
+                </enum>
+                <enum name="5ghz">
+                    5 GHz band
+                </enum>
+            </arg>
+            <arg name="channel" type="u8">
+                Channel of the AP
+            </arg>
+        </cmd>
+        
+        <cmd name="AllWifiScanChanged" id="1">
+            State sent when all scanning result sent
+        </cmd>
+
+        <cmd name="WifiAuthChannelListChanged" id="2" type="LIST_ITEM">
+            Notify of an Authorized Channel.
+            <arg name="band" type="enum">
+                The band of this channel : 2.4 GHz or 5 GHz
+                <enum name="2_4ghz">
+                    2.4 GHz band
+                </enum>
+                <enum name="5ghz">
+                    5 GHz band
+                </enum>
+            </arg>
+            <arg name="channel" type="u8">
+                The authorized channel.
+            </arg>
+            <arg name="in_or_out" type="u8">
+                Bit 0 is 1 if channel is authorized outside (0 otherwise) ; Bit 1 is 1 if channel is authorized inside (0 otherwise)
+            </arg>
+        </cmd>
+
+        <cmd name="AllWifiAuthChannelChanged" id="3">
+            Notify the end of the list of Authorized wifi Channel.
+        </cmd>
+    </class>
+
+    <class name="PilotingSettings" id="2">
+        Piloting Settings commands
+        <cmd name="MaxAltitude" id="0">
+            Set Max Altitude
+            <arg name="current" type="float">
+                Current altitude max in m
+            </arg>
+        </cmd>
+        <cmd name="MaxTilt" id="1">
+            Set Max Tilt
+            <arg name="current" type="float">
+                Current tilt max in degree
+            </arg>
+        </cmd>
+        <cmd name="AbsolutControl" id="2">
+            @deprecated
+            Enable/Disable absolut control
+            <arg name="on" type="u8">
+                1 to enable, 0 to disable
+            </arg>
+        </cmd>
+        <cmd name="MaxDistance" id="3">
+            Set the distance max of the drone
+            <arg name="value" type="float">
+                Current max distance in meter
+            </arg>
+        </cmd>
+        <cmd name="NoFlyOverMaxDistance" id="4">
+            Indication about how the product handle flying over the max distance limitation
+            <arg name="shouldNotFlyOver" type="u8">
+                1 if the drone can't fly further than max distance, 0 if no limitation on the drone should be done
+            </arg>
+        </cmd>
+        
+        <cmd name="setAutonomousFlightMaxHorizontalSpeed" id="5">
+            [NOT USED] Set the maximum horizontal speed used by the autonomous flight
+            <arg name="value" type="float">
+                maximum horizontal speed [m/s]
+            </arg>
+        </cmd>
+        
+        <cmd name="setAutonomousFlightMaxVerticalSpeed" id="6">
+            [NOT USED] Set the maximum vertical speed used by the autonomous flight
+            <arg name="value" type="float">
+                maximum vertical speed [m/s]
+            </arg>
+        </cmd>
+        
+        <cmd name="setAutonomousFlightMaxHorizontalAcceleration" id="7">
+            [NOT USED] Set the maximum horizontal acceleration used by the autonomous flight
+            <arg name="value" type="float">
+                maximum horizontal acceleration [m/s2]
+            </arg>
+        </cmd>
+        
+        <cmd name="setAutonomousFlightMaxVerticalAcceleration" id="8">
+            [NOT USED] Set the maximum vertical acceleration used by the autonomous flight
+            <arg name="value" type="float">
+                maximum vertical acceleration [m/s2]
+            </arg>
+        </cmd>
+        
+        <cmd name="setAutonomousFlightMaxRotationSpeed" id="9">
+            [NOT USED] Set the maximum yaw rotation speed used by the autonomous flight
+            <arg name="value" type="float">
+                maximum yaw rotation speed [rad/s]
+            </arg>
+        </cmd>
+        <cmd name="BankedTurn" id="10">
+            Enable / Disable Banked Turn mode.
+            <arg name="value" type="u8">
+                1 to enable, 0 to disable
+            </arg>
+        </cmd>
+        <cmd name="MinAltitude" id="11">
+            Set Min Altitude
+            <arg name="current" type="float">
+                Current altitude min in m
+            </arg>
+        </cmd>
+        <cmd name="CirclingDirection" id="12">
+             Set Fixed wings circling default direction
+             <arg name="value" type="enum">
+                The circling direction
+                <enum name="CW">
+                    Circling ClockWise
+                </enum>
+                <enum name="CCW">
+                    Circling Counter ClockWise
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="CirclingRadius" id="13">
+            Set Fixed wings circling radius
+            <arg name="value" type="u16">
+                The circling radius in meter
+            </arg>
+        </cmd>
+        <cmd name="CirclingAltitude" id="14">
+            Set Fixed wings circling altitude
+            <arg name="value" type="u16">
+                The circling altitude in meter
+            </arg>
+        </cmd>
+        <cmd name="PitchMode" id="15">
+            Set pitch mode
+            <arg name="value" type="enum">
+                The Pitch mode
+                <enum name="NORMAL">
+                    Positive pitch values will make the drone lower its nose.
+                    Negative pitch values will make the drone raise its nose.
+                </enum>
+                <enum name="INVERTED">
+                    Pitch commands are inverted.
+                    Positive pitch values will make the drone raise its nose.
+                    Negative pitch values will make the drone lower its nose.
+                </enum>
+            </arg>
+         </cmd>
+         <cmd name="LandingMode" id="16">
+            Set fixed wings Landing Mode
+            <arg name="value" type="enum">
+                The Landing mode
+                <enum name="LINEAR">
+                    Linear landing.
+                </enum>
+                <enum name="SPIRALE">
+                    Spirale landing.
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="PilotingSettingsState" id="6">
+        Piloting Settings state from product
+        <cmd name="MaxAltitudeChanged" id="0">
+            Max Altitude sent by product
+            <arg name="current" type="float">
+                Current altitude max
+            </arg>
+            <arg name="min" type="float">
+                Range min of altitude
+            </arg>
+            <arg name="max" type="float">
+                Range max of altitude
+            </arg>
+        </cmd>
+        <cmd name="MaxTiltChanged" id="1">
+            Max tilt sent by product
+            <arg name="current" type="float">
+                Current max tilt
+            </arg>
+            <arg name="min" type="float">
+                Range min of tilt
+            </arg>
+            <arg name="max" type="float">
+                Range max of tilt
+            </arg>
+        </cmd>
+        <cmd name="AbsolutControlChanged" id="2">
+            @deprecated
+            Absolut control boolean sent by product
+            <arg name="on" type="u8">
+                1 if enabled, 0 if disabled
+            </arg>
+        </cmd>
+        <cmd name="MaxDistanceChanged" id="3">
+            Max distance sent by the drone
+            <arg name="current" type="float">
+                Current max distance in meter
+            </arg>
+            <arg name="min" type="float">
+                Minimal possible max distance
+            </arg>
+            <arg name="max" type="float">
+                Maximal possible max distance
+            </arg>
+        </cmd>
+        <cmd name="NoFlyOverMaxDistanceChanged" id="4">
+            Indication about how the product handle flying over the max distance limitation
+            <arg name="shouldNotFlyOver" type="u8">
+                1 if the drone won't fly further than max distance, 0 if no limitation on the drone will be done
+            </arg>
+        </cmd>
+        
+        <cmd name="AutonomousFlightMaxHorizontalSpeed" id="5">
+            [NOT USED] Maximum horizontal speed used by the autonomous flight
+            <arg name="value" type="float">
+                maximum horizontal speed [m/s]
+            </arg>
+        </cmd>
+        
+        <cmd name="AutonomousFlightMaxVerticalSpeed" id="6">
+            [NOT USED] Maximum vertical speed used by the autonomous flight
+            <arg name="value" type="float">
+                maximum vertical speed [m/s]
+            </arg>
+        </cmd>
+        
+        <cmd name="AutonomousFlightMaxHorizontalAcceleration" id="7">
+            [NOT USED] Maximum horizontal acceleration used by the autonomous flight
+            <arg name="value" type="float">
+                maximum horizontal acceleration [m/s2]
+            </arg>
+        </cmd>
+        
+        <cmd name="AutonomousFlightMaxVerticalAcceleration" id="8">
+            [NOT USED] Maximum vertical acceleration used by the autonomous flight
+            <arg name="value" type="float">
+                maximum vertical acceleration [m/s2]
+            </arg>
+        </cmd>
+        
+        <cmd name="AutonomousFlightMaxRotationSpeed" id="9">
+            [NOT USED] Maximum yaw rotation speed used by the autonomous flight
+            <arg name="value" type="float">
+                maximum yaw rotation speed [rad/s]
+            </arg>
+        </cmd>
+
+        <cmd name="BankedTurnChanged" id="10">
+            Banked Turn state.
+            <arg name="state" type="u8">
+                1 if enabled, 0 if disabled
+            </arg>
+        </cmd>
+        <cmd name="MinAltitudeChanged" id="11">
+            Min Altitude sent by product
+            <arg name="current" type="float">
+                Current altitude min
+            </arg>
+            <arg name="min" type="float">
+                Range min of altitude min
+            </arg>
+            <arg name="max" type="float">
+                Range max of altitude min
+            </arg>
+        </cmd>
+        <cmd name="CirclingDirectionChanged" id="12">
+            Fixed wings circling default direction changed
+            <arg name="value" type="enum">
+                The circling direction
+                <enum name="CW">
+                    Circling ClockWise
+                </enum>
+                <enum name="CCW">
+                    Circling Counter ClockWise
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="CirclingRadiusChanged" id="13">
+            Fixed wings circling radius changed
+            <arg name="current" type="u16">
+                The current circling radius in meter
+            </arg>
+            <arg name="min" type="u16">
+                Range min of circling radius in meter
+            </arg>
+            <arg name="max" type="u16">
+                Range max of circling radius in meter
+            </arg>
+        </cmd>
+        <cmd name="CirclingAltitudeChanged" id="14">
+            Fixed wings circling altitude changed
+            <arg name="current" type="u16">
+                The current circling altitude in meter
+            </arg>
+             <arg name="min" type="u16">
+                 Range min of circling altitude in meter
+             </arg>
+             <arg name="max" type="u16">
+                 Range max of circling altitude in meter
+            </arg>
+         </cmd>
+         <cmd name="PitchModeChanged" id="15">
+           Pitch mode changed
+           <arg name="value" type="enum">
+               The Pitch mode
+               <enum name="NORMAL">
+                   Positive pitch values will make the drone lower its nose.
+                   Negative pitch values will make the drone raise its nose.
+               </enum>
+               <enum name="INVERTED">
+                   Pitch commands are inverted.
+                   Positive pitch values will make the drone raise its nose.
+                   Negative pitch values will make the drone lower its nose.
+               </enum>
+           </arg>
+        </cmd>
+        <cmd name="LandingModeChanged" id="16">
+           Fixed wings Landing Mode
+           <arg name="value" type="enum">
+                The Landing mode
+                <enum name="LINEAR">
+                    Linear landing.
+                </enum>
+                <enum name="SPIRALE">
+                    Spirale landing.
+                </enum>
+           </arg>
+        </cmd>
+    </class>
+    <class name="SpeedSettings" id="11">
+        Speed Settings commands
+        <cmd name="MaxVerticalSpeed" id="0">
+            Set Max Vertical speed
+            <arg name="current" type="float">
+                Current max vertical speed in m/s
+            </arg>
+        </cmd>
+        <cmd name="MaxRotationSpeed" id="1">
+            Set Max Yaw Rotation speed
+            <arg name="current" type="float">
+                Current max yaw rotation speed in degree/s
+            </arg>
+        </cmd>
+        <cmd name="HullProtection" id="2">
+            Presence of hull protection
+            <arg name="present" type="u8">
+                1 if present, 0 if not present
+            </arg>
+        </cmd>
+        <cmd name="Outdoor" id="3">
+            @deprecated
+            Outdoor property
+            <arg name="outdoor" type="u8">
+                1 if outdoor flight, 0 if indoor flight
+            </arg>
+        </cmd>
+        <cmd name="MaxPitchRollRotationSpeed" id="4">
+            Set Max Pitch/Rool Rotation speed
+            <arg name="current" type="float">
+                Current max pitch/roll rotation speed in degree/s
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="SpeedSettingsState" id="12">
+        Speed Settings state from product
+        <cmd name="MaxVerticalSpeedChanged" id="0">
+            Max vertical speed sent by product
+            <arg name="current" type="float">
+                Current max vertical speed in m/s
+            </arg>
+            <arg name="min" type="float">
+                Range min of vertical speed
+            </arg>
+            <arg name="max" type="float">
+                Range max of vertical speed
+            </arg>
+        </cmd>
+        <cmd name="MaxRotationSpeedChanged" id="1">
+            Max yaw rotation speed sent by product
+            <arg name="current" type="float">
+                Current max yaw rotation speed in degree/s
+            </arg>
+            <arg name="min" type="float">
+                Range min of yaw rotation speed
+            </arg>
+            <arg name="max" type="float">
+                Range max of yaw rotation speed
+            </arg>
+        </cmd>
+        <cmd name="HullProtectionChanged" id="2">
+            Presence of hull protection sent by product
+            <arg name="present" type="u8">
+                1 if present, 0 if not present
+            </arg>
+        </cmd>
+        <cmd name="OutdoorChanged" id="3">
+            @deprecated
+            Outdoor property sent by product
+            <arg name="outdoor" type="u8">
+                1 if outdoor flight, 0 if indoor flight
+            </arg>
+        </cmd>
+        <cmd name="MaxPitchRollRotationSpeedChanged" id="4">
+            Max pitch/roll rotation speed sent by product
+            <arg name="current" type="float">
+                Current max pitch/roll rotation speed in degree/s
+            </arg>
+            <arg name="min" type="float">
+                Range min of pitch/roll rotation speed
+            </arg>
+            <arg name="max" type="float">
+                Range max of pitch/roll rotation speed
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="NetworkSettings" id="9">
+        Network settings commands
+        <cmd name="WifiSelection" id="0">
+            Auto-select channel of choosen band
+            <arg name="type" type="enum">
+                The type of wifi selection (auto, manual)
+                <enum name="auto">
+                    Auto selection
+                </enum>
+                <enum name="manual">
+                    Manual selection
+                </enum>
+            </arg>
+            <arg name="band" type="enum">
+                The allowed band(s) : 2.4 Ghz, 5 Ghz, or all
+                <enum name="2_4ghz">
+                    2.4 GHz band
+                </enum>
+                <enum name="5ghz">
+                    5 GHz band
+                </enum>
+                <enum name="all">
+                    Both 2.4 and 5 GHz bands
+                </enum>
+            </arg>
+            <arg name="channel" type="u8">
+                The channel (not used in auto mode)
+            </arg>
+        </cmd>
+        <cmd name="wifiSecurity" id="1">
+            Sent by the controller to set the wifi security
+            <arg name="type" type="enum">
+                The type of wifi security (open, wpa2)
+                <enum name="open">
+                    Wifi is not protected by any security (default)
+                </enum>
+                <enum name="wpa2">
+                    Wifi is protected by wpa2
+                </enum>
+            </arg>
+            <arg name="key" type="string">
+                The key to secure the network (empty if type is open)
+            </arg>
+            <arg name="keyType" type="enum">
+                Type of the key
+                <enum name="plain">
+                    Key is plain text, not encrypted
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="NetworkSettingsState" id="10">
+        Network settings state from product
+        <cmd name="WifiSelectionChanged" id="0">
+            Wifi selection from product
+            <arg name="type" type="enum">
+                The type of wifi selection settings
+                <enum name="auto_all">
+                    Auto selection
+                </enum>
+                <enum name="auto_2_4ghz">
+                    Auto selection 2.4ghz
+                </enum>
+                <enum name="auto_5ghz">
+                    Auto selection 5 ghz
+                </enum>
+                <enum name="manual">
+                    Manual selection
+                </enum>
+            </arg>
+            <arg name="band" type="enum">
+                The actual  wifi band state
+                <enum name="2_4ghz">
+                    2.4 GHz band
+                </enum>
+                <enum name="5ghz">
+                    5 GHz band
+                </enum>
+                <enum name="all">
+                    Both 2.4 and 5 GHz bands
+                </enum>
+            </arg>
+            <arg name="channel" type="u8">
+                The channel (depends of the band)
+            </arg>
+        </cmd>
+        <cmd name="wifiSecurityChanged" id="1">
+            @deprecated
+            Sent by the drone when its wifi security changes
+            <arg name="type" type="enum">
+                The type of wifi security (open, wpa2)
+                <enum name="open">
+                    Wifi is not protected by any security (default)
+                </enum>
+                <enum name="wpa2">
+                    Wifi is protected by wpa2
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="wifiSecurity" id="2">
+            Sent by the drone when its wifi security changes
+            <arg name="type" type="enum">
+                The type of wifi security (open, wpa2)
+                <enum name="open">
+                    Wifi is not protected by any security (default)
+                </enum>
+                <enum name="wpa2">
+                    Wifi is protected by wpa2
+                </enum>
+            </arg>
+            <arg name="key" type="string">
+                The key used to secure the network (empty if type is open)
+            </arg>
+            <arg name="keyType" type="enum">
+                Type of the key
+                <enum name="plain">
+                    Key is plain text, not encrypted
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="SettingsState" id="16">
+        Settings state from product
+
+        <cmd name="ProductMotorVersionListChanged" id="0" type="MAP_ITEM">
+            @deprecated
+            Product Motor version (the first argument is the unique identifier for the list)
+            <arg name="motor_number" type="u8">
+                Product Motor number
+            </arg>
+            <arg name="type" type="string">
+                Product Motor type
+            </arg>
+            <arg name="software" type="string">
+                Product Motors software version
+            </arg>
+            <arg name="hardware" type="string">
+                Product Motors hardware version
+            </arg>
+        </cmd>
+        <cmd name="ProductGPSVersionChanged" id="1">
+            Product GPS versions
+            <arg name="software" type="string">
+                Product GPS software version
+            </arg>
+            <arg name="hardware" type="string">
+                Product GPS hardware version
+            </arg>
+        </cmd>
+        <cmd name="MotorErrorStateChanged" id="2">
+            Motor status changed
+            <arg name="motorIds" type="u8">
+                Bit field for concerned motor. If bit 0 = 1, motor 1 is affected by this error. Same with bit 1, 2 and 3.
+            </arg>
+            <arg name="motorError" type="enum">
+                Enumeration of the motor error
+                <enum name="noError">
+                    No error detected
+                </enum>
+                <enum name="errorEEPRom">
+                    EEPROM access failure
+                </enum>
+                <enum name="errorMotorStalled">
+                    Motor stalled 
+                </enum>
+                <enum name="errorPropellerSecurity">
+                    Propeller cutout security triggered
+                </enum>
+                <enum name="errorCommLost">
+                    Communication with motor failed by timeout
+                </enum>
+                <enum name="errorRCEmergencyStop">
+                    RC emergency stop
+                </enum>
+                <enum name="errorRealTime">
+                    Motor controler scheduler real-time out of bounds
+                </enum>
+                <enum name="errorMotorSetting">
+                    One or several incorrect values in motor settings
+                </enum>
+                <enum name="errorTemperature">
+                    Too hot or too cold Cypress temperature
+                </enum>
+                <enum name="errorBatteryVoltage">
+                    Battery voltage out of bounds
+                </enum>
+                <enum name="errorLipoCells">
+                    Incorrect number of LIPO cells
+                </enum>
+                <enum name="errorMOSFET">
+                    Defectuous MOSFET or broken motor phases
+                </enum>
+                <enum name="errorBootloader">
+                    Not use for BLDC but useful for HAL
+                </enum>
+                <enum name="errorAssert">
+                    Error Made by BLDC_ASSERT()
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="MotorSoftwareVersionChanged" id="3">
+            @deprecated
+            Motor software version status
+            <arg name="version" type="string">
+                name of the version : dot separated fields (major version - minor version - firmware type - nb motors handled). Firmware types : Release, Debug, Alpha, Test-bench
+            </arg>
+        </cmd>
+        <cmd name="MotorFlightsStatusChanged" id="4">
+            Motor flights status
+            <arg name="nbFlights" type="u16">
+                total number of flights
+            </arg>
+            <arg name="lastFlightDuration" type="u16">
+                Duration of the last flight (in seconds)
+            </arg>
+            <arg name="totalFlightDuration" type="u32">
+                Duration of all flights (in seconds)
+            </arg>
+        </cmd>
+        <cmd name="MotorErrorLastErrorChanged" id="5">
+            Motor status about last error
+            <arg name="motorError" type="enum">
+                Enumeration of the motor error
+                <enum name="noError">
+                    No error detected
+                </enum>
+                <enum name="errorEEPRom">
+                    EEPROM access failure
+                </enum>
+                <enum name="errorMotorStalled">
+                    Motor stalled
+                </enum>
+                <enum name="errorPropellerSecurity">
+                    Propeller cutout security triggered
+                </enum>
+                <enum name="errorCommLost">
+                    Communication with motor failed by timeout
+                </enum>
+                <enum name="errorRCEmergencyStop">
+                    RC emergency stop
+                </enum>
+                <enum name="errorRealTime">
+                    Motor controler scheduler real-time out of bounds
+                </enum>
+                <enum name="errorMotorSetting">
+                    One or several incorrect values in motor settings
+                </enum>
+                <enum name="errorBatteryVoltage">
+                    Battery voltage out of bounds
+                </enum>
+                <enum name="errorLipoCells">
+                    Incorrect number of LIPO cells
+                </enum>
+                <enum name="errorMOSFET">
+                    Defectuous MOSFET or broken motor phases
+                </enum>
+                <enum name="errorTemperature">
+                    Too hot or too cold Cypress temperature
+                </enum>
+                <enum name="errorBootloader">
+                    Not use for BLDC but useful for HAL
+                </enum>
+                <enum name="errorAssert">
+                    Error Made by BLDC_ASSERT()
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="P7ID" id="6">
+            @deprecated
+            Product P7ID
+            <arg name="serialID" type="string">
+                Product P7ID
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="PictureSettings" id="19">
+        Photo settings chosen by the user
+        <cmd name="PictureFormatSelection" id="0">
+            The format of the photo
+            <arg name="type" type="enum">
+                The type of photo format
+                <enum name="raw">
+                    Take raw image
+                </enum>
+                <enum name="jpeg">
+                    Take a 4:3 jpeg photo
+                </enum>
+                <enum name="snapshot">
+                    Take a 16:9 snapshot from camera
+                </enum>
+                <enum name="jpeg_fisheye">
+                    Take jpeg fisheye image only
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="AutoWhiteBalanceSelection" id="1">
+            AutoWhiteBalance mode
+            <arg name="type" type="enum">
+                The type auto white balance
+                <enum name="auto">
+                    Auto guess of best white balance params
+                </enum>
+                <enum name="tungsten">
+                    Tungsten white balance
+                </enum>
+                <enum name="daylight">
+                    Daylight white balance
+                </enum>
+                <enum name="cloudy">
+                    Cloudy white balance
+                </enum>
+                <enum name="cool_white">
+                    White balance for a flash
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="ExpositionSelection" id="2">
+            The exposition of the image
+            <arg name="value" type="float">
+                Exposition value (bounds given by ExpositionChanged arg min and max, by default [-3:3])
+            </arg>
+        </cmd>
+        <cmd name="SaturationSelection" id="3">
+            The saturation of the image
+            <arg name="value" type="float">
+                Saturation value (bounds given by SaturationChanged arg min and max, by default [-100:100])
+            </arg>
+        </cmd>
+        <cmd name="TimelapseSelection" id="4">
+            Picture taken periodically
+            <arg name="enabled" type="u8">
+                1 if timelapse is enabled, 0 otherwise
+            </arg>
+            <arg name="interval" type="float">
+                interval in seconds for taking pictures
+            </arg>
+        </cmd>
+        <cmd name="VideoAutorecordSelection" id="5">
+            Video autorecord
+            <arg name="enabled" type="u8">
+                1 if video autorecord is enabled, 0 otherwise
+            </arg>
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id to take video
+            </arg>
+        </cmd>
+        <cmd name="VideoStabilizationMode" id="6">
+            Set Video stabilization mode
+            <arg name="mode" type="enum">
+                Video stabilization mode
+                <enum name="roll_pitch">
+                    Video flat on roll and pitch
+                </enum>
+                <enum name="pitch">
+                    Video flat on pitch only
+                </enum>
+                <enum name="roll">
+                    Video flat on roll only
+                </enum>
+                <enum name="none">
+                    Video follows drone angles
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    <class name="PictureSettingsState" id="20">
+        Photo settings state from product
+        <cmd name="PictureFormatChanged" id="0">
+        The format of the photo
+            <arg name="type" type="enum">
+                The type of photo format
+                <enum name="raw">
+                    Take raw image
+                </enum>
+                <enum name="jpeg">
+                    Take a 4:3 jpeg photo
+                </enum>
+                <enum name="snapshot">
+                    Take a 16:9 snapshot from camera
+                </enum>
+                <enum name="jpeg_fisheye">
+                    Take jpeg fisheye image only
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="AutoWhiteBalanceChanged" id="1">
+            AutoWhiteBalance mode
+            <arg name="type" type="enum">
+                The type auto white balance
+                <enum name="auto">
+                    Auto guess of best white balance params
+                </enum>
+                <enum name="tungsten">
+                    Tungsten white balance
+                </enum>
+                <enum name="daylight">
+                    Daylight white balance
+                </enum>
+                <enum name="cloudy">
+                    Cloudy white balance
+                </enum>
+                <enum name="cool_white">
+                    White balance for a flash
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="ExpositionChanged" id="2">
+            The exposition of the image
+            <arg name="value" type="float">
+                Exposition value
+            </arg>
+            <arg name="min" type="float">
+                Min exposition value
+            </arg>
+            <arg name="max" type="float">
+                Max exposition value
+            </arg>
+        </cmd>
+        <cmd name="SaturationChanged" id="3">
+            The saturation of the image
+            <arg name="value" type="float">
+                Saturation value
+            </arg>
+            <arg name="min" type="float">
+                Min saturation value
+            </arg>
+            <arg name="max" type="float">
+                Max saturation value
+            </arg>
+        </cmd>
+        <cmd name="TimelapseChanged" id="4">
+            Picture taken periodically
+            <arg name="enabled" type="u8">
+                1 if timelapse is enabled, 0 otherwise
+            </arg>
+            <arg name="interval" type="float">
+                interval in seconds for taking pictures
+            </arg>
+            <arg name="minInterval" type="float">
+                Minimal interval for taking pictures
+            </arg>
+            <arg name="maxInterval" type="float">
+                Maximal interval for taking pictures
+            </arg>
+        </cmd>
+        <cmd name="VideoAutorecordChanged" id="5">
+            Video autorecord
+            <arg name="enabled" type="u8">
+                1 if video autorecord is enabled, 0 otherwise
+            </arg>
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id for the taken video
+            </arg>
+        </cmd>
+        <cmd name="VideoStabilizationModeChanged" id="6">
+            Video stabilization mode
+            <arg name="mode" type="enum">
+                Video stabilization mode
+                <enum name="roll_pitch">
+                    Video flat on roll and pitch
+                </enum>
+                <enum name="pitch">
+                    Video flat on pitch only
+                </enum>
+                <enum name="roll">
+                    Video flat on roll only
+                </enum>
+                <enum name="none">
+                    Video follows drone angles
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="MediaStreaming" id="21">
+        Control media streaming behavior.
+        <cmd name="VideoEnable" id="0">
+            Enable/disable video streaming.
+            <arg name="enable" type="u8">
+                1 to enable, 0 to disable.
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="MediaStreamingState" id="22">
+        Media streaming status.
+        <cmd name="VideoEnableChanged" id="0">
+            Return video streaming status.
+            <arg name="enabled" type="enum">
+                Current video streaming status.
+                <enum name="enabled">
+                    Video streaming is enabled.
+                </enum>
+                <enum name="disabled">
+                    Video streaming is disabled.
+                </enum>
+                <enum name="error">
+                    Video streaming failed to start.
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="GPSSettings" id="23">
+        GPS settings
+        <cmd name="SetHome" id="0">
+            @deprecated
+            Set home location
+            <arg name="latitude" type="double">
+                Home latitude in decimal degrees
+            </arg>
+            <arg name="longitude" type="double">
+                Home longitude in decimal degrees
+            </arg>
+            <arg name="altitude" type="double">
+                Home altitude in meters
+            </arg>
+        </cmd>
+        <cmd name="ResetHome" id="1">
+            Reset home location and let the drone make its own home
+        </cmd>
+        <cmd name="SendControllerGPS" id="2">
+            send controller GPS location
+            <arg name="latitude" type="double">
+                GPS latitude in decimal degrees
+            </arg>
+            <arg name="longitude" type="double">
+                GPS longitude in decimal degrees
+            </arg>
+            <arg name="altitude" type="double">
+                GPS altitude in meters
+            </arg>
+            <arg name="horizontalAccuracy" type="double">
+                Horizontal Accuracy in meter ; equal -1 if no horizontal Accuracy
+            </arg>
+            <arg name="verticalAccuracy" type="double">
+                Vertical Accuracy in meter ; equal -1 if no vertical Accuracy
+            </arg>
+        </cmd>
+        <cmd name="HomeType" id="3">
+            Set user preference for the type of the home position. Note that this is only a preference
+            <arg name="type" type="enum">
+                The type of the home position
+                <enum name="TAKEOFF">
+                    The drone will try to return to the take off position
+                </enum>
+                <enum name="PILOT">
+                    The drone will try to return to the pilot position
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="ReturnHomeDelay" id="4">
+            Set the delay after which the drone will automatically try to return home
+            <arg name="delay" type="u16">
+                Delay in second
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="GPSSettingsState" id="24">
+        GPS settings state
+        <cmd name="HomeChanged" id="0">
+            Return home status
+            <arg name="latitude" type="double">
+                Home latitude in decimal degrees
+            </arg>
+            <arg name="longitude" type="double">
+                Home longitude in decimal degrees
+            </arg>
+            <arg name="altitude" type="double">
+                Home altitude in meters
+            </arg>
+        </cmd>
+        <cmd name="ResetHomeChanged" id="1">
+            Reset home status
+            <arg name="latitude" type="double">
+                Home latitude in decimal degrees
+            </arg>
+            <arg name="longitude" type="double">
+                Home longitude in decimal degrees
+            </arg>
+            <arg name="altitude" type="double">
+                Home altitude in meters
+            </arg>
+        </cmd>
+        <cmd name="GPSFixStateChanged" id="2">
+            GPS fix state
+            <arg name="fixed" type="u8">
+                1 if gps on drone is fixed, 0 otherwise
+            </arg>
+        </cmd>
+        <cmd name="GPSUpdateStateChanged" id="3">
+            GPS update state
+            <arg name="state" type="enum">
+                The state of the gps update
+                <enum name="updated">
+                    Drone GPS update succeed
+                </enum>
+                <enum name="inProgress">
+                    Drone GPS update In progress
+                </enum>
+                <enum name="failed">
+                    Drone GPS update failed
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="HomeTypeChanged" id="4">
+            State of the type of the home position. This type is the user preference. The prefered home type may not be available, see HomeTypeStatesChanged to get the drone home type.
+            <arg name="type" type="enum">
+                The type of the home position
+                <enum name="TAKEOFF">
+                    The drone will try to return to the take off position
+                </enum>
+                <enum name="PILOT">
+                    The drone will try to return to the pilot position
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="ReturnHomeDelayChanged" id="5">
+            State of the delay after which the drone will automatically try to return home
+            <arg name="delay" type="u16">
+                Delay in second
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="CameraState" id="25">
+        Camera state
+        
+        <cmd name="Orientation" id="0">
+            Camera orientation
+            
+            <arg name="tilt" type="i8">
+                Tilt camera consign for the drone [-100;100]
+            </arg>
+            
+            <arg name="pan" type="i8">
+                Pan camera consign for the drone [-100;100]
+            </arg>
+        </cmd>
+        
+        <cmd name="defaultCameraOrientation" id="1">
+            Orientation of the camera center.
+            This is the value to send when we want to center the camera.
+            <arg name="tilt" type="i8">
+                Tilt value (in degree)
+            </arg>
+            <arg name="pan" type="i8">
+                Pan value (in degree)
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="Antiflickering" id="29">
+        Anti-flickering related commands
+        <cmd name="electricFrequency" id="0">
+            Electric frequency of the country determined by the position of the controller
+            <arg name="frequency" type="enum">
+                Type of the electric frequency
+                <enum name="fiftyHertz">
+                    Electric frequency of the country is 50hz
+                </enum>
+                <enum name="sixtyHertz">
+                    Electric frequency of the country is 60hz
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="setMode" id="1">
+            Set the anti flickering mode
+            <arg name="mode" type="enum">
+                Mode of the anti flickering functionnality
+                <enum name="auto">
+                    Anti flickering based on the electric frequency previously sent
+                </enum>
+                <enum name="FixedFiftyHertz">
+                    Anti flickering based on a fixed frequency of 50Hz
+                </enum>
+                <enum name="FixedSixtyHertz">
+                    Anti flickering based on a fixed frequency of 60Hz
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="AntiflickeringState" id="30">
+        Anti-flickering related states
+        <cmd name="electricFrequencyChanged" id="0">
+            Electric frequency of the country determined by the position of the controller
+            <arg name="frequency" type="enum">
+                Type of the electric frequency
+                <enum name="fiftyHertz">
+                    Electric frequency of the country is 50hz
+                </enum>
+                <enum name="sixtyHertz">
+                    Electric frequency of the country is 60hz
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="modeChanged" id="1">
+            Anti flickering mode
+            <arg name="mode" type="enum">
+                Mode of the anti flickering functionnality
+                <enum name="auto">
+                    Anti flickering based on the electric frequency previously sent
+                </enum>
+                <enum name="FixedFiftyHertz">
+                    Anti flickering based on a fixed frequency of 50Hz
+                </enum>
+                <enum name="FixedSixtyHertz">
+                    Anti flickering based on a fixed frequency of 60Hz
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="GPSState" id="31">
+        GPS related States
+        <cmd name="NumberOfSatelliteChanged" id="0">
+            The number of satellite used to compute the gps position
+            <arg name="numberOfSatellite" type="u8">
+                The number of satellite
+            </arg>
+        </cmd>
+        <cmd name="HomeTypeAvailabilityChanged" id="1" type="MAP_ITEM">
+            Availability of the return home types in a map : for each type other args will be sent by the drone
+            <arg name="type" type="enum">
+                The type of the return home
+                <enum name="TAKEOFF">
+                    The drone will try to return to the take off position
+                </enum>
+                <enum name="PILOT">
+                    The drone will try to return to the pilot position
+                </enum>
+                <enum name="FIRST_FIX">
+                    The drone has not enough information, it will try to return to the first GPS fix
+                </enum>
+            </arg>
+            
+            <arg name="available" type="u8">
+                1 if this type is available, 0 otherwise
+            </arg>
+        </cmd>
+        
+        <cmd name="HomeTypeChosenChanged" id="2">
+            The return home type chosen
+            <arg name="type" type="enum">
+                The type of the return home chosen
+                <enum name="TAKEOFF">
+                    The drone will try to return to the take off position
+                </enum>
+                <enum name="PILOT">
+                    The drone will try to return to the pilot position
+                </enum>
+                <enum name="FIRST_FIX">
+                    The drone has not enough information, it will try to return to the first GPS fix
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="PROState" id="32">
+        @deprecated
+        Pro features enabled on the Bebop
+        <cmd name="Features" id="0">
+            Features enabled
+            <arg name="features" type="u64">
+                Bitfield representing enabled features.
+            </arg>
+        </cmd>
+    </class>
+</project>

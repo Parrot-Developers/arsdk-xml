@@ -1,0 +1,1146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2014 Parrot SA
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the 
+      distribution.
+    * Neither the name of Parrot nor the names
+      of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+    OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+-->
+
+<!--
+ Important notes :
+ ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
+ NEVER MODIFY EXISTING class/command/arg !
+ 
+ Comments are mandatory for all classes/commands/args
+ For each comment : 1st line will be used as brief (if applicable)
+ Other lines will be used as complete desc
+ 
+ How to add a new class :
+ <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
+ Comment about the class                | Inlcuded in Doxygen doc
+ <cmd> ... </cmd>                       | List of commands
+ <cmd> ... </cmd>
+ </class>
+ 
+ How to add a new command (without args) to a class :
+ <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ </cmd>
+ 
+ How to add a new command (with args) to a class :
+ <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ <arg name="argName" type="argType" >   | Repeat for each arg
+ Comment about the arg                | argName must be a valid C variable name
+ </arg>                                 | argType must be a valid type (see below)
+ ...                                    | Comment included in Doxygen doc
+ </cmd>
+ 
+ List of valid types (associated C type) :
+ -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
+ - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
+ - i32 / u32 : signed/unsigned 32 bit integer ([u]int32_t)
+ - i64 / u64 : signed/unsigned 64 bit integer ([u]int64_t)
+ -     float : IEEE-754 single precision floating point number (float)
+ -    double : IEEE-754 double precision floating point number (double)
+ -    string : NULL-terminated UTF-8 String. (char *)
+ -->
+
+
+<project name="common" id="0">
+    All common commands shared between all projects
+
+    <class name="Network" id="0">
+        Network related commands
+        
+        <cmd name="Disconnect" id="0">
+            @deprecated
+            Signals the remote that the host will disconnect and close its
+            libARNetwork instance (and all threads that use libARNetwork)
+        </cmd>
+    </class>
+    
+    <class name="NetworkEvent" id="1">
+        Network Event from product
+        
+        <cmd name="Disconnection" id="0" content="NOTIFICATION">
+            Signals the remote that the host will disconnect and close its
+            libARNetwork instance (and all threads that use libARNetwork)
+            <arg name="cause" type="enum">
+                Cause of the disconnection of the product
+                <enum name="off_button">
+                    The button off has been pressed
+                </enum>
+                <enum name="unknown">
+                    Unknown generic cause
+                </enum>
+            </arg>
+        </cmd>
+
+    </class>
+    
+    <class name="Settings" id="2">
+        Settings commands
+        <cmd name="AllSettings" id="0" timeout="RETRY">
+            Get all product settings, the product must send all settings
+        </cmd>
+        <cmd name="Reset" id="1">
+            Reset all settings
+        </cmd>
+        <cmd name="ProductName" id="2">
+            Set Product name
+            <arg name="name" type="string">
+                Product name
+            </arg>
+        </cmd>
+
+        <cmd name="Country" id="3">
+            Set current Country of controller
+            <arg name="code" type="string">
+                Country code with ISO 3166 format
+            </arg>
+        </cmd>
+        
+        <cmd name="AutoCountry" id="4">
+            Set Auto Country Settings
+            <arg name="automatic" type="u8">
+                Boolean : 0 : Manual / 1 : Auto
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="SettingsState" id="3">
+        Settings state from product
+        <cmd name="AllSettingsChanged" id="0">
+            State sent when all settings has been sent.
+        </cmd>
+        
+        <cmd name="ResetChanged" id="1">
+            State sent when all settings has been resetting.
+        </cmd>
+
+        <cmd name="ProductNameChanged" id="2">
+            Product name 
+            <arg name="name" type="string">
+                Product name
+            </arg>
+        </cmd>
+        
+        <cmd name="ProductVersionChanged" id="3">
+            Product versions
+            <arg name="software" type="string">
+                Product software version
+            </arg>
+            <arg name="hardware" type="string">
+                Product hardware version
+            </arg>
+        </cmd>
+        
+        <cmd name="ProductSerialHighChanged" id="4">
+            Product serial number
+            <arg name="high" type="string">
+                Serial high number (hexadecimal value)
+            </arg>
+        </cmd>
+        
+        <cmd name="ProductSerialLowChanged" id="5">
+            Product serial number
+            <arg name="low" type="string">
+                Serial low number (hexadecimal value)
+            </arg>
+        </cmd>
+
+        <cmd name="CountryChanged" id="6">
+            Inform current Country set in product. (Answer to 'Country' command)
+            <arg name="code" type="string">
+                Country code with ISO 3166 format, empty string means unknown country.
+            </arg>
+        </cmd>
+        
+        <cmd name="AutoCountryChanged" id="7">
+            Inform Auto Country Settings
+            <arg name="automatic" type="u8">
+                Boolean : 0 : Manual / 1 : Auto
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="Common" id="4">
+        Common commands
+        <cmd name="AllStates" id="0" timeout="RETRY">
+            Get all product states.
+        </cmd>
+        
+        <cmd name="CurrentDate" id="1">
+            Set current date of controller
+            <arg name="date" type="string">
+                Date with ISO-8601 format
+            </arg>
+        </cmd>
+        
+        <cmd name="CurrentTime" id="2">
+            Set current time of controller
+            <arg name="time" type="string">
+                Time with ISO-8601 format
+            </arg>
+        </cmd>
+        
+        <cmd name="Reboot" id="3">
+            Command to ask reboot to product
+        </cmd>
+    </class>
+
+    <class name="CommonState" id="5">
+        Common state from product
+        <cmd name="AllStatesChanged" id="0">
+            State sent when all product states has been sent.
+        </cmd>
+        
+        <cmd name="BatteryStateChanged" id="1" buffer="NON_ACK">
+            Battery state
+            <arg name="percent" type="u8">
+                Battery percentage
+            </arg>
+        </cmd>
+        
+        <cmd name="MassStorageStateListChanged" id="2" type="MAP_ITEM">
+            Mass storage state list
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id (unique)
+            </arg>
+            <arg name="name" type="string">
+                Mass storage name
+            </arg>
+        </cmd>
+        
+        <cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM">
+            Mass storage info state list
+            <arg name="mass_storage_id" type="u8">
+                Mass storage state id (unique)
+            </arg>
+            <arg name="size" type="u32">
+                Mass storage size in MBytes
+            </arg>
+            <arg name="used_size" type="u32">
+                Mass storage used size in MBytes
+            </arg>
+            <arg name="plugged" type="u8">
+                Mass storage plugged (1 if mass storage is plugged, otherwise 0)
+            </arg>
+            <arg name="full" type="u8">
+                Mass storage full information state (1 if mass storage full, 0 otherwise).
+            </arg>
+            <arg name="internal" type="u8">
+                Mass storage internal type state (1 if mass storage is internal, 0 otherwise)
+            </arg>
+        </cmd>
+        
+        <cmd name="CurrentDateChanged" id="4">
+            Current date state
+            <arg name="date" type="string">
+                Date with ISO-8601 format
+            </arg>
+        </cmd>
+        
+        <cmd name="CurrentTimeChanged" id="5">
+            Current time state
+            <arg name="time" type="string">
+                Time with ISO-8601 format
+            </arg>
+        </cmd>
+        
+        <cmd name="MassStorageInfoRemainingListChanged" id="6" type="LIST_ITEM">
+            @deprecated
+            Mass storage info remaining list
+            <arg name="free_space" type="u32">
+                Mass storage free space in MBytes
+            </arg>
+            <arg name="rec_time" type="u16">
+                Mass storage record time reamining in minute
+            </arg>
+            <arg name="photo_remaining" type="u32">
+                Mass storage photo remaining
+            </arg>
+        </cmd>
+        
+        <cmd name="WifiSignalChanged" id="7" buffer="NON_ACK">
+            Wifi Signal between controller and product state
+            <arg name="rssi" type="i16">
+                RSSI of the signal between controller and the product (in dbm)
+            </arg>
+        </cmd>
+        
+        <cmd name="SensorsStatesListChanged" id="8" type="MAP_ITEM">
+            Sensors states list
+            <arg name="sensorName" type="enum">
+                Sensor name
+                <enum name="IMU">
+                    Inertial Measurement Unit sensor
+                </enum>
+                <enum name="barometer">
+                    Barometer sensor
+                </enum>
+                <enum name="ultrasound">
+                    Ultrasonic sensor
+                </enum>
+                <enum name="GPS">
+                    GPS sensor
+                </enum>
+                <enum name="magnetometer">
+                    Magnetometer sensor
+                </enum>
+                <enum name="vertical_camera">
+                    Vertical Camera sensor
+                </enum>
+            </arg>
+            <arg name="sensorState" type="u8">
+                Sensor state (1 if the sensor is OK, 0 if the sensor is NOT OK)
+            </arg>
+        </cmd>
+        
+        <cmd name="ProductModel" id="9">
+            Inform of the product model. This is used to customize the UI depending on the connected product.
+            <arg name="model" type="enum">
+                The Model of the product.
+                <enum name="RS_TRAVIS">
+                    Travis (RS taxi) model.
+                </enum>
+                <enum name="RS_MARS">
+                    Mars (RS space) model
+                </enum>
+                <enum name="RS_SWAT">
+                   SWAT (RS SWAT) model
+                </enum>
+                <enum name="RS_MCLANE">
+                    Mc Lane (RS police) model
+                </enum>
+                <enum name="RS_BLAZE">
+                    Blaze (RS fire) model
+                </enum>
+                <enum name="RS_ORAK">
+                    Orak (RS carbon hydrofoil) model
+                </enum>
+                <enum name="RS_NEWZ">
+                    New Z (RS wooden hydrofoil) model
+                </enum>
+                <enum name="JS_MARSHALL">
+                    Marshall (JS fire) model
+                </enum>
+                <enum name="JS_DIESEL">
+                    Diesel (JS SWAT) model
+                </enum>
+                <enum name="JS_BUZZ">
+                    Buzz (JS space) model
+                </enum>
+                <enum name="JS_MAX">
+                    Max (JS F1) model
+                </enum>
+                <enum name="JS_JETT">
+                    Jett (JS flames) model
+                </enum>
+                <enum name="JS_TUKTUK">
+                    Tuk-Tuk (JS taxi) model
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="CountryListKnown" id="10" type="LIST_ITEM">
+            List of the countries known by the device
+            <arg name="listFlags" type="u8">
+                List entry attribute Bitfield.
+                0x01: First: indicate it's the first element of the list. 
+                0x02: Last:  indicate it's the last element of the list.
+                0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+           </arg>
+            <arg name="countryCodes" type="string">
+                Following of country code with ISO 3166 format, separated by ";". Be careful of the command size allowed by the network used. If necessary, split the list in several commands.
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="OverHeat" id="6">
+        Over heat commands
+        
+        <cmd name="SwitchOff" id="0">
+            @deprecated
+            Switch off the drone when a overheat appeared
+        </cmd>
+        
+        <cmd name="Ventilate" id="1">
+            @deprecated
+            Ventilate the drone when a overheat appeared
+        </cmd>
+    </class>
+    
+    <class name="OverHeatState" id="7">
+        Overheat state from product
+        
+        <cmd name="OverHeatChanged" id="0">
+            @deprecated
+            Overheat temperature reached
+        </cmd>
+        
+        <cmd name="OverHeatRegulationChanged" id="1">
+            @deprecated
+            Overheat regulation state changed
+            <arg name="regulationType" type="u8">
+                Type of overheat regulation : 0 for ventilation, 1 for switch off
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Controller" id="8">
+        Notify the device about the state of the controller application.
+        <cmd name="isPiloting" id="0">
+            Tell the device when the controller application enters/leaves the piloting HUD.
+            <arg name="piloting" type="u8">
+                0 when the application is not in the piloting HUD, 1 when it enters the HUD.
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="WifiSettings" id="9">
+        Wifi settings commands
+        <cmd name="OutdoorSetting" id="0">
+            Send to product if it should use its outdoor wifi config, or indoor
+            <arg name="outdoor" type="u8">
+                1 if it should use outdoor wifi settings, 0 otherwise
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="WifiSettingsState" id="10">
+        Wifi settings state from product
+        <cmd name="outdoorSettingsChanged" id="0">
+            Status of the wifi config : either indoor or outdoor
+            <arg name="outdoor" type="u8">
+                1 if it should use outdoor wifi settings, 0 otherwise
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Mavlink" id="11">
+         Mavlink flight plans commands
+         <cmd name="Start" id="0">
+             Start the flight plan
+             <arg name="filepath" type="string">
+                 flight plan file path from the mavlink ftp root
+             </arg>
+             <arg name="type" type="enum">
+                type of the played mavlink file
+                <enum name="flightPlan">
+                    Mavlink file for FlightPlan
+                </enum>
+                <enum name="mapMyHouse">
+                    Mavlink file for MapMyHouse
+                </enum>
+             </arg>
+         </cmd>
+         <cmd name="Pause" id="1">
+             Pause the flightplan (can be restarted with a start)
+         </cmd>
+         <cmd name="Stop" id="2">
+             Stop the flightplan
+         </cmd>
+     </class>
+     <class name="MavlinkState" id="12">
+         Mavlink flight plans states commands
+         <cmd name="MavlinkFilePlayingStateChanged" id="0">
+             Playing state of a mavlink flight plan
+             <arg name="state" type="enum">
+                State of the mavlink 
+                <enum name="playing">
+                    Mavlink file is playing
+                </enum>
+                <enum name="stopped">
+                    Mavlink file is stopped (arg filepath and type are useless in this state)
+                </enum>
+                <enum name="paused">
+                    Mavlink file is paused
+                </enum>
+             </arg>
+             <arg name="filepath" type="string">
+                 flight plan file path from the mavlink ftp root
+             </arg>
+             <arg name="type" type="enum">
+                type of the played mavlink file
+                <enum name="flightPlan">
+                    Mavlink file for FlightPlan
+                </enum>
+                <enum name="mapMyHouse">
+                    Mavlink file for MapMyHouse
+                </enum>
+             </arg>
+         </cmd>
+         <cmd name="MavlinkPlayErrorStateChanged" id="1">
+             FlightPlan play state error
+             <arg name="error" type="enum">
+                 State of play error
+                 <enum name="none">
+                     There is no error
+                 </enum>
+                 <enum name="notInOutDoorMode">
+                     The drone is not in outdoor mode
+                 </enum>
+                 <enum name="gpsNotFixed">
+                     The gps is not fixed
+                 </enum>
+                 <enum name="notCalibrated">
+                     The magnetometer of the drone is not calibrated
+                 </enum>
+             </arg>
+         </cmd>
+     </class>
+    <class name="Calibration" id="13">
+        Calibration commands
+        <cmd name="MagnetoCalibration" id="0">
+            Sent when a calibration of the magnetometer is asked or is aborted
+            <arg name="calibrate" type="u8">
+                1 if the calibration should be started, 0 if it should be aborted
+            </arg>
+        </cmd>
+    </class>
+    <class name="CalibrationState" id="14">
+        Status of the calibration
+        <cmd name="MagnetoCalibrationStateChanged" id="0">
+            Sent when the state of the magneto calibration has changed
+            <arg name="xAxisCalibration" type="u8">
+                State of the x axis (roll) calibration : 1 if calibration is done, 0 otherwise
+            </arg>
+            <arg name="yAxisCalibration" type="u8">
+                State of the y axis (pitch) calibration : 1 if calibration is done, 0 otherwise
+            </arg>
+            <arg name="zAxisCalibration" type="u8">
+                State of the z axis (yaw) calibration : 1 if calibration is done, 0 otherwise
+            </arg>
+            <arg name="calibrationFailed" type="u8">
+                1 if calibration has failed, 0 otherwise. If this arg is 1, consider all previous arg as 0
+            </arg>
+        </cmd>
+        <cmd name="MagnetoCalibrationRequiredState" id="1">
+            Status of the calibration requirement
+            <arg name="required" type="u8">
+                1 if calibration is required, 0 if current calibration is still valid
+            </arg>
+        </cmd>
+        <cmd name="MagnetoCalibrationAxisToCalibrateChanged" id="2">
+            Event sent by a product to inform about the axis to calibrate
+            <arg name="axis" type="enum">
+                The axis to calibrate
+                <enum name="xAxis">
+                    If the current calibration axis should be the x axis
+                </enum>
+                <enum name="yAxis">
+                    If the current calibration axis should be the y axis
+                </enum>
+                <enum name="zAxis">
+                    If the current calibration axis should be the z axis
+                </enum>
+                <enum name="none">
+                    If none of the axis should be calibrated
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="MagnetoCalibrationStartedChanged" id="3">
+            Status of the calibration process
+            <arg name="started" type="u8">
+                1 if calibration has started, 0 otherwise
+            </arg>
+        </cmd>
+    </class>
+    <class name="CameraSettingsState" id="15">
+         Status of the camera settings
+         <cmd name="CameraSettingsChanged" id="0">
+             Status of the camera settings
+             <arg name="fov" type="float">
+                Value of the camera horizontal fov (in degree)
+             </arg>
+             <arg name="panMax" type="float">
+                Value of max pan (right pan) (in degree)
+             </arg>
+             <arg name="panMin" type="float">
+                Value of min pan (left pan) (in degree)
+             </arg>
+             <arg name="tiltMax" type="float">
+                Value of max tilt (top tilt) (in degree)
+             </arg>
+             <arg name="tiltMin" type="float">
+                Value of min tilt (bottom tilt) (in degree)
+             </arg>
+         </cmd>
+     </class>
+
+     <class name="GPS" id="16">
+        GPS related commands
+        <cmd name="ControllerPositionForRun" id="0">
+            Set the controller position for a run. This command is used by all non gps products. Watch out, this command cannot be used with BLE products
+            <arg name="latitude" type="double">
+                Controller latitude in decimal degrees
+            </arg>
+            <arg name="longitude" type="double">
+                Controller longitude in decimal degrees
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="FlightPlanState" id="17">
+        FlightPlan state commands
+        <cmd name="AvailabilityStateChanged" id="0">
+            State of availability to run a flight plan file
+            <arg name="AvailabilityState" type="u8">
+                Running a flightPlan file is available (1 running a flightPlan file is available, otherwise 0)
+            </arg>
+        </cmd>
+
+        <cmd name="ComponentStateListChanged" id="1" type="MAP_ITEM">
+            List of state of drone flightPlan components
+            <arg name="component" type="enum">
+                Drone FlightPlan component id (unique)
+                <enum name="GPS">
+                    GPS for Drone FlightPlan
+                </enum>
+                <enum name="Calibration">
+                    Calibration for Drone FlightPlan
+                </enum>
+                <enum name="Mavlink_File">
+                    Mavlink file for Drone FlightPlan
+                </enum>
+                <enum name="TakeOff">
+                    Take off
+                </enum>
+            </arg>
+            <arg name="State" type="u8">
+                State of the FlightPlan component (1 FlightPlan component OK, otherwise 0)
+            </arg>
+        </cmd>
+    </class>
+    
+    <class name="FlightPlanEvent" id="19">
+        FlightPlan Event commands
+        <cmd name="StartingErrorEvent" id="0" content="NOTIFICATION">
+            Event of flight plan start error
+        </cmd>
+        <cmd name="SpeedBridleEvent" id="1" content="NOTIFICATION">
+            Bridle speed of the drone
+        </cmd>
+    </class>
+    
+    <class name="ARLibsVersionsState" id="18">
+        ARlibs Versions Commands
+        <cmd name="ControllerLibARCommandsVersion" id="0">
+            Controller libARCommands version
+            <arg name="version" type="string">
+                version of libARCommands ("1.2.3.4" format)
+            </arg>
+        </cmd>
+        <cmd name="SkyControllerLibARCommandsVersion" id="1">
+            SkyController libARCommands version
+            <arg name="version" type="string">
+                version of libARCommands ("1.2.3.4" format)
+            </arg>
+        </cmd>
+        <cmd name="DeviceLibARCommandsVersion" id="2">
+            Device libARCommands version
+            <arg name="version" type="string">
+                version of libARCommands ("1.2.3.4" format)
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Audio" id="20">
+        Audio-related commands.
+        <cmd name="ControllerReadyForStreaming" id="0">
+            Tell the firmware whether the controller is ready to start audio streaming.
+            <arg name="ready" type="u8">
+                Bit field for TX and RX ready.
+                bit 0 is 1 if controller is ready and wants to receive sound (Drone TX)
+                bit 1 is 1 if controller is ready and wants to send sound (Drone RX)
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="AudioState" id="21">
+        Audio-related state updates.
+        <cmd name="AudioStreamingRunning" id="0">
+            Notify the controller whether the audio streaming is running.
+            <arg name="running" type="u8">
+                Bit field for TX and RX running
+                bit 0 is 1 if Drone TX is running
+                bit 1 is 1 if Drone RX is running
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Headlights" id="22">
+        Controls the headlight LEDs of the Evo variants.
+        <cmd name="intensity" id="0">
+            Set instensity of lighting LEDs.
+            <arg name="left" type="u8">
+                Set the left LED intensity value (0 through 255).
+            </arg>
+            <arg name="right" type="u8">
+                Set the right LED intensity value (0 through 255).
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="HeadlightsState" id="23">
+        Get information about the state of the Evo variants' LEDs.
+        <cmd name="intensityChanged" id="0">
+            Notify the instensity values for headlight LEDs.
+            <arg name="left" type="u8">
+                The intensity value for the left LED (0 through 255).
+            </arg>
+            <arg name="right" type="u8">
+                The intensity value for the right LED (0 through 255).
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Animations" id="24">
+        Animations-related commands.
+
+        <cmd name="StartAnimation" id="0">
+            Start a paramaterless animation.
+            <arg name="anim" type="enum">
+                Animation to start.
+                <enum name="HEADLIGHTS_FLASH">
+                    Flash headlights.
+                </enum>
+                <enum name="HEADLIGHTS_BLINK">
+                    Blink headlights.
+                </enum>
+                <enum name="HEADLIGHTS_OSCILLATION">
+                    Oscillating headlights.
+                </enum>
+                <enum name="SPIN">
+                    Spin animation.
+                </enum>
+                <enum name="TAP">
+                    Tap animation.
+                </enum>
+                <enum name="SLOW_SHAKE">
+                    Slow shake animation.
+                </enum>
+                <enum name="METRONOME">
+                    Metronome animation.
+                </enum>
+                <enum name="ONDULATION">
+                    Standing dance animation.
+                </enum>
+                <enum name="SPIN_JUMP">
+                    Spin jump animation.
+                </enum>
+                <enum name="SPIN_TO_POSTURE">
+                    Spin that end in standing posture, or in jumper if it was standing animation.
+                </enum>
+                <enum name="SPIRAL">
+                    Spiral animation.
+                </enum>
+                <enum name="SLALOM">
+                    Slalom animation.
+                </enum>
+                <enum name="BOOST">
+                    Boost animation.
+                </enum>
+            </arg>
+        </cmd>
+
+        <cmd name="StopAnimation" id="1">
+            Stop a running animation.
+            <arg name="anim" type="enum">
+                Animation to stop.
+                <enum name="HEADLIGHTS_FLASH">
+                    Flash headlights.
+                </enum>
+                <enum name="HEADLIGHTS_BLINK">
+                    Blink headlights.
+                </enum>
+                <enum name="HEADLIGHTS_OSCILLATION">
+                    Oscillating headlights.
+                </enum>
+                <enum name="SPIN">
+                    Spin animation.
+                </enum>
+                <enum name="TAP">
+                    Tap animation.
+                </enum>
+                <enum name="SLOW_SHAKE">
+                    Slow shake animation.
+                </enum>
+                <enum name="METRONOME">
+                    Metronome animation.
+                </enum>
+                <enum name="ONDULATION">
+                    Standing dance animation.
+                </enum>
+                <enum name="SPIN_JUMP">
+                    Spin jump animation.
+                </enum>
+                <enum name="SPIN_TO_POSTURE">
+                    Spin that end in standing posture, or in jumper if it was standing animation.
+                </enum>
+                <enum name="SPIRAL">
+                    Spiral animation.
+                </enum>
+                <enum name="SLALOM">
+                    Slalom animation.
+                </enum>
+                <enum name="BOOST">
+                    Boost animation.
+                </enum>
+            </arg>
+        </cmd>
+
+        <cmd name="StopAllAnimations" id="2">
+            Stop all running animations.
+        </cmd>
+    </class>
+
+    <class name="AnimationsState" id="25">
+        Animations-related notification/feedback commands.
+
+        <cmd name="List" type="MAP_ITEM" id="0">
+            List of animations state.
+            <arg name="anim" type="enum">
+                Animation type.
+                <enum name="HEADLIGHTS_FLASH">
+                    Flash headlights.
+                </enum>
+                <enum name="HEADLIGHTS_BLINK">
+                    Blink headlights.
+                </enum>
+                <enum name="HEADLIGHTS_OSCILLATION">
+                    Oscillating headlights.
+                </enum>
+                <enum name="SPIN">
+                    Spin animation.
+                </enum>
+                <enum name="TAP">
+                    Tap animation.
+                </enum>
+                <enum name="SLOW_SHAKE">
+                    Slow shake animation.
+                </enum>
+                <enum name="METRONOME">
+                    Metronome animation.
+                </enum>
+                <enum name="ONDULATION">
+                    Standing dance animation.
+                </enum>
+                <enum name="SPIN_JUMP">
+                    Spin jump animation.
+                </enum>
+                <enum name="SPIN_TO_POSTURE">
+                    Spin that end in standing posture, or in jumper if it was standing animation.
+                </enum>
+                <enum name="SPIRAL">
+                    Spiral animation.
+                </enum>
+                <enum name="SLALOM">
+                    Slalom animation.
+                </enum>
+                <enum name="BOOST">
+                    Boost animation.
+                </enum>
+            </arg>
+            
+            <arg name="state" type="enum">
+                State of the animation
+                <enum name="stopped">
+                    animation is stopped
+                </enum>
+                <enum name="started">
+                    animation is started
+                </enum>
+                <enum name="notAvailable">
+                    The animation is not available
+                </enum>
+            </arg>
+            
+            <arg name="error" type="enum">
+                Error to explain the state 
+                <enum name="ok">
+                    No Error
+                </enum>
+                <enum name="unknown">
+                    Unknown generic error
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Accessory" id="26">
+        Accessories-related commands.
+        <cmd name="Config" id="0">
+            Set the current accessory configuration.
+            <arg name="accessory" type="enum">
+                Accessory configuration to set.
+                <enum name="NO_ACCESSORY">
+                    No accessory.
+                </enum>
+                <enum name="STD_WHEELS">
+                    Standard wheels
+                </enum>
+                <enum name="TRUCK_WHEELS">
+                    Truck wheels
+                </enum>
+                <enum name="HULL">
+                    Hull
+                </enum>
+                <enum name="HYDROFOIL">
+                    Hydrofoil
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="AccessoryState" id="27">
+        Accessories-related commands.
+        <cmd name="SupportedAccessoriesListChanged" id="0" type="MAP_ITEM">
+            List of supported accessories
+            <arg name="accessory" type="enum">
+                Accessory configurations supported by the product.
+                <enum name="NO_ACCESSORY">
+                    No accessory.
+                </enum>
+                <enum name="STD_WHEELS">
+                    Standard wheels
+                </enum>
+                <enum name="TRUCK_WHEELS">
+                    Truck wheels
+                </enum>
+                <enum name="HULL">
+                    Hull
+                </enum>
+                <enum name="HYDROFOIL">
+                    Hydrofoil
+                </enum>
+            </arg>
+        </cmd>
+
+        <cmd name="AccessoryConfigChanged" id="1">
+            Accessory config response.
+            <arg name="newAccessory" type="enum">
+                Accessory configuration reported by firmware.
+                <enum name="UNCONFIGURED">
+                    No accessory configuration set. Controller needs to set one.
+                </enum>
+                <enum name="NO_ACCESSORY">
+                    No accessory.
+                </enum>
+                <enum name="STD_WHEELS">
+                    Standard wheels
+                </enum>
+                <enum name="TRUCK_WHEELS">
+                    Truck wheels
+                </enum>
+                <enum name="HULL">
+                    Hull
+                </enum>
+                <enum name="HYDROFOIL">
+                    Hydrofoil
+                </enum>
+            </arg>
+            <arg name="error" type="enum">
+                Error code.
+                <enum name="OK">
+                    No error. Accessory config change successful.
+                </enum>
+                <enum name="UNKNOWN">
+                    Cannot change accessory configuration for some reason.
+                </enum>
+                <enum name="FLYING">
+                    Cannot change accessory configuration while flying.
+                </enum>
+            </arg>
+        </cmd>
+        
+        <cmd name="AccessoryConfigModificationEnabled" id="2">
+            Possibility to modify the accessory configuration.
+            <arg name="enabled" type="u8">
+                1 if the modification of the accessory Config is enabled, 0 otherwise
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="Charger" id="28">
+        Commands sent by the controller to set charger parameters.
+
+        <cmd name="SetMaxChargeRate" id="0">
+            @deprecated
+            Set the maximum charge rate allowed to charge a battery.
+            <arg name="rate" type="enum">
+                The new maximum charge rate.
+                <enum name="SLOW">
+                    Fully charge the battery at a slow rate. Typically limit max charge current to 512 mA.
+                </enum>
+                <enum name="MODERATE">
+                    Almost fully-charge the battery at moderate rate (> 512mA) but slower than the fastest rate.
+                </enum>
+                <enum name="FAST">
+                    Almost fully-charge the battery at the highest possible rate supported by the charger.
+                </enum>
+            </arg>
+        </cmd>
+    </class>
+
+    <class name="ChargerState" id="29">
+        Commands sent by the firmware to advertise the charger status.
+
+        <cmd name="MaxChargeRateChanged" id="0">
+            @deprecated
+            The maximum charge rate reported by the firmware.
+            <arg name="rate" type="enum">
+                The current maximum charge rate.
+                <enum name="SLOW">
+                    Fully charge the battery at a slow rate. Typically limit max charge current to 512 mA.
+                </enum>
+                <enum name="MODERATE">
+                    Almost fully-charge the battery at moderate rate (> 512 mA) but slower than the fastest rate.
+                </enum>
+                <enum name="FAST">
+                    Almost fully-charge the battery at the highest possible rate supported by the charger.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="CurrentChargeStateChanged" id="1">
+            @deprecated
+            The charge status of the battery changed.
+            <arg name="status" type="enum">
+                Charger status.
+                <enum name="DISCHARGING">
+                    The battery is discharging.
+                </enum>
+                <enum name="CHARGING_SLOW">
+                    The battery is charging at a slow rate about 512 mA.
+                </enum>
+                <enum name="CHARGING_MODERATE">
+                    The battery is charging at a moderate rate (> 512 mA) but slower than the fastest rate.
+                </enum>
+                <enum name="CHARGING_FAST">
+                    The battery is charging at a the fastest rate.
+                </enum>
+                <enum name="BATTERY_FULL">
+                    The charger is plugged and the battery is fully charged.
+                </enum>
+            </arg>
+            <arg name="phase" type="enum">
+                The current charging phase.
+                <enum name="UNKNOWN">
+                    The charge phase is unknown or irrelevant.
+                </enum>
+                <enum name="CONSTANT_CURRENT_1">
+                    First phase of the charging process. The battery is charging with constant current.
+                </enum>
+                <enum name="CONSTANT_CURRENT_2">
+                    Second phase of the charging process. The battery is charging with constant current, with a higher voltage than the first phase.
+                </enum>
+                <enum name="CONSTANT_VOLTAGE">
+                    Last part of the charging process. The battery is charging with a constant voltage.
+                </enum>
+                <enum name="CHARGED">
+                    The battery is fully charged.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="LastChargeRateChanged" id="2">
+            @deprecated
+            The charge rate of the last charge sent by the firmware.
+            <arg name="rate" type="enum">
+                The charge rate recorded by the firmware for the last charge.
+                <enum name="UNKNOWN">
+                    The last charge rate is not known.
+                </enum>
+                <enum name="SLOW">
+                    Slow charge rate.
+                </enum>
+                <enum name="MODERATE">
+                    Moderate charge rate.
+                </enum>
+                <enum name="FAST">
+                    Fast charge rate.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="ChargingInfo" id="3">
+            Information of the charge.
+            <arg name="phase" type="enum">
+                The current charging phase.
+                <enum name="UNKNOWN">
+                    The charge phase is unknown or irrelevant.
+                </enum>
+                <enum name="CONSTANT_CURRENT_1">
+                    First phase of the charging process. The battery is charging with constant current.
+                </enum>
+                <enum name="CONSTANT_CURRENT_2">
+                    Second phase of the charging process. The battery is charging with constant current, with a higher voltage than the first phase.
+                </enum>
+                <enum name="CONSTANT_VOLTAGE">
+                    Last part of the charging process. The battery is charging with a constant voltage.
+                </enum>
+                <enum name="CHARGED">
+                    The battery is fully charged.
+                </enum>
+                <enum name="DISCHARGING">
+                    The battery is discharging; Other arguments refers to the last charge.
+                </enum>
+            </arg>
+            <arg name="rate" type="enum">
+                The charge rate. If phase is DISCHARGING, refers to the last charge.
+                <enum name="UNKNOWN">
+                    The charge rate is not known.
+                </enum>
+                <enum name="SLOW">
+                    Slow charge rate.
+                </enum>
+                <enum name="MODERATE">
+                    Moderate charge rate.
+                </enum>
+                <enum name="FAST">
+                    Fast charge rate.
+                </enum>
+            </arg>
+            <arg name="intensity" type="u8">
+                The charging intensity, in dA. (12dA = 1,2A) ; If phase is DISCHARGING, refers to the last charge. Equals to 0 if not known.
+            </arg>
+            <arg name="fullChargingTime" type="u8">
+                The full charging time estimated, in minute. If phase is DISCHARGING, refers to the last charge. Equals to 0 if not known.
+            </arg>
+        </cmd>
+    </class>
+    <class name="RunState" id="30">
+        Commands sent by the drone to inform about the run or flight state
+        <cmd name="RunIdChanged" id="0">
+            Sent when a run id has changed
+            Run ids are uniquely identifying a run or a flight
+            <arg name="runId" type="string">
+                Id of the run
+            </arg>
+        </cmd>
+    </class>
+</project>

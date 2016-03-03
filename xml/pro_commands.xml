@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2014 Parrot SA
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the 
+      distribution.
+    * Neither the name of Parrot nor the names
+      of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+    OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+-->
+
+<!--
+ Important notes :
+ ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
+ NEVER MODIFY EXISTING class/command/arg !
+ 
+ Comments are mandatory for all classes/commands/args
+ For each comment : 1st line will be used as brief (if applicable)
+ Other lines will be used as complete desc
+ 
+ How to add a new class :
+ <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
+ Comment about the class                | Inlcuded in Doxygen doc
+ <cmd> ... </cmd>                       | List of commands
+ <cmd> ... </cmd>
+ </class>
+ 
+ How to add a new command (without args) to a class :
+ <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ </cmd>
+ 
+ How to add a new command (with args primitive type) to a class :
+ <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ <arg name="argName" type="argType" >   | Repeat for each arg
+ Comment about the arg               | argName must be a valid C variable name
+ </arg>                                 | argType must be a valid type (see below)
+ ...                                    | Comment included in Doxygen doc
+ </cmd>
+ 
+ How to add a enum (in args) to a class :
+ <cmd name="MyNewCommandWithArgs" >         | No spaces ! [A-Za-z0-9_]
+ Comment about the command              | Included in Doxygen doc
+ <arg name="argName" type="argType" >   | Repeat for each arg
+ Comment about the arg             | Included in Doxygen doc
+ <enum name="argName">             | No spaces ! [A-Za-z0-9_]
+ Comment about the enum        | Included in Doxygen doc
+ </enum>
+ </arg>                                 | argType must be a valid type (see below)
+ ...                                    | Comment included in Doxygen doc
+ </cmd>
+ 
+ List of valid types (associated C type) :
+ -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
+ - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
+ - i32 / u32 : signed/unsigned 32 bit integer ([u]int32_t)
+ - i64 / u64 : signed/unsigned 64 bit integer ([u]int64_t)
+ -     float : IEEE-754 single precision floating point number (float)
+ -    double : IEEE-754 double precision floating point number (double)
+ -    string : NULL-terminated UTF-8 String. (char *)
+ -    enum:  : enumeration define on arg
+ -->
+
+<project name="pro" id="7">
+    Pro Feature
+    <class name="Pro" id="0">
+        Pro related commands from the controller to the product
+        <cmd name="BoughtFeatures" id="0">
+            Bought features on this pro version of the controller (features that have been bought)
+            This command starts the pro authentification process
+            <arg name="features" type="u64">
+                Bought features
+            </arg>
+        </cmd>
+        <cmd name="Response" id="1" type="LIST_ITEM">
+            Response to the challenge string sent by the controller
+            <arg name="listFlags" type="u8">
+                    List entry attribute Bitfield.
+                    0x01: First: indicate it's the first element of the list.
+                    0x02: Last:  indicate it's the last element of the list.
+                    0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+            </arg>
+            <arg name="signedChallenge" type="string">
+                the signed challenge
+            </arg>
+        </cmd>
+        <cmd name="ActivateFeatures" id="2">
+            Activate some pro features
+            Pro features activated should be part of the list returned by ProState->FeaturesSupported
+            <arg name="features" type="u64">
+                Pro features to activate
+            </arg>
+        </cmd>
+    </class>
+    <class name="ProState" id="1">
+        Pro related commands from the product to the controller
+        <cmd name="SupportedFeatures" id="0">
+            Features supported. This command ends the pro authentification
+            <arg name="status" type="enum">
+                Status of the supported features
+                <enum name="OK">
+                    Response is valid, pro features available
+                </enum>
+                <enum name="CHALLENGE_ERROR">
+                    The response received is not valid
+                </enum>
+            </arg>
+            <arg name="features" type="u64">
+                Supported pro features.
+            </arg>
+        </cmd>
+        <cmd name="FeaturesActivated" id="1">
+            Pro features that are currently activated
+            <arg name="features" type="u64">
+                Activated pro features.
+            </arg>
+        </cmd>
+    </class>
+    <class name="ProEvent" id="2" content="NOTIFICATION">
+        Pro related events from the product to the controller
+        <cmd name="ChallengeEvent" id="0">
+            Challenge event sent from the drone
+            <arg name="challenge" type="string">
+                the challenge that the receiver will have to sign
+            </arg>
+        </cmd>
+    </class>
+</project>
