@@ -874,7 +874,7 @@ def main():
     path = os.path.join(path, "xml")
     # first load generic.xml
     parse_xml(ctx, os.path.join(path, "generic.xml"))
-    for f in os.listdir(path):
+    for f in sorted(os.listdir(path)):
         if not f.endswith(".xml") or f == "generic.xml":
             continue
         parse_xml(ctx, os.path.join(path, f))
