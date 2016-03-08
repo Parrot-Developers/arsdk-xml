@@ -143,6 +143,8 @@ class ArFeature(object):
         self.evtsById = {}
         self.evtsByName = {}
         self.classes = None #only for project conversion
+        self.classesById = {} #only for project conversion
+        self.classesByName = {} #only for project conversion
 
     def getMsgs (self):
         return  self.cmds + self.evts
@@ -167,10 +169,12 @@ class ArFeature(object):
     def from_project(prj):
         ftrObj = ArFeature (prj.name, prj.projectId, prj.doc)
         ftrObj.classes = prj.classes
+        ftrObj.classesById = prj.classesById
+        ftrObj.classesByName = prj.classesByName
 
         for cl in prj.classes:
             for cmd in cl.cmds:
-                msgId = cl.cmds.index(cmd)
+                msgId = cmd.cmdId
                 msgName = cmd.name
                 if "event" in cl.name.lower() or "state" in cl.name.lower():
                     msgObj = ArEvt(msgName, msgId, cmd.doc, cmd.listType,
@@ -187,7 +191,9 @@ class ArFeature(object):
                 # Create enums
                 for arg in msgObj.args:
                     if len(arg.enums) > 0:
-                        enumName = cl.name + '_' + cmd.name + '_' + arg.name
+                        enumName = cl.name + '_' +\
+                                cmd.name[0].upper()+cmd.name[1:]+'_' +\
+                                arg.name[0].upper()+arg.name[1:]
                         enumObj = ArEnum(enumName, arg.doc)
                         for val in arg.enums:
                             eValObj = ArEnumValue(val.name, val.value, val.doc)
@@ -206,7 +212,6 @@ class ArFeature(object):
                     ftrObj.evts.append(msgObj)
                     ftrObj.evtsById[msgId] = msgObj
                     ftrObj.evtsByName[msgName] = msgObj
-
         return ftrObj
 
 #===============================================================================
