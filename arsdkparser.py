@@ -137,8 +137,8 @@ class ArFeature(object):
         self.enums = []
         self.enumsByName = {}
         self.cmds = []
-        self.cmdsById = {}
-        self.cmdsByName = {}
+        self.cmdsById = {} #only for real feature, empty for project
+        self.cmdsByName = {} #only for real feature, empty for project
         self.evts = []
         self.evtsById = {}
         self.evtsByName = {}
@@ -150,9 +150,11 @@ class ArFeature(object):
         return  self.cmds + self.evts
 
     def getMsgsById (self):
+        #only for feature
         return dict(self.cmdsById, **self.evtsById)
 
     def getMsgsByName (self):
+        #only for feature
         return dict(self.cmdsByName, **self.evtsByName)
 
     def __repr__(self):
@@ -206,12 +208,8 @@ class ArFeature(object):
 
                 if isinstance(msgObj, ArCmd):
                     ftrObj.cmds.append(msgObj)
-                    ftrObj.cmdsById[msgId] = msgObj
-                    ftrObj.cmdsByName[msgName] = msgObj
                 else:
                     ftrObj.evts.append(msgObj)
-                    ftrObj.evtsById[msgId] = msgObj
-                    ftrObj.evtsByName[msgName] = msgObj
         return ftrObj
 
 #===============================================================================
