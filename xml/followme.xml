@@ -9,7 +9,7 @@
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
+      the documentation and/or other materials provided with the
       distribution.
     * Neither the name of Parrot nor the names
       of its contributors may be used to endorse or promote products
@@ -23,7 +23,7 @@
     COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
@@ -34,23 +34,23 @@
  Important notes :
  ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
  NEVER MODIFY EXISTING class/command/arg !
- 
+
  Comments are mandatory for all classes/commands/args
  For each comment : 1st line will be used as brief (if applicable)
  Other lines will be used as complete desc
- 
+
  How to add a new class :
  <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the class                | Inlcuded in Doxygen doc
  <cmd> ... </cmd>                       | List of commands
  <cmd> ... </cmd>
  </class>
- 
+
  How to add a new command (without args) to a class :
  <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
  </cmd>
- 
+
  How to add a new command (with args) to a class :
  <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
@@ -59,7 +59,7 @@
  </arg>                                 | argType must be a valid type (see below)
  ...                                    | Comment included in Doxygen doc
  </cmd>
- 
+
  List of valid types (associated C type) :
  -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
  - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
@@ -89,7 +89,7 @@
                 Follow the target keeping the same orientation to its direction
             </value>
         </enum>
-        
+
         <enum name="anim_type">
             Type of the current FollowMe animation
             <value name="none">
@@ -111,7 +111,7 @@
                 Current follow me animation is dolly slide
             </value>
         </enum>
-        
+
         <enum name="types_available">
             Types of FollowMe available
             <value name="none">
@@ -125,18 +125,18 @@
             </value>
         </enum>
     </enums>
-    
+
     <msgs>
         <evt name="availability" id="1">
-            <comment 
+            <comment
                 title="FollowMe types availability"
                 desc="Get the FollowMe types you can run."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="type" type="enum:types_available"/>
         </evt>
-    
+
         <cmd name="geographic_run" id="2">
-            <comment 
+            <comment
                 title="Begin or stop geographic type followMe"
                 desc="Begin or stop geographic type followMe (follow the leader keeping the same vector). \n
                       Sending this command will stop other running followMe."
@@ -145,7 +145,7 @@
                 1 to start geographic follow me process, 0 to stop it
             </arg>
             <arg name="distance_is_default" type="u8">
-                0 if distance is set by user, 1 if set by current distance (in this case distance value is not used) 
+                0 if distance is set by user, 1 if set by current distance (in this case distance value is not used)
                 Not used when arg start is at 0
             </arg>
             <arg name="distance" type="float">
@@ -165,9 +165,9 @@
                 The azimuth north-leader-follower in rad (not used when arg start is at 0)
             </arg>
         </cmd>
-        
+
         <cmd name="relative_run" id="3">
-            <comment 
+            <comment
                 title="Begin or stop relative type followMe"
                 desc="Begin or stop relative type followMe (follow the leader keeping the same orientation to its direction).\n
                       Sending this command will stop other running followMe."
@@ -194,9 +194,9 @@
                 The azimuth north-leader-follower in rad (not used when arg start is at 0)
             </arg>
         </cmd>
-        
+
         <cmd name="look_at_run" id="4">
-            <comment 
+            <comment
                 title="Begin or stop look at type followMe"
                 desc="Begin or stop look at type followMe (stare at the leader while hovering).\n
                     Sending this command will stop other running followMe."
@@ -205,28 +205,28 @@
                 1 to start look at process, 0 to stop it
             </arg>
         </cmd>
-        
+
         <evt name="run" id="5">
-            <comment 
+            <comment
                 title="State of the FollowMe run"
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="type" type="enum:type"/>
         </evt>
-        
+
         <evt name="geographic_config_changed" id="6">
-            <comment 
+            <comment
                 title="Geographic configuration changed"
                 desc="Geographic configuration changed.\n
                     This event is only valid when [Run type](#134-2) is geographic."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="distance_is_default" type="u8">
-                0 if distance is set by user, 1 if set by current distance 
+                0 if distance is set by user, 1 if set by current distance
             </arg>
             <arg name="distance" type="float">
                 The distance leader-follower in meter, if distance is default, this value is the current drone distance
             </arg>
             <arg name="elevation_is_default" type="u8">
-                0 if elevation is set by user, 1 if set by current elevation 
+                0 if elevation is set by user, 1 if set by current elevation
             </arg>
             <arg name="elevation" type="float">
                 The elevation leader-follower in rad, if elevation is default, this value is the current leader to drone elevation angle
@@ -238,9 +238,9 @@
                 The azimuth north-leader-follower in rad, if azimuth is default, this value is the current leader to drone azimuth
             </arg>
         </evt>
-        
+
         <evt name="relative_config_changed" id="7">
-            <comment 
+            <comment
                 title="Relative configuration changed"
                 desc="Relative configuration changed.\n
                     This event is only valid when [Run type](#134-2) is relative."
@@ -255,7 +255,7 @@
                 0 if elevation is set by user, 1 if set set by current elevation
             </arg>
             <arg name="elevation" type="float">
-                The elevation leader-follower in rad, if elevation is default, this value is the current leader to drone elevation 
+                The elevation leader-follower in rad, if elevation is default, this value is the current leader to drone elevation
             </arg>
             <arg name="azimuth_is_default" type="u8">
                 0 if azimuth is set by user, 1 if set by current azimuth
@@ -264,10 +264,10 @@
                 The azimuth course-leader-follower in rad, if azimuth is default, this value is the current leader to drone azimuth
             </arg>
         </evt>
-        
+
         <!-- FollowMe Animations -->
         <cmd name="spiral_anim_run" id="8">
-            <comment 
+            <comment
                 title="Begin or stop a spiral animation"
                 desc="Begin or stop a spiral animation.\n
                     The spiral animation allows the drone to revolve around the target while going up, with a fixed radius."
@@ -276,21 +276,21 @@
                 1 to start the anim, 0 to stop it
             </arg>
             <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed should be used 
+                0 if speed is set by user, 1 if default speed should be used
                 Not used when start is 0
             </arg>
             <arg name="speed" type="float">
-                The desired speed of the anim in m/s 
+                The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
                 Not used when start is 0
             </arg>
             <arg name="revolution_nb_is_default" type="u8">
-                0 if the number of revolution is set by user, 1 if default revolution nb should be used 
+                0 if the number of revolution is set by user, 1 if default revolution nb should be used
                 Not used when start is 0
             </arg>
             <arg name="revolution_number" type="float">
                 The number of revolution (in turn)
-                Negative value is infinite 
+                Negative value is infinite
                 Example: 1.5 makes an entire turn plus half of a turn
                 Not used when revolutionNb_is_default is 1
                 Not used when start is 0
@@ -305,9 +305,9 @@
                 Not used when start is 0
             </arg>
         </cmd>
-        
+
         <cmd name="swing_anim_run" id="9">
-            <comment 
+            <comment
                 title="Begin or stop a swing animation"
                 desc="Begin or stop a swing animation.\n
                     The swing animation enables a vertical point of view while the drone passes over the target."
@@ -320,7 +320,7 @@
                 Not used when start is 0
             </arg>
             <arg name="speed" type="float">
-                The desired speed of the anim in m/s 
+                The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
                 Not used when start is 0
             </arg>
@@ -334,9 +334,9 @@
                 Not used when start is 0
             </arg>
         </cmd>
-        
+
         <cmd name="boomerang_anim_run" id="10">
-            <comment 
+            <comment
                 title="Begin or stop a boomerang animation"
                 desc="Begin or stop a boomerang animation.\n
                     The boomerang animation enables a zoom-out/zoom-in trajectory while preserving the framing chosen by the user."
@@ -349,7 +349,7 @@
                 Not used when start is 0
             </arg>
             <arg name="speed" type="float">
-                The desired speed of the anim in m/s 
+                The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
                 Not used when start is 0
             </arg>
@@ -363,13 +363,13 @@
                 Not used when start is 0
             </arg>
         </cmd>
-        
+
         <cmd name="candle_anim_run" id="11">
-            <comment 
+            <comment
                 title="Begin or stop a candle animation"
                 desc="Begin or stop a candle animation.\n
                     The candle animation enables a zoom-in directly on the target followed by a vertical zoom-out."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>            
+                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="start" type="u8">
                 1 to start the anim, 0 to stop it
             </arg>
@@ -378,7 +378,7 @@
                 Not used when start is 0
             </arg>
             <arg name="speed" type="float">
-                The desired speed of the anim in m/s 
+                The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
                 Not used when start is 0
             </arg>
@@ -392,13 +392,13 @@
                 Not used when start is 0
             </arg>
         </cmd>
-        
+
         <cmd name="dolly_slide_anim_run" id="12">
-            <comment 
+            <comment
                 title="Begin or stop a dolly slide animation"
                 desc="Begin or stop a dolly slide animation.\n
                     Allows the drone to catch up to the target before flying past it, creating a zoom-in/zoom_out effect without a curved path."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>   
+                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="start" type="u8">
                 1 to start the anim, 0 to stop it
             </arg>
@@ -407,7 +407,7 @@
                 Not used when start is 0
             </arg>
             <arg name="speed" type="float">
-                The desired speed of the anim in m/s 
+                The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
                 Not used when start is 0
             </arg>
@@ -430,17 +430,17 @@
                 Not used when start is 0
             </arg>
         </cmd>
-        
+
         <evt name="anim_run" id="13">
-            <comment 
+            <comment
                 title="State of the current FollowMe animation"
                 desc="State of the current FollowMe animation."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/> 
+                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="type" type="enum:anim_type"/>
         </evt>
-        
+
         <evt name="spiral_anim_config_changed" id="14">
-            <comment 
+            <comment
                 title="Spiral animation configuration changed"
                 desc="Spiral animation configuration changed.\n
                 This event is only valid when AnimRun type is spiral"
@@ -465,9 +465,9 @@
                 Distance that will be made by the product to reach the top of the spiral in m
             </arg>
         </evt>
-        
+
         <evt name="swing_anim_config_changed" id="15">
-            <comment 
+            <comment
                 title="Swing animation configuration changed"
                 desc="Swing animation configuration changed.\n
                 This event is only valid when AnimRun type is swing"
@@ -485,9 +485,9 @@
                 Distance that will be made by the product to reach the top of the swing in m
             </arg>
         </evt>
-        
+
         <evt name="boomerang_anim_config_changed" id="16">
-            <comment 
+            <comment
                 title="Boomerang animation configuration changed"
                 desc="Boomerang animation configuration changed.\n
                 This event is only valid when AnimRun type is boomerang"
@@ -505,9 +505,9 @@
                 Distance that will be made by the product to reach its return point in m
             </arg>
         </evt>
-        
+
         <evt name="candle_anim_config_changed" id="17">
-            <comment 
+            <comment
                 title="Candle animation configuration changed"
                 desc="Candle animation configuration changed.\n
                 This event is only valid when AnimRun type is candle"
@@ -525,9 +525,9 @@
                 Distance that will be made by the product to reach the top of the vertical zoom-out in m
             </arg>
         </evt>
-        
+
         <evt name="dolly_slide_anim_config_changed" id="18">
-            <comment 
+            <comment
                 title="DollySlide animation configuration changed"
                 desc="DollySlide animation configuration changed.\n
                 This event is only valid when AnimRun type is dolly_slide"
@@ -551,9 +551,9 @@
                 Distance that will be made by the product to reach its target in m
             </arg>
         </evt>
-        
+
         <cmd name="user_framing_position" id="19">
-            <comment 
+            <comment
                 title="User desired framing in the video"
                 desc="User desired framing in the video."
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
@@ -564,9 +564,9 @@
                 Vertical position in the video (in %, from bottom to top)
             </arg>
         </cmd>
-        
+
         <evt name="user_framing_position_changed" id="20">
-            <comment 
+            <comment
                 title="User desired framing in the video changed"
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="horizontal" type="i8">
@@ -576,38 +576,38 @@
                 Vertical position in the video (in %, from bottom to top)
             </arg>
         </evt>
-        
+
         <cmd name="user_GPS_data" id="21">
-            <comment 
+            <comment
                 title="User gps data"
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
              <arg name="latitude" type="double">
                 Latitude of the user (in deg)
             </arg>
-            
+
             <arg name="longitude" type="double">
                 Longitude of the user (in deg)
             </arg>
-            
+
             <arg name="altitude" type="float">
                 Altitude of the user (in meters, according to sea level)
             </arg>
-            
+
             <arg name="horizontal_accuracy" type="float">
                 Horizontal accuracy (in meter)
             </arg>
-            
+
             <arg name="vertical_accuracy" type="float">
                 Vertical accuracy (in meter)
             </arg>
             <arg name="north_speed" type="float">
                 North speed (in meter per second)
             </arg>
-            
+
             <arg name="east_speed" type="float">
                 East speed (in meter per second)
             </arg>
-            
+
             <arg name="down_speed" type="float">
                 Vertical speed (in meter per second) (down is positive)
             </arg>
@@ -615,24 +615,24 @@
                 Timestamp of the gps data
             </arg>
         </cmd>
-        
+
         <cmd name="user_baro_data" id="22">
-            <comment 
+            <comment
                 title="User barometer data"
                 result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="pressure" type="float">
-                Atmospheric pressure in hPa (millibar) 
+                Atmospheric pressure in hPa (millibar)
             </arg>
             <arg name="timestamp" type="double">
                 Timestamp of the barometer data
             </arg>
         </cmd>
-        
+
         <cmd name="lynx_detection" id="23">
-            <comment 
+            <comment
                 title="Send vision detection results"
                 desc="Send vision detection results."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>   
+                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
             <arg name="target_pan" type="float">
                 Pan angle of detected target in radian
             </arg>

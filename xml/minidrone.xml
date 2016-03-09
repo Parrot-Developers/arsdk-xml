@@ -9,7 +9,7 @@
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
+      the documentation and/or other materials provided with the
       distribution.
     * Neither the name of Parrot nor the names
       of its contributors may be used to endorse or promote products
@@ -23,7 +23,7 @@
     COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
@@ -34,23 +34,23 @@
  Important notes :
  ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
  NEVER MODIFY EXISTING class/command/arg !
- 
+
  Comments are mandatory for all classes/commands/args
  For each comment : 1st line will be used as brief (if applicable)
  Other lines will be used as complete desc
- 
+
  How to add a new class :
  <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the class                | Inlcuded in Doxygen doc
  <cmd> ... </cmd>                       | List of commands
  <cmd> ... </cmd>
  </class>
- 
+
  How to add a new command (without args) to a class :
  <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
  </cmd>
- 
+
  How to add a new command (with args primitive type) to a class :
  <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
@@ -59,7 +59,7 @@
  </arg>                                 | argType must be a valid type (see below)
  ...                                    | Comment included in Doxygen doc
  </cmd>
- 
+
  How to add a enum (in args) to a class :
  <cmd name="MyNewCommandWithArgs" >         | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
@@ -71,7 +71,7 @@
  </arg>                                 | argType must be a valid type (see below)
  ...                                    | Comment included in Doxygen doc
  </cmd>
- 
+
  List of valid types (associated C type) :
  -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
  - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
@@ -85,54 +85,54 @@
 
 <project name="minidrone" id="2">
     All MiniDrone-only commands
-    
+
     <class name="Piloting" id="0">
         All commands related to piloting the MiniDrone
-        
+
         <cmd name="FlatTrim" id="0">
             Do a flat trim
         </cmd>
-        
+
         <cmd name="TakeOff" id="1">
             Ask the drone to take off
         </cmd>
-        
+
         <cmd name="PCMD" id="2" buffer="NON_ACK">
             Ask the drone to move around.
-            
+
             <arg name="flag" type="u8">
                 Boolean flag to activate roll/pitch movement
             </arg>
-            
+
             <arg name="roll" type="i8">
                 Roll consign for the MiniDrone [-100;100]
             </arg>
-            
+
             <arg name="pitch" type="i8">
                 Pitch consign for the MiniDrone [-100;100]
             </arg>
-            
+
             <arg name="yaw" type="i8">
                 Yaw consign for the MiniDrone [-100;100]
             </arg>
-            
+
             <arg name="gaz" type="i8">
                 Gaz consign for the MiniDrone [-100;100]
             </arg>
-            
+
             <arg name="timestamp" type="u32">
                 Timestamp in miliseconds. Not an absolute time. (Typically 0 = time of connexion).
             </arg>
         </cmd>
-        
+
         <cmd name="Landing" id="3">
             Ask the MiniDrone to land
         </cmd>
-        
+
         <cmd name="Emergency" id="4" buffer="HIGH_PRIO" timeout="RETRY">
             Put drone in emergency state
         </cmd>
-        
+
         <cmd name="AutoTakeOffMode" id="5">
             Set MiniDrone automatic take off mode
             <arg name="state" type="u8">
@@ -156,14 +156,14 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="PilotingState" id="3">
         Occasional information
-        
+
         <cmd name="FlatTrimChanged" id="0">
             MiniDrone send flat trim was correctly processed
         </cmd>
-        
+
         <cmd name="FlyingStateChanged" id="1">
             Drone flying state changed
             <arg name="state" type="enum">
@@ -194,7 +194,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="AlertStateChanged" id="2">
             Drone alert state changed
             <arg name="state" type="enum">
@@ -216,7 +216,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="AutoTakeOffModeChanged" id="3">
             Set MiniDrone automatic take off mode
             <arg name="state" type="u8">
@@ -243,7 +243,7 @@
 
     <class name="Animations" id="4">
         Animation commands
-        
+
         <cmd name="Flip" id="0">
             Make a flip
             <arg name="direction" type="enum">
@@ -269,10 +269,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="MediaRecord" id="6">
         Media recording management
-        
+
         <cmd name="Picture" id="0">
             @deprecated
             Take picture
@@ -280,15 +280,15 @@
                 Mass storage id to take picture
             </arg>
         </cmd>
-        
+
         <cmd name="PictureV2" id="1">
             Take picture
         </cmd>
     </class>
-    
+
     <class name="MediaRecordState" id="7">
         State of media recording
-        
+
         <cmd name="PictureStateChanged" id="0">
             @deprecated
             State of picture recording
@@ -299,7 +299,7 @@
                 Mass storage id to record
             </arg>
         </cmd>
-        
+
         <cmd name="PictureStateChangedV2" id="1">
             State of device picture recording changed
             <arg name="state" type="enum">
@@ -314,9 +314,9 @@
                     The picture recording is not available
                 </enum>
             </arg>
-            
+
             <arg name="error" type="enum">
-                Error to explain the state 
+                Error to explain the state
                 <enum name="ok">
                     No Error
                 </enum>
@@ -335,10 +335,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="MediaRecordEvent" id="2">
         Events of media recording
-        
+
         <cmd name="PictureEventChanged" id="0" content="NOTIFICATION">
             Event of picture recording
             <arg name="event" type="enum">
@@ -352,12 +352,12 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the event 
+                Error to explain the event
                 <enum name="ok">
                     No Error
                 </enum>
                 <enum name="unknown">
-                    Unknown generic error ; only when state is failed 
+                    Unknown generic error ; only when state is failed
                 </enum>
                 <enum name="busy">
                     Picture recording is busy ; only when state is failed
@@ -373,9 +373,9 @@
                 </enum>
             </arg>
         </cmd>
-        
+
     </class>
-    
+
     <class name="PilotingSettings" id="8">
         Piloting Settings commands
         <cmd name="MaxAltitude" id="0">
@@ -391,7 +391,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="PilotingSettingsState" id="9">
         Piloting Settings state from product
         <cmd name="MaxAltitudeChanged" id="0">
@@ -419,7 +419,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SpeedSettings" id="1">
         Speed Settings commands
         <cmd name="MaxVerticalSpeed" id="0">
@@ -447,7 +447,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SpeedSettingsState" id="5">
         Speed Settings state from product
         <cmd name="MaxVerticalSpeedChanged" id="0">
@@ -495,18 +495,18 @@
     </class>
     <class name="Settings" id="10">
         Settings commands
-        
+
         <cmd name="CutOutMode" id="0">
             Set MiniDrone cut out mode
             <arg name="enable" type="u8">
                 Enable cut out mode (1 if is activate, 0 otherwise)
             </arg>
         </cmd>
-        
+
     </class>
     <class name="SettingsState" id="11">
         Settings state from product
-        
+
         <cmd name="ProductMotorsVersionChanged" id="0">
             @deprecated
             Product Motors versions
@@ -533,19 +533,19 @@
                 Product Inertial hardware version
             </arg>
         </cmd>
-        
+
         <cmd name="CutOutModeChanged" id="2">
             MiniDrone cut out mode
             <arg name="enable" type="u8">
                 State of cut out mode (1 if is activate, 0 otherwise)
             </arg>
         </cmd>
-        
+
     </class>
-    
+
     <class name="FloodControlState" id="12">
         Settings state from product
-        
+
         <cmd name="FloodControlChanged" id="0">
             @deprecated
             Flood control regulation
