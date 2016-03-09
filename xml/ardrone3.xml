@@ -9,7 +9,7 @@
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
+      the documentation and/or other materials provided with the
       distribution.
     * Neither the name of Parrot nor the names
       of its contributors may be used to endorse or promote products
@@ -23,7 +23,7 @@
     COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
@@ -34,23 +34,23 @@
  Important notes :
  ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
  NEVER MODIFY EXISTING class/command/arg !
- 
+
  Comments are mandatory for all classes/commands/args
  For each comment : 1st line will be used as brief (if applicable)
  Other lines will be used as complete desc
- 
+
  How to add a new class :
  <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the class                | Inlcuded in Doxygen doc
  <cmd> ... </cmd>                       | List of commands
  <cmd> ... </cmd>
  </class>
- 
+
  How to add a new command (without args) to a class :
  <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
  </cmd>
- 
+
  How to add a new command (with args) to a class :
  <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
@@ -59,7 +59,7 @@
  </arg>                                 | argType must be a valid type (see below)
  ...                                    | Comment included in Doxygen doc
  </cmd>
- 
+
  List of valid types (associated C type) :
  -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
  - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
@@ -73,54 +73,54 @@
 
 <project name="ardrone3" id="1">
     All ARDrone3-only commands
-    
+
     <class name="Piloting" id="0">
         All commands related to piloting the totoDrone
-        
+
         <cmd name="FlatTrim" id="0">
             Do a flat trim
         </cmd>
-        
+
         <cmd name="TakeOff" id="1">
             Ask the drone to take off
         </cmd>
-        
+
         <cmd name="PCMD" id="2" buffer="NON_ACK">
             Ask the drone to move around.
-            
+
             <arg name="flag" type="u8">
                 Boolean flag to activate roll/pitch movement
             </arg>
-            
+
             <arg name="roll" type="i8">
                 Roll consign for the drone [-100;100]
             </arg>
-            
+
             <arg name="pitch" type="i8">
                 Pitch consign for the drone [-100;100]
             </arg>
-            
+
             <arg name="yaw" type="i8">
                 Yaw consign for the drone [-100;100]
             </arg>
-            
+
             <arg name="gaz" type="i8">
                 Gaz consign for the drone [-100;100]
             </arg>
-            
+
             <arg name="timestampAndSeqNum" type="u32">
                 Command timestamp in milliseconds (low 24 bits) + command sequence number [0;255] (high 8 bits).
             </arg>
         </cmd>
-        
+
         <cmd name="Landing" id="3">
             Ask the drone to land
         </cmd>
-        
+
         <cmd name="Emergency" id="4" buffer="HIGH_PRIO" timeout="RETRY">
             Put drone in emergency user state
         </cmd>
-        
+
         <cmd name="NavigateHome" id="5">
             Ask the drone to fly to home
             <arg name="start" type="u8">
@@ -134,7 +134,7 @@
                 State of automatic take off mode (1 for autotake off enabled)
             </arg>
         </cmd>
-        
+
         <cmd name="moveBy" id="7">
             [DRAFT] Move the drone to a relative position and rotate heading by a given angle
             The frame is horizontal and relative to the current drone orientation:
@@ -179,10 +179,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="Animations" id="5">
         Animation commands
-        
+
         <cmd name="Flip" id="0">
             Make a flip
             <arg name="direction" type="enum">
@@ -202,19 +202,19 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="Camera" id="1">
         Ask the drone to move camera
-        
+
         <cmd name="Orientation" id="0">
             Ask the drone to move camera.
-            
+
             <arg name="tilt" type="i8">
                 Tilt camera consign for the drone (in degree)
                 The value is saturated by the drone.
                 Saturation value is sent by thre drone through CameraSettingsChanged command.
             </arg>
-            
+
             <arg name="pan" type="i8">
                 Pan camera consign for the drone (in degree)
                 The value is saturated by the drone.
@@ -222,10 +222,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="MediaRecord" id="7">
         Media recording management
-        
+
         <cmd name="Picture" id="0">
             @deprecated
             Take picture
@@ -233,7 +233,7 @@
                 Mass storage id to take picture
             </arg>
         </cmd>
-        
+
         <cmd name="Video" id="1">
             @deprecated
             Video record
@@ -250,11 +250,11 @@
                 Mass storage id to record
             </arg>
         </cmd>
-        
+
         <cmd name="PictureV2" id="2">
             Take picture
         </cmd>
-        
+
         <cmd name="VideoV2" id="3">
             Video record
             <arg name="record" type="enum">
@@ -268,10 +268,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="MediaRecordState" id="8">
         State of media recording
-        
+
         <cmd name="PictureStateChanged" id="0">
             @deprecated
             State of picture recording
@@ -282,7 +282,7 @@
                 Mass storage id where the picture was recorded
             </arg>
         </cmd>
-        
+
         <cmd name="VideoStateChanged" id="1">
             @deprecated
             State of video recording
@@ -305,7 +305,7 @@
                 Mass storage id where the video was recorded
             </arg>
         </cmd>
-        
+
         <cmd name="PictureStateChangedV2" id="2">
             State of device picture recording changed
             <arg name="state" type="enum">
@@ -320,9 +320,9 @@
                     The picture recording is not available
                 </enum>
             </arg>
-            
+
             <arg name="error" type="enum">
-                Error to explain the state 
+                Error to explain the state
                 <enum name="ok">
                     No Error
                 </enum>
@@ -340,7 +340,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="VideoStateChangedV2" id="3">
             State of device video recording changed
             <arg name="state" type="enum">
@@ -357,7 +357,7 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the state 
+                Error to explain the state
                 <enum name="ok">
                     No Error
                 </enum>
@@ -375,12 +375,12 @@
                 </enum>
             </arg>
         </cmd>
-        
+
     </class>
 
     <class name="MediaRecordEvent" id="3">
         Events of media recording
-        
+
         <cmd name="PictureEventChanged" id="0" content="NOTIFICATION">
             Event of picture recording
             <arg name="event" type="enum">
@@ -394,12 +394,12 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the event 
+                Error to explain the event
                 <enum name="ok">
                     No Error
                 </enum>
                 <enum name="unknown">
-                    Unknown generic error ; only when state is failed 
+                    Unknown generic error ; only when state is failed
                 </enum>
                 <enum name="busy">
                     Picture recording is busy ; only when state is failed
@@ -415,7 +415,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="VideoEventChanged" id="1" content="NOTIFICATION">
             Event of video recording
             <arg name="event" type="enum">
@@ -432,7 +432,7 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the event 
+                Error to explain the event
                 <enum name="ok">
                     No Error
                 </enum>
@@ -456,16 +456,16 @@
                 </enum>
             </arg>
         </cmd>
-        
+
     </class>
-    
+
     <class name="PilotingState" id="4">
         State from drone
-        
+
         <cmd name="FlatTrimChanged" id="0">
             Drone acknowledges that flat trim was correctly processed
         </cmd>
-        
+
         <cmd name="FlyingStateChanged" id="1">
             Drone flying state changed
             <arg name="state" type="enum">
@@ -493,7 +493,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="AlertStateChanged" id="2">
             Drone alert state changed
             <arg name="state" type="enum">
@@ -518,7 +518,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="NavigateHomeStateChanged" id="3">
             Navigating home state
             <arg name="state" type="enum">
@@ -537,7 +537,7 @@
                 </enum>
             </arg>
             <arg name="reason" type="enum">
-                Reason of the state 
+                Reason of the state
                 <enum name="userRequest">
                     User requested a navigate home (available->inProgress)
                 </enum>
@@ -561,7 +561,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="PositionChanged" id="4">
             Drone position changed
             <arg name="latitude" type="double">
@@ -612,10 +612,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="PilotingEvent" id="34">
         Events of Piloting
-        
+
         <cmd name="moveByEnd" id="0" content="NOTIFICATION">
             [NOT USED] End of relative displacement of the drone
             The frame is horizontal and relative to the current drone orientation:
@@ -635,7 +635,7 @@
                 Applied angle on heading  [rad]
             </arg>
             <arg name="error" type="enum">
-                Error to explain the event 
+                Error to explain the event
                 <enum name="ok">
                     No Error ; The relative displacement
                 </enum>
@@ -643,21 +643,21 @@
                     Unknown generic error
                 </enum>
                 <enum name="busy">
-                    The Device is busy ; command moveBy ignored 
+                    The Device is busy ; command moveBy ignored
                 </enum>
                 <enum name="notAvailable">
-                    Command moveBy is not available ; command moveBy ignored 
+                    Command moveBy is not available ; command moveBy ignored
                 </enum>
                 <enum name="interrupted">
-                    Command moveBy interrupted 
+                    Command moveBy interrupted
                 </enum>
             </arg>
         </cmd>
     </class>
-    
+
     <class name="Network" id="13">
         Network related commands
-        
+
         <cmd name="WifiScan" id="0">
             Launches wifi network scan
             <arg name="band" type="enum">
@@ -677,12 +677,12 @@
         <cmd name="WifiAuthChannel" id="1">
             Controller inquire the list of authorized wifi channels.
         </cmd>
-        
+
     </class>
-    
+
     <class name="NetworkState" id="14">
         Network state from Product
-        
+
         <cmd name="WifiScanListChanged" id="0" type="MAP_ITEM">
             One scanning result found
             <arg name="ssid" type="string">
@@ -704,7 +704,7 @@
                 Channel of the AP
             </arg>
         </cmd>
-        
+
         <cmd name="AllWifiScanChanged" id="1">
             State sent when all scanning result sent
         </cmd>
@@ -766,35 +766,35 @@
                 1 if the drone can't fly further than max distance, 0 if no limitation on the drone should be done
             </arg>
         </cmd>
-        
+
         <cmd name="setAutonomousFlightMaxHorizontalSpeed" id="5">
             [NOT USED] Set the maximum horizontal speed used by the autonomous flight
             <arg name="value" type="float">
                 maximum horizontal speed [m/s]
             </arg>
         </cmd>
-        
+
         <cmd name="setAutonomousFlightMaxVerticalSpeed" id="6">
             [NOT USED] Set the maximum vertical speed used by the autonomous flight
             <arg name="value" type="float">
                 maximum vertical speed [m/s]
             </arg>
         </cmd>
-        
+
         <cmd name="setAutonomousFlightMaxHorizontalAcceleration" id="7">
             [NOT USED] Set the maximum horizontal acceleration used by the autonomous flight
             <arg name="value" type="float">
                 maximum horizontal acceleration [m/s2]
             </arg>
         </cmd>
-        
+
         <cmd name="setAutonomousFlightMaxVerticalAcceleration" id="8">
             [NOT USED] Set the maximum vertical acceleration used by the autonomous flight
             <arg name="value" type="float">
                 maximum vertical acceleration [m/s2]
             </arg>
         </cmd>
-        
+
         <cmd name="setAutonomousFlightMaxRotationSpeed" id="9">
             [NOT USED] Set the maximum yaw rotation speed used by the autonomous flight
             <arg name="value" type="float">
@@ -865,7 +865,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="PilotingSettingsState" id="6">
         Piloting Settings state from product
         <cmd name="MaxAltitudeChanged" id="0">
@@ -917,35 +917,35 @@
                 1 if the drone won't fly further than max distance, 0 if no limitation on the drone will be done
             </arg>
         </cmd>
-        
+
         <cmd name="AutonomousFlightMaxHorizontalSpeed" id="5">
             [NOT USED] Maximum horizontal speed used by the autonomous flight
             <arg name="value" type="float">
                 maximum horizontal speed [m/s]
             </arg>
         </cmd>
-        
+
         <cmd name="AutonomousFlightMaxVerticalSpeed" id="6">
             [NOT USED] Maximum vertical speed used by the autonomous flight
             <arg name="value" type="float">
                 maximum vertical speed [m/s]
             </arg>
         </cmd>
-        
+
         <cmd name="AutonomousFlightMaxHorizontalAcceleration" id="7">
             [NOT USED] Maximum horizontal acceleration used by the autonomous flight
             <arg name="value" type="float">
                 maximum horizontal acceleration [m/s2]
             </arg>
         </cmd>
-        
+
         <cmd name="AutonomousFlightMaxVerticalAcceleration" id="8">
             [NOT USED] Maximum vertical acceleration used by the autonomous flight
             <arg name="value" type="float">
                 maximum vertical acceleration [m/s2]
             </arg>
         </cmd>
-        
+
         <cmd name="AutonomousFlightMaxRotationSpeed" id="9">
             [NOT USED] Maximum yaw rotation speed used by the autonomous flight
             <arg name="value" type="float">
@@ -1069,7 +1069,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SpeedSettingsState" id="12">
         Speed Settings state from product
         <cmd name="MaxVerticalSpeedChanged" id="0">
@@ -1122,7 +1122,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="NetworkSettings" id="9">
         Network settings commands
         <cmd name="WifiSelection" id="0">
@@ -1174,7 +1174,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="NetworkSettingsState" id="10">
         Network settings state from product
         <cmd name="WifiSelectionChanged" id="0">
@@ -1245,7 +1245,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SettingsState" id="16">
         Settings state from product
 
@@ -1288,7 +1288,7 @@
                     EEPROM access failure
                 </enum>
                 <enum name="errorMotorStalled">
-                    Motor stalled 
+                    Motor stalled
                 </enum>
                 <enum name="errorPropellerSecurity">
                     Propeller cutout security triggered
@@ -1400,7 +1400,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="PictureSettings" id="19">
         Photo settings chosen by the user
         <cmd name="PictureFormatSelection" id="0">
@@ -1628,7 +1628,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="GPSSettings" id="23">
         GPS settings
         <cmd name="SetHome" id="0">
@@ -1684,7 +1684,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="GPSSettingsState" id="24">
         GPS settings state
         <cmd name="HomeChanged" id="0">
@@ -1751,22 +1751,22 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="CameraState" id="25">
         Camera state
-        
+
         <cmd name="Orientation" id="0">
             Camera orientation
-            
+
             <arg name="tilt" type="i8">
                 Tilt camera consign for the drone [-100;100]
             </arg>
-            
+
             <arg name="pan" type="i8">
                 Pan camera consign for the drone [-100;100]
             </arg>
         </cmd>
-        
+
         <cmd name="defaultCameraOrientation" id="1">
             Orientation of the camera center.
             This is the value to send when we want to center the camera.
@@ -1778,7 +1778,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="Antiflickering" id="29">
         Anti-flickering related commands
         <cmd name="electricFrequency" id="0">
@@ -1809,7 +1809,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="AntiflickeringState" id="30">
         Anti-flickering related states
         <cmd name="electricFrequencyChanged" id="0">
@@ -1840,7 +1840,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="GPSState" id="31">
         GPS related States
         <cmd name="NumberOfSatelliteChanged" id="0">
@@ -1863,12 +1863,12 @@
                     The drone has not enough information, it will try to return to the first GPS fix
                 </enum>
             </arg>
-            
+
             <arg name="available" type="u8">
                 1 if this type is available, 0 otherwise
             </arg>
         </cmd>
-        
+
         <cmd name="HomeTypeChosenChanged" id="2">
             The return home type chosen
             <arg name="type" type="enum">

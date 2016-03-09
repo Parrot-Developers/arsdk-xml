@@ -9,7 +9,7 @@
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
+      the documentation and/or other materials provided with the
       distribution.
     * Neither the name of Parrot nor the names
       of its contributors may be used to endorse or promote products
@@ -23,7 +23,7 @@
     COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
@@ -34,23 +34,23 @@
  Important notes :
  ALWAYS ADD NEW THINGS AT THE END OF THE PARENT TAG !
  NEVER MODIFY EXISTING class/command/arg !
- 
+
  Comments are mandatory for all classes/commands/args
  For each comment : 1st line will be used as brief (if applicable)
  Other lines will be used as complete desc
- 
+
  How to add a new class :
  <class name="MyNewClassName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the class                | Inlcuded in Doxygen doc
  <cmd> ... </cmd>                       | List of commands
  <cmd> ... </cmd>
  </class>
- 
+
  How to add a new command (without args) to a class :
  <cmd name="MyNewCommandName" >           | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
  </cmd>
- 
+
  How to add a new command (with args) to a class :
  <cmd name="MyNewCommandWithArgs" >       | No spaces ! [A-Za-z0-9_]
  Comment about the command              | Included in Doxygen doc
@@ -59,7 +59,7 @@
  </arg>                                 | argType must be a valid type (see below)
  ...                                    | Comment included in Doxygen doc
  </cmd>
- 
+
  List of valid types (associated C type) :
  -  i8 /  u8 : signed/unsigned  8 bit integer ([u]int8_t)
  - i16 / u16 : signed/unsigned 16 bit integer ([u]int16_t)
@@ -76,17 +76,17 @@
 
     <class name="Network" id="0">
         Network related commands
-        
+
         <cmd name="Disconnect" id="0">
             @deprecated
             Signals the remote that the host will disconnect and close its
             libARNetwork instance (and all threads that use libARNetwork)
         </cmd>
     </class>
-    
+
     <class name="NetworkEvent" id="1">
         Network Event from product
-        
+
         <cmd name="Disconnection" id="0" content="NOTIFICATION">
             Signals the remote that the host will disconnect and close its
             libARNetwork instance (and all threads that use libARNetwork)
@@ -102,7 +102,7 @@
         </cmd>
 
     </class>
-    
+
     <class name="Settings" id="2">
         Settings commands
         <cmd name="AllSettings" id="0" timeout="RETRY">
@@ -124,7 +124,7 @@
                 Country code with ISO 3166 format
             </arg>
         </cmd>
-        
+
         <cmd name="AutoCountry" id="4">
             Set Auto Country Settings
             <arg name="automatic" type="u8">
@@ -132,24 +132,24 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SettingsState" id="3">
         Settings state from product
         <cmd name="AllSettingsChanged" id="0">
             State sent when all settings has been sent.
         </cmd>
-        
+
         <cmd name="ResetChanged" id="1">
             State sent when all settings has been resetting.
         </cmd>
 
         <cmd name="ProductNameChanged" id="2">
-            Product name 
+            Product name
             <arg name="name" type="string">
                 Product name
             </arg>
         </cmd>
-        
+
         <cmd name="ProductVersionChanged" id="3">
             Product versions
             <arg name="software" type="string">
@@ -159,14 +159,14 @@
                 Product hardware version
             </arg>
         </cmd>
-        
+
         <cmd name="ProductSerialHighChanged" id="4">
             Product serial number
             <arg name="high" type="string">
                 Serial high number (hexadecimal value)
             </arg>
         </cmd>
-        
+
         <cmd name="ProductSerialLowChanged" id="5">
             Product serial number
             <arg name="low" type="string">
@@ -180,7 +180,7 @@
                 Country code with ISO 3166 format, empty string means unknown country.
             </arg>
         </cmd>
-        
+
         <cmd name="AutoCountryChanged" id="7">
             Inform Auto Country Settings
             <arg name="automatic" type="u8">
@@ -188,27 +188,27 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="Common" id="4">
         Common commands
         <cmd name="AllStates" id="0" timeout="RETRY">
             Get all product states.
         </cmd>
-        
+
         <cmd name="CurrentDate" id="1">
             Set current date of controller
             <arg name="date" type="string">
                 Date with ISO-8601 format
             </arg>
         </cmd>
-        
+
         <cmd name="CurrentTime" id="2">
             Set current time of controller
             <arg name="time" type="string">
                 Time with ISO-8601 format
             </arg>
         </cmd>
-        
+
         <cmd name="Reboot" id="3">
             Command to ask reboot to product
         </cmd>
@@ -219,14 +219,14 @@
         <cmd name="AllStatesChanged" id="0">
             State sent when all product states has been sent.
         </cmd>
-        
+
         <cmd name="BatteryStateChanged" id="1" buffer="NON_ACK">
             Battery state
             <arg name="percent" type="u8">
                 Battery percentage
             </arg>
         </cmd>
-        
+
         <cmd name="MassStorageStateListChanged" id="2" type="MAP_ITEM">
             Mass storage state list
             <arg name="mass_storage_id" type="u8">
@@ -236,7 +236,7 @@
                 Mass storage name
             </arg>
         </cmd>
-        
+
         <cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM">
             Mass storage info state list
             <arg name="mass_storage_id" type="u8">
@@ -258,21 +258,21 @@
                 Mass storage internal type state (1 if mass storage is internal, 0 otherwise)
             </arg>
         </cmd>
-        
+
         <cmd name="CurrentDateChanged" id="4">
             Current date state
             <arg name="date" type="string">
                 Date with ISO-8601 format
             </arg>
         </cmd>
-        
+
         <cmd name="CurrentTimeChanged" id="5">
             Current time state
             <arg name="time" type="string">
                 Time with ISO-8601 format
             </arg>
         </cmd>
-        
+
         <cmd name="MassStorageInfoRemainingListChanged" id="6" type="LIST_ITEM">
             @deprecated
             Mass storage info remaining list
@@ -286,14 +286,14 @@
                 Mass storage photo remaining
             </arg>
         </cmd>
-        
+
         <cmd name="WifiSignalChanged" id="7" buffer="NON_ACK">
             Wifi Signal between controller and product state
             <arg name="rssi" type="i16">
                 RSSI of the signal between controller and the product (in dbm)
             </arg>
         </cmd>
-        
+
         <cmd name="SensorsStatesListChanged" id="8" type="MAP_ITEM">
             Sensors states list
             <arg name="sensorName" type="enum">
@@ -321,7 +321,7 @@
                 Sensor state (1 if the sensor is OK, 0 if the sensor is NOT OK)
             </arg>
         </cmd>
-        
+
         <cmd name="ProductModel" id="9">
             Inform of the product model. This is used to customize the UI depending on the connected product.
             <arg name="model" type="enum">
@@ -367,12 +367,12 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="CountryListKnown" id="10" type="LIST_ITEM">
             List of the countries known by the device
             <arg name="listFlags" type="u8">
                 List entry attribute Bitfield.
-                0x01: First: indicate it's the first element of the list. 
+                0x01: First: indicate it's the first element of the list.
                 0x02: Last:  indicate it's the last element of the list.
                 0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
            </arg>
@@ -381,29 +381,29 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="OverHeat" id="6">
         Over heat commands
-        
+
         <cmd name="SwitchOff" id="0">
             @deprecated
             Switch off the drone when a overheat appeared
         </cmd>
-        
+
         <cmd name="Ventilate" id="1">
             @deprecated
             Ventilate the drone when a overheat appeared
         </cmd>
     </class>
-    
+
     <class name="OverHeatState" id="7">
         Overheat state from product
-        
+
         <cmd name="OverHeatChanged" id="0">
             @deprecated
             Overheat temperature reached
         </cmd>
-        
+
         <cmd name="OverHeatRegulationChanged" id="1">
             @deprecated
             Overheat regulation state changed
@@ -472,7 +472,7 @@
          <cmd name="MavlinkFilePlayingStateChanged" id="0">
              Playing state of a mavlink flight plan
              <arg name="state" type="enum">
-                State of the mavlink 
+                State of the mavlink
                 <enum name="playing">
                     Mavlink file is playing
                 </enum>
@@ -606,7 +606,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="FlightPlanState" id="17">
         FlightPlan state commands
         <cmd name="AvailabilityStateChanged" id="0">
@@ -638,7 +638,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="FlightPlanEvent" id="19">
         FlightPlan Event commands
         <cmd name="StartingErrorEvent" id="0" content="NOTIFICATION">
@@ -648,7 +648,7 @@
             Bridle speed of the drone
         </cmd>
     </class>
-    
+
     <class name="ARLibsVersionsState" id="18">
         ARlibs Versions Commands
         <cmd name="ControllerLibARCommandsVersion" id="0">
@@ -868,7 +868,7 @@
                     Boost animation.
                 </enum>
             </arg>
-            
+
             <arg name="state" type="enum">
                 State of the animation
                 <enum name="stopped">
@@ -881,9 +881,9 @@
                     The animation is not available
                 </enum>
             </arg>
-            
+
             <arg name="error" type="enum">
-                Error to explain the state 
+                Error to explain the state
                 <enum name="ok">
                     No Error
                 </enum>
@@ -979,7 +979,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="AccessoryConfigModificationEnabled" id="2">
             Possibility to modify the accessory configuration.
             <arg name="enabled" type="u8">
