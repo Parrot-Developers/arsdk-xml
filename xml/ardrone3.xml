@@ -859,8 +859,8 @@
                 <enum name="LINEAR">
                     Linear landing.
                 </enum>
-                <enum name="SPIRALE">
-                    Spirale landing.
+                <enum name="SPIRAL">
+                    Spiral landing.
                 </enum>
             </arg>
         </cmd>
