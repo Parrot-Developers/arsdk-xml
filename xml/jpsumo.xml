@@ -9,7 +9,7 @@
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
+      the documentation and/or other materials provided with the
       distribution.
     * Neither the name of Parrot nor the names
       of its contributors may be used to endorse or promote products
@@ -23,7 +23,7 @@
     COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
@@ -181,7 +181,7 @@
                 Actual real-world speed in cm/s. Value -32768 returned if not available.
             </arg>
         </cmd>
-        
+
         <cmd name="FlyingStateChanged" id="3">
             Drone flying state changed
             Only used for Unknown_Product_1
@@ -337,7 +337,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SettingsState" id="5">
         Settings state from product
        <cmd name="ProductGPSVersionChanged" id="0">
@@ -379,11 +379,11 @@
                 Mass storage id to record
             </arg>
         </cmd>
-        
+
         <cmd name="PictureV2" id="2">
             Take picture
         </cmd>
-        
+
         <cmd name="VideoV2" id="3">
             Video record
             <arg name="record" type="enum">
@@ -430,7 +430,7 @@
                 Mass storage id where the video was recorded
             </arg>
         </cmd>
-        
+
         <cmd name="PictureStateChangedV2" id="2">
             State of device picture recording changed
             <arg name="state" type="enum">
@@ -445,9 +445,9 @@
                     The picture recording is not available
                 </enum>
             </arg>
-            
+
             <arg name="error" type="enum">
-                Error to explain the state 
+                Error to explain the state
                 <enum name="ok">
                     No Error
                 </enum>
@@ -465,7 +465,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="VideoStateChangedV2" id="3">
             State of device video recording changed
             <arg name="state" type="enum">
@@ -482,7 +482,7 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the state 
+                Error to explain the state
                 <enum name="ok">
                     No Error
                 </enum>
@@ -501,10 +501,10 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="MediaRecordEvent" id="20">
         Events of media recording
-        
+
         <cmd name="PictureEventChanged" id="0" content="NOTIFICATION">
             Event of picture recording
             <arg name="event" type="enum">
@@ -518,12 +518,12 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the event 
+                Error to explain the event
                 <enum name="ok">
                     No Error
                 </enum>
                 <enum name="unknown">
-                    Unknown generic error ; only when state is failed 
+                    Unknown generic error ; only when state is failed
                 </enum>
                 <enum name="busy">
                     Picture recording is busy ; only when state is failed
@@ -539,7 +539,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
         <cmd name="VideoEventChanged" id="1" content="NOTIFICATION">
             Event of video recording
             <arg name="event" type="enum">
@@ -556,7 +556,7 @@
             </arg>
 
             <arg name="error" type="enum">
-                Error to explain the event 
+                Error to explain the event
                 <enum name="ok">
                     No Error
                 </enum>
@@ -580,7 +580,7 @@
                 </enum>
             </arg>
         </cmd>
-        
+
     </class>
 
     <class name="NetworkSettings" id="8">
@@ -726,7 +726,7 @@
         <cmd name="AllWifiAuthChannelChanged" id="3">
             Notify the end of the list of Authorized wifi Channel.
         </cmd>
-        
+
         <cmd name="LinkQualityChanged" id="4">
             Notification sent by the firmware to give an indication of the WiFi link quality.
             <arg name="quality" type="u8">
@@ -908,7 +908,7 @@
             </arg>
         </cmd>
     </class>
-    
+
     <class name="SpeedSettingsState" id="17">
         Speed Settings state from product
         <cmd name="OutdoorChanged" id="0">
