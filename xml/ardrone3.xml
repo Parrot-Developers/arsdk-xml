@@ -796,9 +796,9 @@
         </cmd>
 
         <cmd name="setAutonomousFlightMaxRotationSpeed" id="9">
-            [NOT USED] Set the maximum yaw rotation speed used by the autonomous flight
+            Set the maximum yaw rotation speed used by the autonomous flight
             <arg name="value" type="float">
-                maximum yaw rotation speed [rad/s]
+                maximum yaw rotation speed [deg/s]
             </arg>
         </cmd>
         <cmd name="BankedTurn" id="10">
@@ -949,7 +949,7 @@
         <cmd name="AutonomousFlightMaxRotationSpeed" id="9">
             [NOT USED] Maximum yaw rotation speed used by the autonomous flight
             <arg name="value" type="float">
-                maximum yaw rotation speed [rad/s]
+                maximum yaw rotation speed [deg/s]
             </arg>
         </cmd>
 
