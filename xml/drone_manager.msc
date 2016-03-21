@@ -1,0 +1,82 @@
+msc {
+	a[label="Drone Manager", arctextcolour="#003f00" ],b [label="FreeFlight", arctextcolour="#00003f" ];
+
+	|||;
+
+	a box b [ label = "Auto connection", textbgcolour="#7fff7f", textcolour="#000000" ];
+	a->b [ label = "connection_state(searching, last_drone)" ];
+	...;
+	a->b [ label = "connection_state(connecting, active_drone)" ];
+	...;
+	a->b [ label = "connection_state(connected, active_drone)" ];
+
+	|||;
+	|||;
+	|||;
+
+	a box b [ label = "Auto connection, bad key", textbgcolour="#ff7f7f", textcolour="#000000" ];
+	a->b [ label = "connection_state(searching, last_drone)" ];
+	...;
+	a->b [ label = "connection_state(connecting, active_drone)" ];
+	...;
+	a->b [ label = "connection_state(failed, active_drone, error=bad_key)" ];
+	b abox b [ label = "prompt user for passphrase" ];
+	b=>a [ label = "connect(active_drone, new_key)" ];
+	...;
+	a->b [ label = "connection_state(connecting, active_drone)" ];
+	...;
+	a->b [ label = "connection_state(connected, active_drone)" ];
+
+	|||;
+	|||;
+	|||;
+
+	a box b [ label = "Drone list request", textbgcolour="#7fff7f", textcolour="#000000" ];
+	b=>a [ label = "discover_drones()" ];
+	--- [ label = "if drone manager is doing auto scans" ];
+	a abox a [ label = "wait for auto scan result" ];
+	--- [ label = "else" ];
+	a abox a [ label = "launch scan and wait for result" ];
+	--- [ label = "endif" ];
+	a>>b [ label = "drone_list(known, visible, ...)" ];
+
+	|||;
+	|||;
+	|||;
+
+	a box b [ label = "Manual connection", textbgcolour="#7fff7f", textcolour="#000000" ];
+	a->b [ label = "connection_state(<any>, old_drone)" ];
+	...;
+	--- [ label = "if new_drone is secured, and no saved key" ];
+	b abox b [ label = "promp user for passphrase" ];
+	--- [ label = "end-if" ];
+	b=>a [ label = "connect(new_drone, <passphrase_or_\"\">)" ];
+	a->b [ label = "connection_state(connecting, new_drone)" ];
+	...;
+	a->b [ label = "connection_state(connected, new_drone)" ];
+
+	|||;
+	|||;
+	|||;
+
+	a box b [ label = "Forget, inactive drone", textbgcolour="#7fff7f", textcolour="#000000" ];
+	a->b [ label = "connection_state(<any>, drone_A)" ];
+	...;
+	b=>a [ label = "forget(drone_B)" ];
+	--- [ label = "no response from Drone Manager" ];
+
+	|||;
+	|||;
+	|||;
+
+	a box b [ label = "Forget, active drone", textbgcolour="#7f7fff", textcolour="#000000" ];
+	a->b [ label = "connection_state(connect[ed|ing], the_drone)" ];
+	...;
+	b=>a [ label = "forget(the_drone)" ];
+	a->b [ label = "connection_state(searching, the_drone)" ];
+	...;
+	--- [label = "New autoselect from Drone Manager, if available" ];
+	a->b [ label = "connection_state(connecting, other_drone)" ];
+	...;
+	a->b [ label = "connection_state(connected, other_drone)" ];
+}
