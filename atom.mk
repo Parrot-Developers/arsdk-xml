@@ -89,7 +89,7 @@ $$(arsdkgen_done_file):
 	@touch $$@
 
 # Update alchemy variables for the module
-LOCAL_CLEAN_FILES += $$(arsdkgen_done_file) $(if $(call is-path-relative,$2),$$(arsdkgen_gen_files))
+LOCAL_CLEAN_FILES += $$(arsdkgen_done_file) $(if $(call is-path-absolute,$2),$(empty),$$(arsdkgen_gen_files))
 LOCAL_EXPORT_PREREQUISITES += $$(arsdkgen_gen_files)
 LOCAL_CUSTOM_TARGETS += $$(arsdkgen_done_file)
 LOCAL_DEPENDS_HOST_MODULES += host.arsdkgen
