@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (C) 2014 Parrot SA
+    Copyright (C) 2016 Parrot SA
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
@@ -74,13 +74,13 @@
 <feature id="134" name="follow_me">
     FollowMe feature
     <enums>
-        <enum name="type">
-            Type of FollowMe
+        <enum name="mode">
+            FollowMe mode
             <value name="none">
                 No follow me
             </value>
             <value name="look_at">
-                LookAt follow me type
+                Look at the target without moving automatically
             </value>
             <value name="geographic">
                 Follow the target keeping the same vector
@@ -89,243 +89,368 @@
                 Follow the target keeping the same orientation to its direction
             </value>
         </enum>
-
-        <enum name="anim_type">
-            Type of the current FollowMe animation
-            <value name="none">
-                No current follow me animation
+        <enum name="behavior">
+            FollowMe behavior
+            <value name="idle">
+                Drone is not moving according to the target
+                This means that at least one required input is missing
             </value>
-            <value name="spiral">
-                Current follow me animation is spiral
-            </value>
-            <value name="swing">
-                Current follow me animation is swing
-            </value>
-            <value name="boomerang">
-                Current follow me animation is boomerang
-            </value>
-            <value name="candle">
-                Current follow me animation is candle
-            </value>
-            <value name="dolly_slide">
-                Current follow me animation is dolly slide
-            </value>
-        </enum>
-
-        <enum name="types_available">
-            Types of FollowMe available
-            <value name="none">
-                No follow me available
+            <value name="follow">
+                Follow the target
             </value>
             <value name="look_at">
-                LookAt available, no other types
+                Look at the target without moving
             </value>
-            <value name="look_and_follow">
-                LookAt, Geographic and Relative follow me are available
+        </enum>
+        <enum name="input">
+            Input values used by the FollowMe
+            <value name="drone_calibrated">
+                Drone is calibrated
+            </value>
+            <value name="drone_gps_good_accuracy">
+                Drone gps has fixed and has a good accuracy
+            </value>
+            <value name="target_gps_good_accuracy">
+                Target gps data is known and has a good accuracy
+            </value>
+            <value name="target_barometer_ok">
+                Target barometer data is available
+            </value>
+            <value name="drone_far_enough">
+                Drone is far enough from the target
+            </value>
+            <value name="drone_high_enough">
+                Drone is high enough from the ground
+            </value>
+            <value name="image_detection">
+                Target detection is done by image detection among other things
+            </value>
+        </enum>
+        <enum name="anim_unavailability_reason">
+            Reason of unavailability of an animation
+            <value name="wrong_follow_me_type">
+                The current type of FollowMe doesn't allow this type of animation
+            </value>
+        </enum>
+        <enum name="geo_rel_configure_param">
+            Geographic and Relative follow me configuration parameters
+            <value name="distance">
+                Distance configuration
+            </value>
+            <value name="elevation">
+                Elevation configuration
+            </value>
+            <value name="azimuth">
+                Azimuth configuration
+            </value>
+        </enum>
+        <enum name="animation">
+            FollowMe animation type
+            <value name="none">
+                No animation
+            </value>
+            <value name="helicoid">
+                Turn around the target
+            </value>
+            <value name="swing">
+                Pass by the zenith and change of side
+            </value>
+            <value name="boomerang">
+                Fly far from the target and fly back
+            </value>
+            <value name="candle">
+                Move to the target and go high when it is near
+            </value>
+            <value name="dolly_slide">
+                Fly in line
+            </value>
+        </enum>
+        <enum name="helicoid_configure_param">
+            Helicoid animation configuration parameters.
+            <value name="speed">
+                Speed parameter
+            </value>
+            <value name="revolution_nb">
+                Number of turn
+            </value>
+            <value name="vertical_distance">
+                Vertical distance
+            </value>
+        </enum>
+        <enum name="swing_configure_param">
+            Swing configure parameters.
+            <value name="speed">
+                Speed parameter
+            </value>
+            <value name="vertical_distance">
+                Vertical distance
+            </value>
+        </enum>
+        <enum name="boomerang_configure_param">
+            Boomerang animation configure parameters.
+            <value name="speed">
+                Speed parameter
+            </value>
+            <value name="distance">
+                Distance
+            </value>
+        </enum>
+        <enum name="candle_configure_param">
+            Candle animation configure parameters.
+            <value name="speed">
+                Speed parameter
+            </value>
+            <value name="vertical_distance">
+                Follow the target keeping the same vector
+            </value>
+        </enum>
+        <enum name="dolly_slide_configure_param">
+            Dolly slide animation configure parameters.
+            <value name="speed">
+                Speed parameter
+            </value>
+            <value name="angle">
+                Angle
+            </value>
+            <value name="horizontal_distance">
+                Horizontal distance
+            </value>
+        </enum>
+        <enum name="image_detection_status">
+            State of the image detection
+            <value name="none">
+                No image detection
+            </value>
+            <value name="ok">
+                Image detection is considered ok by the drone
+            </value>
+            <value name="lost">
+                Image detection is considered lost or
+                in contradiction with gps value.
+                This state will remain until a new selection of the target is done
             </value>
         </enum>
     </enums>
 
     <msgs>
-        <evt name="availability" id="1">
+        <cmd name="start" id="1">
             <comment
-                title="FollowMe types availability"
-                desc="Get the FollowMe types you can run."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="type" type="enum:types_available"/>
-        </evt>
+                title="Start followMe mode"
+                desc="Start a FollowMe with all its params set to the default params. \n
+                      Sending this command will stop other running followMe."
+                result="Event [state](#134-3) is triggered.\n
+                Also triggers the event that informs about the current \n
+                configuration (if there is one) like event\n
+                [Geographic configuration](#134-4) or [Relative configuration](#134-5)"/>
+             <arg name="mode" type="enum:mode"/>
+        </cmd>
 
-        <cmd name="geographic_run" id="2">
+        <cmd name="stop" id="2">
             <comment
-                title="Begin or stop geographic type followMe"
+                title="Stop current followMe"
                 desc="Begin or stop geographic type followMe (follow the leader keeping the same vector). \n
                       Sending this command will stop other running followMe."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start geographic follow me process, 0 to stop it
+                result="Event [state](#134-3) is triggered."/>
+        </cmd>
+
+        <evt name="state" id="3">
+            <comment
+                title="State of the FollowMe"
+                triggered="by any changes on the followme, like [start](#134-1),\n
+                [stop](#134-2), [start helicoid anim](#134-9)..."/>
+            <arg name="mode" type="enum:mode">
+                Mode asked by user
             </arg>
-            <arg name="distance_is_default" type="u8">
-                0 if distance is set by user, 1 if set by current distance (in this case distance value is not used)
-                Not used when arg start is at 0
+            <arg name="behavior" type="enum:behavior">
+                Behavior of the drone according to the asked mode
             </arg>
+            <arg name="animation" type="enum:animation">
+                Current animation
+            </arg>
+            <arg name="animation_available" type="bitfield:u16:animation">
+                List of available animations
+            </arg>
+        </evt>
+
+        <evt name="mode_info" id="4" type="MAP_ITEM:mode">
+            <comment
+                title="Information about each mode"
+                triggered="When the list of missing requirements or improvments changes"/>
+            <arg name="mode" type="enum:mode"/>
+            <arg name="missing_requirements" type="bitfield:u16:input">
+                List of missing requirements to enter this mode on start.
+                If at least one input is missing, drone won't able to follow the target.
+                It won't use any fallback either
+            </arg>
+            <arg name="improvements" type="bitfield:u16:input">
+                List of inputs that can improve the mode.
+                If at least one input is missing, a downgraded mode will be used. See behavior
+            </arg>
+        </evt>
+
+        <cmd name="configure_geographic" id="6">
+            <comment
+                title="Configure the geographic follow me"
+                desc="Configure the geographic FollowMe.\n
+                      This should only be taken in account if arg behavior in [state](#134-3) is equal to Follow."
+                result="Event [Geographic config](#134-5) is sent and drone will move to respect the configuration."/>
+            <arg name="use_default" type="bitfield:u8:geo_rel_configure_param"/>
             <arg name="distance" type="float">
                 The distance leader-follower in meter
                 Not used when arg start is at 0
             </arg>
-            <arg name="elevation_is_default" type="u8">
-                0 if elevation is set by user, 1 if set by current elevation (in this case elevation value is not used) (not used when arg start is at 0)
-            </arg>
             <arg name="elevation" type="float">
                 The elevation leader-follower in rad (not used when arg start is at 0)
-            </arg>
-            <arg name="azimuth_is_default" type="u8">
-                0 if azimuth is set by user, 1 if set by current azimuth (in this case azimuth value is not used) (not used when arg start is at 0)
             </arg>
             <arg name="azimuth" type="float">
                 The azimuth north-leader-follower in rad (not used when arg start is at 0)
             </arg>
         </cmd>
 
-        <cmd name="relative_run" id="3">
-            <comment
-                title="Begin or stop relative type followMe"
-                desc="Begin or stop relative type followMe (follow the leader keeping the same orientation to its direction).\n
-                      Sending this command will stop other running followMe."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start relative follow me process, 0 to stop it
-            </arg>
-            <arg name="distance_is_default" type="u8">
-                0 if distance is set by user, 1 if set by current distance (in this case distance value is not used) (not used when arg start is at 0)
-            </arg>
-            <arg name="distance" type="float">
-                The distance leader-follower in meter (not used when arg start is at 0)
-            </arg>
-            <arg name="elevation_is_default" type="u8">
-                0 if elevation is set by user, 1 if set by current elevation (in this case elevation value is not used) (not used when arg start is at 0)
-            </arg>
-            <arg name="elevation" type="float">
-                The elevation leader-follower in rad (not used when arg start is at 0)
-            </arg>
-            <arg name="azimuth_is_default" type="u8">
-                0 if azimuth is set by user, 1 if set by current azimuth (in this case azimuth value is not used) (not used when arg start is at 0)
-            </arg>
-            <arg name="azimuth" type="float">
-                The azimuth north-leader-follower in rad (not used when arg start is at 0)
-            </arg>
-        </cmd>
-
-        <cmd name="look_at_run" id="4">
-            <comment
-                title="Begin or stop look at type followMe"
-                desc="Begin or stop look at type followMe (stare at the leader while hovering).\n
-                    Sending this command will stop other running followMe."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start look at process, 0 to stop it
-            </arg>
-        </cmd>
-
-        <evt name="run" id="5">
-            <comment
-                title="State of the FollowMe run"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="type" type="enum:type"/>
-        </evt>
-
-        <evt name="geographic_config_changed" id="6">
+        <evt name="geographic_config" id="7">
             <comment
                 title="Geographic configuration changed"
                 desc="Geographic configuration changed.\n
-                    This event is only valid when [Run type](#134-2) is geographic."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="distance_is_default" type="u8">
-                0 if distance is set by user, 1 if set by current distance
-            </arg>
+                    This event is only valid when arg behavior in [state](#134-3) is equal to Follow."
+                triggered="By [start geographic](#134-1) or [configure geographic](#134-4)."/>
+            <arg name="use_default" type="bitfield:u8:geo_rel_configure_param"/>
             <arg name="distance" type="float">
-                The distance leader-follower in meter, if distance is default, this value is the current drone distance
-            </arg>
-            <arg name="elevation_is_default" type="u8">
-                0 if elevation is set by user, 1 if set by current elevation
+                The distance leader-follower in meter
+                If distance is default, this value is the current drone distance
             </arg>
             <arg name="elevation" type="float">
-                The elevation leader-follower in rad, if elevation is default, this value is the current leader to drone elevation angle
-            </arg>
-            <arg name="azimuth_is_default" type="u8">
-                0 if azimuth is set by user, 1 if set by current azimuth
+                The elevation leader-follower in rad
+                If elevation is default, this value is the current leader to drone elevation
             </arg>
             <arg name="azimuth" type="float">
-                The azimuth north-leader-follower in rad, if azimuth is default, this value is the current leader to drone azimuth
+                The azimuth north-leader-follower in rad
+                If azimuth is default, this value is the current leader to drone azimuth
             </arg>
         </evt>
 
-        <evt name="relative_config_changed" id="7">
+        <cmd name="configure_relative" id="8">
+            <comment
+                title="Configure the relative follow me"
+                desc="Configure the relative FollowMe.\n
+                      This should only be taken in account if arg behavior in [state](#134-3) is equal to Follow"
+                result="Event [Relative config](#134-5) is sent and drone will move to respect the configuration."/>
+            <arg name="use_default" type="bitfield:u8:geo_rel_configure_param"/>
+            <arg name="distance" type="float">
+                The distance leader-follower in meter
+            </arg>
+            <arg name="elevation" type="float">
+                The elevation leader-follower in rad
+            </arg>
+            <arg name="azimuth" type="float">
+                The azimuth north-leader-follower in rad
+            </arg>
+        </cmd>
+
+        <evt name="relative_config" id="9">
             <comment
                 title="Relative configuration changed"
                 desc="Relative configuration changed.\n
-                    This event is only valid when [Run type](#134-2) is relative."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="distance_is_default" type="u8">
-                0 if distance is set by user, 1 if set by current distance
-            </arg>
+                    This event is only valid when arg behavior in [state](#134-3) is equal to Follow."
+                triggered="By [start relative](#134-1) or [configure relative](#134-4)."/>
+            <arg name="use_default" type="bitfield:u8:geo_rel_configure_param"/>
             <arg name="distance" type="float">
-                The distance leader-follower in meter, if distance is default, this value is the current drone distance
-            </arg>
-            <arg name="elevation_is_default" type="u8">
-                0 if elevation is set by user, 1 if set set by current elevation
+                The distance leader-follower in meter
+                If distance is default, this value is the current drone distance
             </arg>
             <arg name="elevation" type="float">
-                The elevation leader-follower in rad, if elevation is default, this value is the current leader to drone elevation
-            </arg>
-            <arg name="azimuth_is_default" type="u8">
-                0 if azimuth is set by user, 1 if set by current azimuth
+                The elevation leader-follower in rad
+                If elevation is default, this value is the current leader to drone elevation
             </arg>
             <arg name="azimuth" type="float">
-                The azimuth course-leader-follower in rad, if azimuth is default, this value is the current leader to drone azimuth
+                The azimuth course-leader-follower in rad
+                If azimuth is default, this value is the current leader to drone azimuth
+            </arg>
+        </evt>
+        
+        <evt name="target_trajectory" id="10" buffer="NON_ACK">
+            <comment
+                title="Target estimated trajectory"
+                triggered="Regularly when a FollowMe is started."/>
+            <arg name="latitude" type="double">
+                Target latitude (in degrees)
+            </arg>
+            <arg name="longitude" type="double">
+                Target longitude (in degrees)
+            </arg>
+            <arg name="altitude" type="float">
+                Target altitude (in meters, relative to take off altitude)
+            </arg>
+            <arg name="north_speed" type="float">
+                Target north speed (in m/s)
+            </arg>
+            <arg name="east_speed" type="float">
+                Target east speed (in m/s)
+            </arg>
+            <arg name="down_speed" type="float">
+                Target down speed (in m/s)
             </arg>
         </evt>
 
         <!-- FollowMe Animations -->
-        <cmd name="spiral_anim_run" id="8">
+        <cmd name="stop_animation" id="11">
             <comment
-                title="Begin or stop a spiral animation"
-                desc="Begin or stop a spiral animation.\n
-                    The spiral animation allows the drone to revolve around the target while going up, with a fixed radius."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start the anim, 0 to stop it
-            </arg>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed should be used
-                Not used when start is 0
-            </arg>
+                title="Stop current followMe animation"
+                desc="Stop current followMe animation"
+                result="FollowMe animation will stop. Event [state](#133-2) is triggered."/>
+        </cmd>
+
+        <cmd name="start_helicoid_anim" id="12">
+            <comment
+                title="Start a helicoid animation"
+                desc="Start a helicoid animation.\n
+                    The helicoid animation allows the drone to revolve around the target while going up, with a fixed radius."
+                result="Animation is started and event [state](#133-2) is triggered."/>
+            <arg name="use_default" type="bitfield:u8:helicoid_configure_param"/>
             <arg name="speed" type="float">
                 The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
-                Not used when start is 0
-            </arg>
-            <arg name="revolution_nb_is_default" type="u8">
-                0 if the number of revolution is set by user, 1 if default revolution nb should be used
-                Not used when start is 0
             </arg>
             <arg name="revolution_number" type="float">
                 The number of revolution (in turn)
                 Negative value is infinite
                 Example: 1.5 makes an entire turn plus half of a turn
                 Not used when revolutionNb_is_default is 1
-                Not used when start is 0
-            </arg>
-            <arg name="vertical_distance_is_default" type="u8">
-                0 if the vertical distance is set by user, 1 if default value should be used
-                Not used when start is 0
             </arg>
             <arg name="vertical_distance" type="float">
-                Distance that should be made by the product to reach the top of the spiral in m
+                Distance that should be made by the product to reach the top of the helicoid in m
                 Not used when verticalDistance_is_default is 1
-                Not used when start is 0
             </arg>
         </cmd>
 
-        <cmd name="swing_anim_run" id="9">
+        <evt name="helicoid_anim_config" id="13">
             <comment
-                title="Begin or stop a swing animation"
-                desc="Begin or stop a swing animation.\n
+                title="Helicoid animation configuration"
+                desc="Helicoid animation configuration.\n
+                      This should only be taken in account if arg animation in [state](#134-3) is equal to helicoid"
+                triggered="by a [start helicoid animation](#134-9)."/>
+            <arg name="use_default" type="bitfield:u8:helicoid_configure_param"/>
+            <arg name="speed" type="float">
+                The speed of the anim in m/s
+            </arg>
+            <arg name="revolution_nb" type="float">
+                The number of revolution (in turn)
+                Negative value is infinite
+            </arg>
+            <arg name="vertical_distance" type="float">
+                Distance that will be made by the product to reach the top of the helicoid in m
+            </arg>
+        </evt>
+
+        <cmd name="start_swing_anim" id="14">
+            <comment
+                title="Start a swing animation"
+                desc="Start a swing animation.\n
                     The swing animation enables a vertical point of view while the drone passes over the target."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start the anim, 0 to stop it
-            </arg>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed should be used
-                Not used when start is 0
-            </arg>
+                result="Animation is started and event [state](#133-2) is triggered."/>
+            <arg name="use_default" type="bitfield:u8:swing_configure_param"/>
             <arg name="speed" type="float">
                 The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
-                Not used when start is 0
-            </arg>
-            <arg name="vertical_distance_is_default" type="u8">
-                0 if the vertical distance is set by user, 1 if default value should be used
                 Not used when start is 0
             </arg>
             <arg name="vertical_distance" type="float">
@@ -335,26 +460,31 @@
             </arg>
         </cmd>
 
-        <cmd name="boomerang_anim_run" id="10">
+        <evt name="swing_anim_config" id="15">
             <comment
-                title="Begin or stop a boomerang animation"
-                desc="Begin or stop a boomerang animation.\n
+                title="Swing animation configuration changed"
+                desc="Swing animation configuration changed.\n
+                This should only be taken in account if arg animation in [state](#134-3) is equal to swing"
+                triggered="by a [start swing animation](#134-11)."/>
+            <arg name="use_default" type="bitfield:u8:swing_configure_param"/>
+            <arg name="speed" type="float">
+                The speed of the anim in m/s
+            </arg>
+            <arg name="vertical_distance" type="float">
+                Distance that will be made by the product to reach the top of the swing in m
+            </arg>
+        </evt>
+
+        <cmd name="start_boomerang_anim" id="16">
+            <comment
+                title="Start a boomerang animation"
+                desc="Start a boomerang animation.\n
                     The boomerang animation enables a zoom-out/zoom-in trajectory while preserving the framing chosen by the user."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start the anim, 0 to stop it
-            </arg>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed should be used
-                Not used when start is 0
-            </arg>
+                result="Animation is started and event [state](#133-2) is triggered."/>
+            <arg name="use_default" type="bitfield:u8:boomerang_configure_param"/>
             <arg name="speed" type="float">
                 The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
-                Not used when start is 0
-            </arg>
-            <arg name="distance_is_default" type="u8">
-                0 if the distance is set by user, 1 if default value should be used
                 Not used when start is 0
             </arg>
             <arg name="distance" type="float">
@@ -364,26 +494,31 @@
             </arg>
         </cmd>
 
-        <cmd name="candle_anim_run" id="11">
+        <evt name="boomerang_anim_config" id="17">
             <comment
-                title="Begin or stop a candle animation"
-                desc="Begin or stop a candle animation.\n
+                title="Boomerang animation configuration changed"
+                desc="Boomerang animation configuration changed.\n
+                This should only be taken in account if arg animation in [state](#134-3) is equal to boomerang"
+                triggered="by a [start boomerang animation](#134-13)."/>
+            <arg name="use_default" type="bitfield:u8:boomerang_configure_param"/>
+            <arg name="speed" type="float">
+                The speed of the anim in m/s
+            </arg>
+            <arg name="distance" type="float">
+                Distance that will be made by the product to reach its return point in m
+            </arg>
+        </evt>
+
+        <cmd name="start_candle_anim" id="18">
+            <comment
+                title="Start a candle animation"
+                desc="Start a candle animation.\n
                     The candle animation enables a zoom-in directly on the target followed by a vertical zoom-out."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start the anim, 0 to stop it
-            </arg>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed should be used
-                Not used when start is 0
-            </arg>
+                result="Animation is started and event [state](#133-2) is triggered."/>
+            <arg name="use_default" type="bitfield:u8:candle_configure_param"/>
             <arg name="speed" type="float">
                 The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
-                Not used when start is 0
-            </arg>
-            <arg name="vertical_distance_is_default" type="u8">
-                0 if the vertical distance is set by user, 1 if default value should be used
                 Not used when start is 0
             </arg>
             <arg name="vertical_distance" type="float">
@@ -393,35 +528,36 @@
             </arg>
         </cmd>
 
-        <cmd name="dolly_slide_anim_run" id="12">
+        <evt name="candle_anim_config" id="19">
             <comment
-                title="Begin or stop a dolly slide animation"
-                desc="Begin or stop a dolly slide animation.\n
+                title="Candle animation configuration changed"
+                desc="Candle animation configuration changed.\n
+                This should only be taken in account if arg animation in [state](#134-3) is equal to candle"
+                triggered="by a [start candle animation](#134-15)."/>
+            <arg name="use_default" type="bitfield:u8:candle_configure_param"/>
+            <arg name="speed" type="float">
+                The speed of the anim in m/s
+            </arg>
+            <arg name="vertical_distance" type="float">
+                Distance that will be made by the product to reach the top of the vertical zoom-out in m
+            </arg>
+        </evt>
+
+        <cmd name="start_dolly_slide_anim" id="20">
+            <comment
+                title="Start a dolly slide animation"
+                desc="Start a dolly slide animation.\n
                     Allows the drone to catch up to the target before flying past it, creating a zoom-in/zoom_out effect without a curved path."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="start" type="u8">
-                1 to start the anim, 0 to stop it
-            </arg>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed should be used
-                Not used when start is 0
-            </arg>
+                result="Animation is started and event [state](#133-2) is triggered."/>
+            <arg name="use_default" type="bitfield:u8:dolly_slide_configure_param"/>
             <arg name="speed" type="float">
                 The desired speed of the anim in m/s
                 Not used when speed_is_default is 1
                 Not used when start is 0
             </arg>
-            <arg name="angle_is_default" type="u8">
-                0 if the angle is set by user, 1 if default value should be used
-                Not used when start is 0
-            </arg>
             <arg name="angle" type="float">
                 Desired angle Product-User-Target in rad
                 Not used when angle_is_default is 1
-                Not used when start is 0
-            </arg>
-            <arg name="horizontal_distance_is_default" type="u8">
-                0 if the horizontal distance is set by user, 1 if default value should be used
                 Not used when start is 0
             </arg>
             <arg name="horizontal_distance" type="float">
@@ -431,132 +567,29 @@
             </arg>
         </cmd>
 
-        <evt name="anim_run" id="13">
-            <comment
-                title="State of the current FollowMe animation"
-                desc="State of the current FollowMe animation."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="type" type="enum:anim_type"/>
-        </evt>
-
-        <evt name="spiral_anim_config_changed" id="14">
-            <comment
-                title="Spiral animation configuration changed"
-                desc="Spiral animation configuration changed.\n
-                This event is only valid when AnimRun type is spiral"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed is used
-            </arg>
-            <arg name="speed" type="float">
-                The speed of the anim in m/s
-            </arg>
-            <arg name="revolution_nb_is_default" type="u8">
-                0 if the number of revolution is set by user, 1 if default revolution nb is used
-            </arg>
-            <arg name="revolution_nb" type="float">
-                The number of revolution (in turn)
-                Negative value is infinite
-            </arg>
-            <arg name="vertical_distance_is_default" type="u8">
-                0 if the vertical distance is set by user, 1 if default value is used
-            </arg>
-            <arg name="vertical_distance" type="float">
-                Distance that will be made by the product to reach the top of the spiral in m
-            </arg>
-        </evt>
-
-        <evt name="swing_anim_config_changed" id="15">
-            <comment
-                title="Swing animation configuration changed"
-                desc="Swing animation configuration changed.\n
-                This event is only valid when AnimRun type is swing"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed is used
-            </arg>
-            <arg name="speed" type="float">
-                The speed of the anim in m/s
-            </arg>
-            <arg name="vertical_distance_is_default" type="u8">
-                0 if the vertical distance is set by user, 1 if default value is used
-            </arg>
-            <arg name="vertical_distance" type="float">
-                Distance that will be made by the product to reach the top of the swing in m
-            </arg>
-        </evt>
-
-        <evt name="boomerang_anim_config_changed" id="16">
-            <comment
-                title="Boomerang animation configuration changed"
-                desc="Boomerang animation configuration changed.\n
-                This event is only valid when AnimRun type is boomerang"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed is used
-            </arg>
-            <arg name="speed" type="float">
-                The speed of the anim in m/s
-            </arg>
-            <arg name="distance_is_default" type="u8">
-                0 if the distance is set by user, 1 if default value is used
-            </arg>
-            <arg name="distance" type="float">
-                Distance that will be made by the product to reach its return point in m
-            </arg>
-        </evt>
-
-        <evt name="candle_anim_config_changed" id="17">
-            <comment
-                title="Candle animation configuration changed"
-                desc="Candle animation configuration changed.\n
-                This event is only valid when AnimRun type is candle"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed is used
-            </arg>
-            <arg name="speed" type="float">
-                The speed of the anim in m/s
-            </arg>
-            <arg name="vertical_distance_is_default" type="u8">
-                0 if the vertical distance is set by user, 1 if default value is used
-            </arg>
-            <arg name="vertical_distance" type="float">
-                Distance that will be made by the product to reach the top of the vertical zoom-out in m
-            </arg>
-        </evt>
-
-        <evt name="dolly_slide_anim_config_changed" id="18">
+        <evt name="dolly_slide_anim_config" id="21">
             <comment
                 title="DollySlide animation configuration changed"
                 desc="DollySlide animation configuration changed.\n
-                This event is only valid when AnimRun type is dolly_slide"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="speed_is_default" type="u8">
-                0 if speed is set by user, 1 if default speed is used
-            </arg>
+                This should only be taken in account if arg animation in [state](#134-3) is equal to dolly_slide"
+                triggered="by a [start dolly slide animation](#134-17)."/>
+            <arg name="use_default" type="bitfield:u8:dolly_slide_configure_param"/>
             <arg name="speed" type="float">
                 The speed of the anim in m/s
             </arg>
-            <arg name="angle_is_default" type="u8">
-                0 if the angle is set by user, 1 if default value is used
-            </arg>
             <arg name="angle" type="float">
                 Angle Product-User-Target in rad
-            </arg>
-            <arg name="horizontal_distance_is_default" type="u8">
-                0 if the horizontal distance is set by user, 1 if default value is used
             </arg>
             <arg name="horizontal_distance" type="float">
                 Distance that will be made by the product to reach its target in m
             </arg>
         </evt>
 
-        <cmd name="user_framing_position" id="19">
+        <cmd name="target_framing_position" id="22">
             <comment
-                title="User desired framing in the video"
-                desc="User desired framing in the video."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
+                title="Target desired framing in the video"
+                desc="Target desired framing in the video."
+                result="Event [target framing position](#134-20) is triggered."/>
             <arg name="horizontal" type="i8">
                 Horizontal position in the video (in %, from left to right)
             </arg>
@@ -565,10 +598,10 @@
             </arg>
         </cmd>
 
-        <evt name="user_framing_position_changed" id="20">
+        <evt name="target_framing_position_changed" id="23">
             <comment
-                title="User desired framing in the video changed"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
+                title="Target desired framing in the video changed"
+                triggered="by [set target framing](#134-19)."/>
             <arg name="horizontal" type="i8">
                 Horizontal position in the video (in %, from left to right)
             </arg>
@@ -577,73 +610,23 @@
             </arg>
         </evt>
 
-        <cmd name="user_GPS_data" id="21">
-            <comment
-                title="User gps data"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-             <arg name="latitude" type="double">
-                Latitude of the user (in deg)
-            </arg>
-
-            <arg name="longitude" type="double">
-                Longitude of the user (in deg)
-            </arg>
-
-            <arg name="altitude" type="float">
-                Altitude of the user (in meters, according to sea level)
-            </arg>
-
-            <arg name="horizontal_accuracy" type="float">
-                Horizontal accuracy (in meter)
-            </arg>
-
-            <arg name="vertical_accuracy" type="float">
-                Vertical accuracy (in meter)
-            </arg>
-            <arg name="north_speed" type="float">
-                North speed (in meter per second)
-            </arg>
-
-            <arg name="east_speed" type="float">
-                East speed (in meter per second)
-            </arg>
-
-            <arg name="down_speed" type="float">
-                Vertical speed (in meter per second) (down is positive)
-            </arg>
-            <arg name="timestamp" type="double">
-                Timestamp of the gps data
-            </arg>
-        </cmd>
-
-        <cmd name="user_baro_data" id="22">
-            <comment
-                title="User barometer data"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="pressure" type="float">
-                Atmospheric pressure in hPa (millibar)
-            </arg>
-            <arg name="timestamp" type="double">
-                Timestamp of the barometer data
-            </arg>
-        </cmd>
-
-        <cmd name="lynx_detection" id="23">
+        <cmd name="target_image_detection" id="24">
             <comment
                 title="Send vision detection results"
                 desc="Send vision detection results."
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
-            <arg name="target_pan" type="float">
-                Pan angle of detected target in radian
+                result="If drone is in FollowMe, is will look at the target according to\n
+                the chosen [framing position](#134-20)."/>
+            <arg name="target_azimuth" type="float">
+                Horizontal north-drone-target angle in radian
             </arg>
-            <arg name="target_tilt" type="float">
-                Tilt angle of detected target in radian
+            <arg name="target_elevation" type="float">
+                Vertical angle horizon-drone-target in radian
             </arg>
             <arg name="change_of_scale" type="float">
-                Target's change of scale : new width = (1+ changOfScale) * old width
+                Normalized relative radial speed in 1/second
             </arg>
             <arg name="confidence_index" type="u8">
-                Confidence index of the Lynx detection (from 0 to 255, the highest is the best)
+                Confidence index of the detection (from 0 to 255, the highest is the best)
             </arg>
             <arg name="is_new_selection" type="u8">
                 Boolean. 1 if the selection is new, 0 otherwise
@@ -652,5 +635,11 @@
                 Acquisition time of processed picture in millisecond
             </arg>
         </cmd>
+        <evt name="target_image_detection_state" id="25">
+            <comment
+                title="State of the image detection"
+                triggered="By a possible wrong [target image detection](#134-24)."/>
+            <arg name="state" type="enum:image_detection_status"/>
+        </evt>
     </msgs>
 </feature>
