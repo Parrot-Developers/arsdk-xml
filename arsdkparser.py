@@ -442,6 +442,10 @@ def _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj):
             msgId = int(msgNode.getAttribute("id"))
             msgDoc = _get_node_content(msgNode).strip()
 
+            if msgId < _MIN_CMD_ID or msgId > _MAX_CMD_ID:
+                raise ArParserError("%s: Invalid msg id %d" % (
+                        filePath, msgId))
+
             # Check msg name
             if msgName in featureObj.getMsgsByName():
                 raise ArParserError("%s: Duplicate message name '%s'" % (
@@ -533,14 +537,11 @@ def _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj):
 #===============================================================================
 #===============================================================================
 def _parse_class_node(filePath, classNode, classObj):
-    nextId = 0
     for cmdNode in classNode.getElementsByTagName("cmd"):
         cmdName = cmdNode.getAttribute("name")
+        cmdId = int(cmdNode.getAttribute("id"))
         cmdDoc = _get_node_content(cmdNode).strip()
 
-        # Generate Id
-        cmdId = nextId
-        nextId += 1
         if cmdId < _MIN_CMD_ID or cmdId > _MAX_CMD_ID:
             raise ArParserError("%s: Invalid cmd id %d" % (
                     filePath, cmdId))
