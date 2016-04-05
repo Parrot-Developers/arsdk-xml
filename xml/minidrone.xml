@@ -584,4 +584,138 @@
             </arg>
         </cmd>
     </class>
+    <class name="UsbAccessoryState" id="15">
+        USB Accessories state commands.
+        <cmd name="LightState" id="0" type="MAP_ITEM">
+            USB Light accessory state cmd.
+            <arg name="id" type="u8">
+                Usb accessory id
+            </arg>
+            <arg name="state" type="enum">
+                Usb Light state.
+                <enum name="FIXED">
+                    Fixed state at given intensity.
+                </enum>
+                <enum name="BLINKED">
+                    Blinked state.
+                </enum>
+                <enum name="OSCILLATED">
+                    Oscillated state.
+                </enum>
+            </arg>
+            <arg name="intensity" type="u8">
+                Light intensity from 0 (OFF) to 100 (Max intensity).
+                Only used in FIXED state.
+            </arg>
+            <arg name="list_flags" type="u8">
+                List entry attribute Bitfield.
+                0x01: First: indicate it's the first element of the list.
+                0x02: Last:  indicate it's the last element of the list.
+                0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+                0x08: Remove: This value should be removed from the existing list.
+            </arg>
+        </cmd>
+        <cmd name="ClawState" id="1" type="MAP_ITEM">
+            USB Claw accessory state cmd.
+            <arg name="id" type="u8">
+                Usb accessory id
+            </arg>
+            <arg name="state" type="enum">
+                Usb Claw state.
+                <enum name="OPENED">
+                    Claw is fully opened.
+                </enum>
+                <enum name="OPENING">
+                    Claw open in progress.
+                </enum>
+                <enum name="CLOSED">
+                    Claw is fully closed.
+                </enum>
+                <enum name="CLOSING">
+                    Claw close in progress.
+                </enum>
+            </arg>
+            <arg name="list_flags" type="u8">
+                List entry attribute Bitfield.
+                0x01: First: indicate it's the first element of the list.
+                0x02: Last:  indicate it's the last element of the list.
+                0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+                0x08: Remove: This value should be removed from the existing list.
+            </arg>
+        </cmd>
+        <cmd name="GunState" id="2" type="MAP_ITEM">
+            USB Gun accessory state cmd.
+            <arg name="id" type="u8">
+                Usb accessory id.
+            </arg>
+            <arg name="state" type="enum">
+                USB Claw state.
+                <enum name="READY">
+                    Gun is ready to fire.
+                </enum>
+                <enum name="BUSY">
+                    Gun is busy (ie not ready to fire).
+                </enum>
+            </arg>
+            <arg name="list_flags" type="u8">
+                List entry attribute Bitfield.
+                0x01: First: indicate it's the first element of the list.
+                0x02: Last:  indicate it's the last element of the list.
+                0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+                0x08: Remove: This value should be removed from the existing list.
+            </arg>
+        </cmd>
+    </class>
+    <class name="UsbAccessory" id="16">
+       USB Accessories control commands.
+       <cmd name="LightControl" id="0">
+            USB Light control cmd.
+            <arg name="id" type="u8">
+                Usb accessory id
+            </arg>
+            <arg name="mode" type="enum">
+                Usb Light mode.
+                <enum name="FIXED">
+                    Turn light in fixed state at a given intensity.
+                </enum>
+                <enum name="BLINKED">
+                    Turn light in blinked state.
+                </enum>
+                <enum name="OSCILLATED">
+                    Turn light in oscillated state.
+                </enum>
+            </arg>
+            <arg name="intensity" type="u8">
+                Light intensity from 0 (OFF) to 100 (Max intensity).
+                Only used in FIXED mode.
+            </arg>
+        </cmd>
+        <cmd name="ClawControl" id="1">
+            USB Claw control cmd.
+            <arg name="id" type="u8">
+                Usb accessory id.
+            </arg>
+            <arg name="action" type="enum">
+                USB Claw action.
+                <enum name="OPEN">
+                    Open Claw.
+                </enum>
+                <enum name="CLOSE">
+                    Close Claw.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="GunControl" id="2">
+            USB Gun control cmd.
+            <arg name="id" type="u8">
+                Usb accessory id
+            </arg>
+            <arg name="action" type="enum">
+                USB Gun action.
+                <enum name="FIRE">
+                    Fire.
+                </enum>
+            </arg>
+        </cmd>
+    </class>
 </project>
