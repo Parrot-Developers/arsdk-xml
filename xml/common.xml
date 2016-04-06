@@ -1019,6 +1019,9 @@
                 <enum name="HYDROFOIL">
                     Hydrofoil
                 </enum>
+                <enum name="IN_PROGRESS">
+                    Configuration in progress.
+                </enum>
             </arg>
             <arg name="error" type="enum">
                 Error code.
