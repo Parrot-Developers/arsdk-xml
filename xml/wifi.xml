@@ -79,13 +79,13 @@
             </value>
         </enum>
 
-        <enum name="environement">
-            Type of environement
+        <enum name="environment">
+            Type of environment
             <value name="indoor">
-                indoor environement
+                indoor environment
             </value>
             <value name="outdoor">
-                outdoor environement
+                outdoor environment
             </value>
         </enum>
 
@@ -159,7 +159,7 @@
             <arg name="channel" type="u8">
                 The channel number
             </arg>
-            <arg name="environement" type="bitfield:u8:environement"/>
+            <arg name="environment" type="bitfield:u8:environment"/>
             <arg name="list_flags" type="bitfield:u8:list_flags"/>
             <!-- implicit
             <arg name="list_flags" type="u8">
@@ -245,22 +245,22 @@
             </arg>
         </evt>
 
-        <cmd name="set_environement" id="11">
+        <cmd name="set_environment" id="11">
             <comment
                 title="Set indoor/outdoor wifi settings"
                 desc="Set indoor or outdoor wifi settings."
                 support="0901;0902;0904;0905;0906;090c"
                 result="The product change its indoor/outdoor wifi settings.\nThen, it will trigger [OutdoorChanged](#133-12).\nAccording to the country (defined by [SetAutoCountry](#wifi-AutoCountry) or [SetCountry](#wifi-Country)) laws the drone might change its wifi band and channel. So a disconnection might appear."/>
-            <arg name="environement" type="enum:environement"/>
+            <arg name="environment" type="enum:environment"/>
         </cmd>
 
-        <evt name="environement_changed" id="12">
+        <evt name="environment_changed" id="12">
             <comment
                 title="Outdoor setting changed"
                 desc="Status of the wifi config : either indoor or outdoor."
                 support="0901;0902;0904;0905;0906;090c"
                 triggered="Triggered by [SetOutdoor](#133-11)."/>
-            <arg name="environement" type="enum:environement">
+            <arg name="environment" type="enum:environment">
                 1 if it uses outdoor wifi settings, 0 otherwise
             </arg>
         </evt>
