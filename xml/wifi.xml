@@ -40,10 +40,10 @@
      <enums>
         <enum name="band">
             The band : 2.4 Ghz or 5 Ghz
-            <value name="2_4ghz">
+            <value name="2_4_ghz">
                 2.4 GHz band
             </value>
-            <value name="5ghz">
+            <value name="5_ghz">
                 5 GHz band
             </value>
         </enum>
