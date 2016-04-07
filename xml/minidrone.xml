@@ -718,4 +718,13 @@
             </arg>
         </cmd>
     </class>
+    <class name="MassStorageMediaState" id="17">
+        Mass storage media related commands.
+        <cmd name="NbPhotosChanged" id="0">
+            Mass storage number of photos.
+            <arg name="nb_photos" type="u16">
+                Number of photos
+            </arg>
+        </cmd>
+    </class>
 </project>
