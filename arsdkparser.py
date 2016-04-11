@@ -197,6 +197,7 @@ class ArFeature(object):
                                 cmd.name[0].upper()+cmd.name[1:]+'_' +\
                                 arg.name[0].upper()+arg.name[1:]
                         enumObj = ArEnum(enumName, arg.doc)
+                        enumObj.msg = msgObj
                         for val in arg.enums:
                             eValObj = ArEnumValue(val.name, val.value, val.doc)
                             enumObj.values.append(eValObj)
@@ -246,7 +247,7 @@ class ArMsg(object):
         self.mapKey = None
         self.args = []
         self.argsByName = {}
-        self.cls = None #only for project convertion
+        self.cls = None #only for project conversion
 
     def __repr__(self):
         return ("{name='%s', cmdId=%d, doc='%s', listType='%s', "
@@ -345,6 +346,7 @@ class ArEnum(object):
         self.values = []
         self.valuesByName = {}
         self.usedLikeBitfield = False
+        self.msg = None #only for project conversion
 
     def getMaxBitfieldVal(self):
         return 2 ** max(self.values).value
