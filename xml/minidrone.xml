@@ -390,6 +390,12 @@
                 Current tilt max in degree
             </arg>
         </cmd>
+        <cmd name="PlaneModePitch" id="2">
+            Set plane mode pitch (only available for wing x)
+            <arg name="current" type="float">
+                Current plane mode pitch in degree
+            </arg>
+        </cmd>
     </class>
 
     <class name="PilotingSettingsState" id="9">
@@ -418,6 +424,18 @@
                 Range max of tilt
             </arg>
         </cmd>
+        <cmd name="PlaneModePitchChanged" id="2">
+            Plane mode pitch sent by product (only available for wing x)
+            <arg name="current" type="float">
+                Current plane mode pitch in degree
+            </arg>
+            <arg name="min" type="float">
+                Range min of plane mode pitch in degree
+            </arg>
+            <arg name="max" type="float">
+                Range max of plane mode pitch in degree
+            </arg>
+        </cmd>
     </class>
 
     <class name="SpeedSettings" id="1">
@@ -444,6 +462,12 @@
             Set Max Horizontal speed (only used in case where PilotingSettings_MaxTilt is not used like in hydrofoil mode)
             <arg name="current" type="float">
                 Current max Horizontal speed in m/s
+            </arg>
+        </cmd>
+        <cmd name="MaxPlaneModeRotationSpeed" id="4">
+            Set max plane mode rotation speed (only available for wing x)
+            <arg name="current" type="float">
+                Current max plane mode rotation speed in degree/s
             </arg>
         </cmd>
     </class>
@@ -490,6 +514,18 @@
             </arg>
             <arg name="max" type="float">
                 Range max of horizontal speed
+            </arg>
+        </cmd>
+        <cmd name="MaxPlaneModeRotationSpeedChanged" id="4">
+            Max plane rotation speed sent by product (only available for wing x)
+            <arg name="current" type="float">
+                Current max plane mode rotation speed in degree/s
+            </arg>
+            <arg name="min" type="float">
+                Range min of plane mode rotation speed
+            </arg>
+            <arg name="max" type="float">
+                Range max of plane mode rotation speed
             </arg>
         </cmd>
     </class>
