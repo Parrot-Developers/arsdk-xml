@@ -82,7 +82,7 @@ $$(foreach __f,$$(arsdkgen_gen_files), \
 # the same xml the move ensure atomicity of the copy.
 $$(arsdkgen_done_file): $(addprefix $(HOST_OUT_STAGING)/usr/lib/arsdkgen/,$(arsdkgen_files))
 $$(arsdkgen_done_file): PRIVATE_OUT_DIR := $$(arsdkgen_out_dir)
-$$(arsdkgen_done_file):
+$$(arsdkgen_done_file): .FORCE
 	@echo "$$(PRIVATE_MODULE): Generating arsdk files"
 	$(Q) $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
 		-o $$(PRIVATE_OUT_DIR) $1
@@ -101,4 +101,3 @@ endef
 
 # Register the macro in alchemy
 $(call local-register-custom-macro,arsdkgen-macro)
-

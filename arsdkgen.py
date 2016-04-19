@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, stat, logging
+import sys, os, stat, logging, tempfile, filecmp, shutil
 import optparse
 import arsdkparser
 #===============================================================================
@@ -71,7 +71,22 @@ def main():
 	if options.listFiles:
 		generator.list_files(ctx, options.outdir)
 	else:
-		generator.generate_files(ctx, options.outdir)
+		# Generate in tmp folder.
+		tmp_dir = tempfile.mkdtemp()
+		generator.generate_files(ctx, tmp_dir)
+		# Copy in outdir all files different in tmp_dir and in outdir.
+		for path, subdirs, files in os.walk(tmp_dir):
+			for name in files:
+				f_tmp = os.path.join(path, name)
+				f_cp = f_tmp.replace(tmp_dir, options.outdir)
+				if not os.path.isfile(f_cp) or \
+						filecmp.cmp(f_tmp, f_cp) == False:
+					if not os.path.exists(os.path.dirname(f_cp)):
+						os.makedirs(os.path.dirname(f_cp))
+					logging.info('Copy: ' + f_tmp + " => " + f_cp)
+					shutil.copy(f_tmp, f_cp)
+		# Remove tmp_dir
+		shutil.rmtree(tmp_dir)
 
 #===============================================================================
 # Setup option parser and parse command line.
