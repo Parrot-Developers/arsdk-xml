@@ -80,6 +80,7 @@ $$(foreach __f,$$(arsdkgen_gen_files), \
 # Actual generation rule
 # The copy of xml is staging is done in 2 steps because several modules could use
 # the same xml the move ensure atomicity of the copy.
+$$(arsdkgen_done_file): $(addprefix $(HOST_OUT_STAGING)/usr/lib/arsdkgen/,$(arsdkgen_files))
 $$(arsdkgen_done_file): PRIVATE_OUT_DIR := $$(arsdkgen_out_dir)
 $$(arsdkgen_done_file):
 	@echo "$$(PRIVATE_MODULE): Generating arsdk files"
