@@ -50,6 +50,7 @@ arsdkgen-macro-path := $(LOCAL_PATH)
 # $1: generator filepath
 # $2: output directory (Relative to build directory unless an absolute path is
 #     given (ex LOCAL_PATH).
+# $3: extra parameter passed to the generator.
 define arsdkgen-macro
 
 # Setup some internal variables
@@ -59,10 +60,10 @@ arsdkgen_out_dir := $(if $(call is-path-absolute,$2),$2,$$(arsdkgen_module_build
 arsdkgen_done_file := $$(arsdkgen_module_build_dir)/$(LOCAL_MODULE)-arsdkgen.done
 $(if $(wildcard $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py), \
 	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
-		-f -o $$(arsdkgen_out_dir) $1)
+		-f -o $$(arsdkgen_out_dir) $1 $3)
 	, \
 	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/arsdkgen.py \
-		-f -o $$(arsdkgen_out_dir) $1)
+		-f -o $$(arsdkgen_out_dir) $1 $3)
 )
 
 # Create a dependency between generated files and .done file with an empty
@@ -85,7 +86,7 @@ $$(arsdkgen_done_file): PRIVATE_OUT_DIR := $$(arsdkgen_out_dir)
 $$(arsdkgen_done_file): .FORCE
 	@echo "$$(PRIVATE_MODULE): Generating arsdk files"
 	$(Q) $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
-		-o $$(PRIVATE_OUT_DIR) $1
+		-o $$(PRIVATE_OUT_DIR) $1 $3
 	@mkdir -p $$(dir $$@)
 	@touch $$@
 
