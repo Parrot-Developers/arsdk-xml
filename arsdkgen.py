@@ -39,6 +39,7 @@ def main():
 	(options, args) = parseArgs()
 	setupLog(options)
 	generator_filepath = args[0]
+	extra = args[1] if len(args) > 1 else None
 
 	# Setup full path of output directories
 	options.outdir = os.path.abspath(options.outdir)
@@ -69,11 +70,11 @@ def main():
 
 	# Call generator
 	if options.listFiles:
-		generator.list_files(ctx, options.outdir)
+		generator.list_files(ctx, options.outdir, extra)
 	else:
 		# Generate in tmp folder.
 		tmp_dir = tempfile.mkdtemp()
-		generator.generate_files(ctx, tmp_dir)
+		generator.generate_files(ctx, tmp_dir, extra)
 		# Copy in outdir all files different in tmp_dir and in outdir.
 		for path, subdirs, files in os.walk(tmp_dir):
 			for name in files:
@@ -93,7 +94,7 @@ def main():
 #===============================================================================
 def parseArgs():
 	# Setup parser
-	usage = "usage: %prog [options] <generator>"
+	usage = "usage: %prog [options] <generator> [extra]"
 	parser = optparse.OptionParser(usage = usage)
 
 	# Main options
