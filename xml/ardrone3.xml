@@ -1490,6 +1490,33 @@
                 </enum>
             </arg>
         </cmd>
+        <cmd name="VideoRecordingMode" id="7">
+            Set Video recording mode
+            <arg name="mode" type="enum">
+                Video recording mode
+                <enum name="quality">
+                    Maximize recording quality.
+                </enum>
+                <enum name="time">
+                    Maximize recording time.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="VideoFramerate" id="8">
+            Set Video framerate
+            <arg name="framerate" type="enum">
+                Video framerate
+                <enum name="24_FPS">
+                    23.976 frames per second.
+                </enum>
+                <enum name="25_FPS">
+                      25 frames per second.
+                </enum>
+                <enum name="30_FPS">
+                      29.97 frames per second.
+                </enum>
+            </arg>
+        </cmd>
     </class>
     <class name="PictureSettingsState" id="20">
         Photo settings state from product
@@ -1595,6 +1622,33 @@
                 </enum>
                 <enum name="none">
                     Video follows drone angles
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="VideoRecordingModeChanged" id="7">
+            Video recording mode
+            <arg name="mode" type="enum">
+                Video recording mode
+                <enum name="quality">
+                    Maximize recording quality.
+                </enum>
+                <enum name="time">
+                    Maximize recording time.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="VideoFramerateChanged" id="8">
+            Video framerate
+            <arg name="framerate" type="enum">
+                Video framerate
+                <enum name="24_FPS">
+                    23.976 frames per second.
+                </enum>
+                <enum name="25_FPS">
+                      25 frames per second.
+                </enum>
+                <enum name="30_FPS">
+                      29.97 frames per second.
                 </enum>
             </arg>
         </cmd>
