@@ -58,11 +58,11 @@ arsdkgen_generator_path := $1
 arsdkgen_module_build_dir := $(call local-get-build-dir)
 arsdkgen_out_dir := $(if $(call is-path-absolute,$2),$2,$$(arsdkgen_module_build_dir)/$2)
 arsdkgen_done_file := $$(arsdkgen_module_build_dir)/$(LOCAL_MODULE)-arsdkgen.done
-$(if $(wildcard $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py), \
-	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
+$(if $(wildcard $(arsdkgen-macro-path)/arsdkgen.py), \
+	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/arsdkgen.py \
 		-f -o $$(arsdkgen_out_dir) $1 $3)
 	, \
-	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/arsdkgen.py \
+	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
 		-f -o $$(arsdkgen_out_dir) $1 $3)
 )
 
