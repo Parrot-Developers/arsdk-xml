@@ -785,6 +785,18 @@
                 <enum name="BOOST">
                     Boost animation.
                 </enum>
+                <enum name="LOOPING">
+                    Make a looping. (Only for WingX)
+                </enum>
+                <enum name="BARREL_ROLL_180_RIGHT">
+                    Make a barrel roll of 180 degree turning on right. (Only for WingX)
+                </enum>
+                <enum name="BARREL_ROLL_180_LEFT">
+                    Make a barrel roll of 180 degree turning on left. (Only for WingX)
+                </enum>
+                <enum name="BACKSWAP">
+                    Put the drone upside down. (Only for WingX)
+                </enum>
             </arg>
         </cmd>
 
@@ -830,6 +842,18 @@
                 </enum>
                 <enum name="BOOST">
                     Boost animation.
+                </enum>
+                <enum name="LOOPING">
+                    Make a looping. (Only for WingX)
+                </enum>
+                <enum name="BARREL_ROLL_180_RIGHT">
+                    Make a barrel roll of 180 degree turning on right. (Only for WingX)
+                </enum>
+                <enum name="BARREL_ROLL_180_LEFT">
+                    Make a barrel roll of 180 degree turning on left. (Only for WingX)
+                </enum>
+                <enum name="BACKSWAP">
+                    Put the drone upside down. (Only for WingX)
                 </enum>
             </arg>
         </cmd>
@@ -884,6 +908,18 @@
                 </enum>
                 <enum name="BOOST">
                     Boost animation.
+                </enum>
+                <enum name="LOOPING">
+                    Make a looping. (Only for WingX)
+                </enum>
+                <enum name="BARREL_ROLL_180_RIGHT">
+                    Make a barrel roll of 180 degree turning on right. (Only for WingX)
+                </enum>
+                <enum name="BARREL_ROLL_180_LEFT">
+                    Make a barrel roll of 180 degree turning on left. (Only for WingX)
+                </enum>
+                <enum name="BACKSWAP">
+                    Put the drone upside down. (Only for WingX)
                 </enum>
             </arg>
 
