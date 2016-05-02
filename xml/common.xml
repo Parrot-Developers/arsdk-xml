@@ -380,6 +380,24 @@
                 Following of country code with ISO 3166 format, separated by ";". Be careful of the command size allowed by the network used. If necessary, split the list in several commands.
             </arg>
         </cmd>
+        <cmd name="MassStorageContentChanged" id="11" type="MAP_ITEM">
+            Notify the device of a change in mass storage content
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id (unique)
+            </arg>
+            <arg name="nbPhotos" type="u16">
+                Number of photos
+            </arg>
+            <arg name="nbVideos" type="u16">
+                Number of videos
+            </arg>
+            <arg name="nbPuds" type="u16">
+                Number of puds
+            </arg>
+            <arg name="nbCrashLogs" type="u16">
+                Number of crash logs
+            </arg>
+        </cmd>
     </class>
 
     <class name="OverHeat" id="6">
