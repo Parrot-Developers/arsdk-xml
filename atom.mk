@@ -63,7 +63,7 @@ $(if $(wildcard $(arsdkgen-macro-path)/arsdkgen.py), \
 	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/$$(arsdkgen_python) \
 		-f -o $$(arsdkgen_out_dir) $1 $3)
 	, \
-	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/$$(arsdkgen_python) \
+	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/arsdkgen/$$(arsdkgen_python) \
 		-f -o $$(arsdkgen_out_dir) $1 $3)
 )
 
