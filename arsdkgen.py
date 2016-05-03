@@ -44,8 +44,9 @@ def main():
 	# Setup full path of output directories
 	options.outdir = os.path.abspath(options.outdir)
 
-	logging.info("Generator: %s", generator_filepath)
-	logging.info("Output dir: %s", options.outdir)
+	logging.info("arsdkgen: cmd=%s generator=%s, outdir=%s",
+		"list" if options.listFiles else "generate",
+		generator_filepath, options.outdir)
 	if not options.listFiles and not os.path.exists(options.outdir):
 		os.makedirs(options.outdir, 0755)
 
