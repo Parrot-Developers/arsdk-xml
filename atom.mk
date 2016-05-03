@@ -54,15 +54,16 @@ arsdkgen-macro-path := $(LOCAL_PATH)
 define arsdkgen-macro
 
 # Setup some internal variables
+arsdkgen_python := arsdkgen.py $(if $(call streq,$(V),1),-v)
 arsdkgen_generator_path := $1
 arsdkgen_module_build_dir := $(call local-get-build-dir)
 arsdkgen_out_dir := $(if $(call is-path-absolute,$2),$2,$$(arsdkgen_module_build_dir)/$2)
 arsdkgen_done_file := $$(arsdkgen_module_build_dir)/$(LOCAL_MODULE)-arsdkgen.done
 $(if $(wildcard $(arsdkgen-macro-path)/arsdkgen.py), \
-	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/arsdkgen.py \
+	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/$$(arsdkgen_python) \
 		-f -o $$(arsdkgen_out_dir) $1 $3)
 	, \
-	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
+	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/$$(arsdkgen_python) \
 		-f -o $$(arsdkgen_out_dir) $1 $3)
 )
 
@@ -85,7 +86,7 @@ $$(arsdkgen_done_file): $(addprefix $(HOST_OUT_STAGING)/usr/lib/arsdkgen/,$(arsd
 $$(arsdkgen_done_file): PRIVATE_OUT_DIR := $$(arsdkgen_out_dir)
 $$(arsdkgen_done_file): .FORCE
 	@echo "$$(PRIVATE_MODULE): Generating arsdk files"
-	$(Q) $(HOST_OUT_STAGING)/usr/lib/arsdkgen/arsdkgen.py \
+	$(Q) $(HOST_OUT_STAGING)/usr/lib/arsdkgen/$$(arsdkgen_python) \
 		-o $$(PRIVATE_OUT_DIR) $1 $3
 	@mkdir -p $$(dir $$@)
 	@touch $$@
