@@ -281,6 +281,16 @@
             </enum>
           </arg>
         </cmd>
+
+        <cmd name="ProductVersionChanged" id="4">
+            Product versions
+            <arg name="software" type="string">
+                Product software version
+            </arg>
+            <arg name="hardware" type="string">
+                Product hardware version
+            </arg>
+        </cmd>
     </class>
 
     <class name="Common" id="6">
