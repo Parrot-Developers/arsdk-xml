@@ -191,11 +191,11 @@
 
     <enum name="button_event">
       Button event
-      <value name="press">
-	button pressed
-      </value>
       <value name="release">
 	button released
+      </value>
+      <value name="press">
+	button pressed
       </value>
     </enum>
 
