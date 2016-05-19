@@ -312,7 +312,8 @@
         <cmd name="BatteryChanged" id="0">
             State sent when SkyController battery has changed
             <arg name="percent" type="u8">
-                SkyController battery
+                SkyController battery: from 0 to 100 (full charge)
+                value of 255 when charging.
             </arg>
         </cmd>
 
