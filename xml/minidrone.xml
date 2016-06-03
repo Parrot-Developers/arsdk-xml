@@ -754,4 +754,21 @@
             </arg>
         </cmd>
     </class>
+    <class name="Connection" id="17">
+        Connection commands.
+        <cmd name="ConnectToController" id="0">
+            Direct connection to a specified mac address of a remote controller.
+			Where mac address: MSB-MID-LSB.
+			This will produce a disconnection from the currently connected controller
+            <arg name="msb_mac" type="u16">
+                2 bytes of mac address
+            </arg>
+            <arg name="mid_mac" type="u16">
+                2 bytes of mac address
+            </arg>
+            <arg name="lsb_mac" type="u16">
+                2 bytes of mac address
+            </arg>
+        </cmd>
+    </class>
 </project>
