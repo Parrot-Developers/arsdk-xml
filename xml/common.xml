@@ -500,6 +500,9 @@
                 <enum name="paused">
                     Mavlink file is paused
                 </enum>
+                <enum name="loaded">
+                    Mavlink file is loaded (it will be played at take-off)
+                </enum>
              </arg>
              <arg name="filepath" type="string">
                  flight plan file path from the mavlink ftp root
