@@ -206,7 +206,7 @@
     <class name="Camera" id="1">
         Ask the drone to move camera
 
-        <cmd name="Orientation" id="0">
+        <cmd name="Orientation" id="0" buffer="NON_ACK">
             Ask the drone to move camera.
 
             <arg name="tilt" type="i8">
