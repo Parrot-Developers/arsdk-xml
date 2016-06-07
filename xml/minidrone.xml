@@ -754,20 +754,20 @@
             </arg>
         </cmd>
     </class>
-    <class name="Connection" id="17">
-        Connection commands.
-        <cmd name="ConnectToController" id="0">
-            Direct connection to a specified mac address of a remote controller.
+    <class name="RemoteController" id="17">
+        Remote controller related commands.
+        <cmd name="SetPairedRemote" id="0">
+            Send the address of the remote controller on which the drone should be paired
+            This is used to pair a Tinos controller
 			Where mac address: MSB-MID-LSB.
-			This will produce a disconnection from the currently connected controller
             <arg name="msb_mac" type="u16">
-                2 bytes of mac address
+                2 most significant bytes of mac address
             </arg>
             <arg name="mid_mac" type="u16">
-                2 bytes of mac address
+                2 middle bytes of mac address
             </arg>
             <arg name="lsb_mac" type="u16">
-                2 bytes of mac address
+                2 least significant bytes of mac address
             </arg>
         </cmd>
     </class>
