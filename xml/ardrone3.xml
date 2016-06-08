@@ -491,6 +491,9 @@
                 <enum name="usertakeoff">
                     User take off state. Waiting for user action to take off.
                 </enum>
+                <enum name="motor_ramping">
+                    Motor ramping state (for fixed wings).
+                </enum>
             </arg>
         </cmd>
 
