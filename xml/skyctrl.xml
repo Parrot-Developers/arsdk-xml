@@ -324,22 +324,44 @@
             </arg>
         </cmd>
 
-		<cmd name="GpsPositionChanged" id="2">
-		  State sent when the SkyController gps position has changed
-		  <arg name="latitude" type="double">
-			SkyController latitude (500. if not available)
-		  </arg>
-		  <arg name="longitude" type="double">
-			SkyController longiture (500. if not available)
-		  </arg>
-		  <arg name="altitude" type="double">
-			Altitude (in meters) above sea level
-			Only meaningful if latitude and longiture are available
-		  </arg>
-		  <arg name="heading" type="float">
-			SkyController heading relative to magnetic north (500.f if not available)
-		  </arg>
-		</cmd>
+	<cmd name="GpsPositionChanged" id="2">
+	  State sent when the SkyController gps position has changed
+	  <arg name="latitude" type="double">
+	    SkyController latitude (500. if not available)
+	  </arg>
+	  <arg name="longitude" type="double">
+	    SkyController longiture (500. if not available)
+	  </arg>
+	  <arg name="altitude" type="double">
+	    Altitude (in meters) above sea level
+	    Only meaningful if latitude and longiture are available
+	  </arg>
+	  <arg name="heading" type="float">
+	    SkyController heading relative to magnetic north (500.f if not available)
+	  </arg>
+	</cmd>
+
+	<cmd name="BatteryState" id="3">
+	  State of the SkyController 2 battery
+	  <arg name="state" type="enum">
+	    Current battery state
+	    <enum name="charging">
+	      Battery is charging
+	    </enum>
+	    <enum name="charged">
+	      Battery is fully charged
+	    </enum>
+	    <enum name="discharging">
+	      Battery is discharging (normal case when on and unplugged)
+	    </enum>
+	    <enum name="discharging_low">
+	      Battery is low (Can still work for a few minutes)
+	    </enum>
+	    <enum name="discharging_critical">
+	      Battery is critically low (the product will automatically shut down if not plugged)
+	    </enum>
+	  </arg>
+	</cmd>
 
     </class>
 
