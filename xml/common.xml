@@ -636,7 +636,6 @@
                 Running a flightPlan file is available (1 running a flightPlan file is available, otherwise 0)
             </arg>
         </cmd>
-
         <cmd name="ComponentStateListChanged" id="1" type="MAP_ITEM">
             List of state of drone flightPlan components
             <arg name="component" type="enum">
@@ -656,6 +655,13 @@
             </arg>
             <arg name="State" type="u8">
                 State of the FlightPlan component (1 FlightPlan component OK, otherwise 0)
+            </arg>
+        </cmd>
+        <cmd name="LockStateChanged" id="2">
+            Avaibility to stop or pause a playing or loaded flyplan.
+            <arg name="LockState" type="u8">
+                1 if Flyplan is locked: can't pause or stop flyplan.
+                0 if Flyplan is unlocked: pause or stop available.
             </arg>
         </cmd>
     </class>
