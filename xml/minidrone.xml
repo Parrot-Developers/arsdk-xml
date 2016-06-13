@@ -155,6 +155,21 @@
                 </enum>
             </arg>
         </cmd>
+        <cmd name="PlaneGearBox" id="7">
+            Set Plane Gear Box. Only supported by WingX
+            <arg name="state" type="enum">
+                Plane Gear Box
+                <enum name="gear_1">
+                    Gear 1. Low speed
+                </enum>
+                <enum name="gear_2">
+                    Gear 2. Middle speed
+                </enum>
+                <enum name="gear_3">
+                    Gear 3. High speed
+                </enum>
+            </arg>
+        </cmd>
     </class>
 
     <class name="PilotingState" id="3">
@@ -236,6 +251,22 @@
                 </enum>
                 <enum name="plane_backward">
                     Fly as a plane in backward mode
+                </enum>
+            </arg>
+        </cmd>
+
+        <cmd name="PlaneGearBoxChanged" id="5">
+            Plane Gear Box changed. Only supported by WingX
+            <arg name="state" type="enum">
+                Plane Gear Box
+                <enum name="gear_1">
+                    Gear 1. Low speed
+                </enum>
+                <enum name="gear_2">
+                    Gear 2. Middle speed
+                </enum>
+                <enum name="gear_3">
+                    Gear 3. High speed
                 </enum>
             </arg>
         </cmd>
