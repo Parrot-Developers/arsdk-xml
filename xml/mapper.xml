@@ -199,6 +199,25 @@
       </value>
     </enum>
 
+    <enum name="expo_type">
+      Expo type
+      <value name="linear">
+	No expo applied, axis is linear
+      </value>
+      <value name="expo_0">
+	Light exponential curve
+      </value>
+      <value name="expo_1">
+	Medium exponential curve
+      </value>
+      <value name="expo_2">
+	Heavy exponential curve
+      </value>
+      <value name="expo_4">
+	Maximum exponential curve
+      </value>
+    </enum>
+
   </enums>
 
   <msgs>
@@ -356,7 +375,7 @@
 
     <cmd name="reset_mapping" id="11">
       <comment
-	  title="Reset mapping to default values"
+	  title="Reset mapping/expo to default values"
 	  desc="TODO"
 	  support="090f"
 	  result="update of the mapping"/>
@@ -365,5 +384,38 @@
       </arg>
     </cmd>
 
+    <cmd name="set_expo" id="12">
+      <comment
+	  title="Set exponential type for the given axis, for the given product"
+	  desc="TODO"
+	  support="090f"
+	  result="update of the expo map"/>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list). Set to 0 to apply to all products
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number. Set to -1 to apply to all axes.
+      </arg>
+      <arg name="expo" type="enum:expo_type"/>
+    </cmd>
+
+    <cmd name="expo_map_item" id="13" type="MAP_ITEM:uid">
+      <comment
+	  title="Item of the expo map"
+	  desc="TODO"
+	  support="090f"
+	  triggered="Triggered by the set_expo command"/>
+      <arg name="uid" type="u32">
+	Unique ID (for MAP_ITEM type)
+      </arg>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list)
+      </arg>
+      <arg name="axis" type="i32">
+	The axis
+      </arg>
+      <arg name="expo" type="enum:expo_type"/>
+      <arg name="list_flags" type="bitfield:u8:list_flags"/>
+    </cmd>
   </msgs>
 </feature>
