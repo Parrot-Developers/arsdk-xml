@@ -1520,6 +1520,21 @@
                 </enum>
             </arg>
         </cmd>
+        <cmd name="VideoMode" id="9">
+            Set video mode (streaming and recording resolutions)
+            <arg name="mode" type="enum">
+                Video mode
+                <enum name="legacy">
+                    Legacy mode (1080p recording + 360p streaming).
+                </enum>
+                <enum name="priority_recording">
+                    Priority on recording (1080p recording + 480p streaming).
+                </enum>
+                <enum name="priority_streaming">
+                    Priority on streaming (720p recording + 720p streaming).
+                </enum>
+            </arg>
+        </cmd>
     </class>
     <class name="PictureSettingsState" id="20">
         Photo settings state from product
@@ -1652,6 +1667,21 @@
                 </enum>
                 <enum name="30_FPS">
                       29.97 frames per second.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="VideoModeChanged" id="9">
+            Video mode (streaming and recording resolutions)
+            <arg name="mode" type="enum">
+                Video mode
+                <enum name="legacy">
+                    Legacy mode (1080p recording + 360p streaming).
+                </enum>
+                <enum name="priority_recording">
+                    Priority on recording (1080p recording + 480p streaming).
+                </enum>
+                <enum name="priority_streaming">
+                    Priority on streaming (720p recording + 720p streaming).
                 </enum>
             </arg>
         </cmd>
