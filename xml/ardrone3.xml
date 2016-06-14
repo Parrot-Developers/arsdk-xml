@@ -1524,14 +1524,11 @@
             Set video mode (streaming and recording resolutions)
             <arg name="mode" type="enum">
                 Video mode
-                <enum name="legacy">
-                    Legacy mode (1080p recording + 360p streaming).
-                </enum>
                 <enum name="priority_recording">
-                    Priority on recording (1080p recording + 480p streaming).
+                    Priority on recording (1080p recording + best-effort streaming).
                 </enum>
                 <enum name="priority_streaming">
-                    Priority on streaming (720p recording + 720p streaming).
+                    Priority on streaming (720p streaming + best-effort recording).
                 </enum>
             </arg>
         </cmd>
@@ -1674,14 +1671,11 @@
             Video mode (streaming and recording resolutions)
             <arg name="mode" type="enum">
                 Video mode
-                <enum name="legacy">
-                    Legacy mode (1080p recording + 360p streaming).
-                </enum>
                 <enum name="priority_recording">
-                    Priority on recording (1080p recording + 480p streaming).
+                    Priority on recording (1080p recording + best-effort streaming).
                 </enum>
                 <enum name="priority_streaming">
-                    Priority on streaming (720p recording + 720p streaming).
+                    Priority on streaming (720p streaming + best-effort recording).
                 </enum>
             </arg>
         </cmd>
