@@ -362,7 +362,22 @@
 	    </enum>
 	  </arg>
 	</cmd>
-
+	<cmd name="AttitudeChanged" id="4">
+	  SkyController Attitude in north-east-down (NED) coordinate system.
+	  Attitude is provided as a quaternion.
+	  <arg name="q0" type="float">
+	    SkyController Attitude q0 (quaternion scalar part)
+	  </arg>
+	  <arg name="q1" type="float">
+	    SkyController Attitude q1 (quaternion vector part)
+	  </arg>
+	  <arg name="q2" type="float">
+	    SkyController Attitude q2 (quaternion vector part)
+	  </arg>
+	  <arg name="q3" type="float">
+	    SkyController Attitude q3 (quaternion vector part)
+	  </arg>
+	</cmd>
     </class>
 
     <class name="AccessPointSettings" id="9">
