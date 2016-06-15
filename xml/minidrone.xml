@@ -421,12 +421,6 @@
                 Current tilt max in degree
             </arg>
         </cmd>
-        <cmd name="PlaneModePitch" id="2">
-            Set plane mode pitch (only available for wing x)
-            <arg name="current" type="float">
-                Current plane mode pitch in degree
-            </arg>
-        </cmd>
     </class>
 
     <class name="PilotingSettingsState" id="9">
@@ -453,18 +447,6 @@
             </arg>
             <arg name="max" type="float">
                 Range max of tilt
-            </arg>
-        </cmd>
-        <cmd name="PlaneModePitchChanged" id="2">
-            Plane mode pitch sent by product (only available for wing x)
-            <arg name="current" type="float">
-                Current plane mode pitch in degree
-            </arg>
-            <arg name="min" type="float">
-                Range min of plane mode pitch in degree
-            </arg>
-            <arg name="max" type="float">
-                Range max of plane mode pitch in degree
             </arg>
         </cmd>
     </class>
