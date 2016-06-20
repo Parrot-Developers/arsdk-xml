@@ -199,7 +199,7 @@
 			</arg>
 		</evt>
 
-		<evt name="invert_channel" id="8">
+		<cmd name="invert_channel" id="8">
 			<comment
 			title="Invert a RC channel values"
 			desc="Invert a RC channel values"/>
@@ -209,6 +209,6 @@
 			<arg name="flag" type="u8">
 				1 to invert channel 0 to restore channel.
 			</arg>
-		</evt>
+		</cmd>
 	</msgs>
 </feature>
