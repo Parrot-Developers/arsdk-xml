@@ -614,6 +614,30 @@
                 Altitude in meters
             </arg>
         </cmd>
+        <cmd name="GpsLocationChanged" id="9">
+            Drone Gps location changed
+            <arg name="latitude" type="double">
+                Latitude location in decimal degrees (500.0 if not available)
+            </arg>
+            <arg name="longitude" type="double">
+                Longitude location in decimal degrees (500.0 if not available)
+            </arg>
+            <arg name="altitude" type="double">
+                Altitude location in meters.
+            </arg>
+            <arg name="latitude_accuracy" type="i8">
+                Latitude location error in meters (1 sigma/standard deviation)
+                -1 if not available.
+            </arg>
+            <arg name="longitude_accuracy" type="i8">
+                Longitude location error in meters (1 sigma/standard deviation)
+                -1 if not available.
+            </arg>
+            <arg name="altitude_accuracy" type="i8">
+                Altitude location error in meters (1 sigma/standard deviation)
+                -1 if not available.
+            </arg>
+        </cmd>
     </class>
 
     <class name="PilotingEvent" id="34">
