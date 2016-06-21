@@ -102,9 +102,6 @@
         <value name="disconnecting">
 	  The drone manager is finishing the connection with the drone before taking further action.
         </value>
-        <value name="authentication_failed">
-          The connection failed because of wrong wifi key. Waiting for user interaction.
-        </value>
       </enum>
     </enums>
 
@@ -190,6 +187,22 @@
                        If the state is searching, all informations about the drone will refer to the last connected drone.
                        Otherwise, these informations will refer to the active drone."/>
         <arg name="state" type="enum:connection_state"/>
+        <arg name="serial" type="string">
+          Serial number of the drone.
+        </arg>
+        <arg name="model" type="u16">
+          Model of the drone.
+        </arg>
+        <arg name="name" type="string">
+          Name (SSID) of the drone.
+        </arg>
+      </evt>
+      <evt name="authentication_failed" id="6">
+        <comment
+	    title="Authentication failed"
+	    desc="Wrong WPA password"
+	    support="090f"
+	    triggered="Try to connect to a WPA protected drone with a wrong password"/>
         <arg name="serial" type="string">
           Serial number of the drone.
         </arg>
