@@ -399,7 +399,7 @@
       <arg name="expo" type="enum:expo_type"/>
     </cmd>
 
-    <cmd name="expo_map_item" id="13" type="MAP_ITEM:uid">
+    <evt name="expo_map_item" id="13" type="MAP_ITEM:uid">
       <comment
 	  title="Item of the expo map"
 	  desc="TODO"
@@ -416,6 +416,6 @@
       </arg>
       <arg name="expo" type="enum:expo_type"/>
       <arg name="list_flags" type="bitfield:u8:list_flags"/>
-    </cmd>
+    </evt>
   </msgs>
 </feature>
