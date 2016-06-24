@@ -210,5 +210,11 @@
 				1 to invert channel 0 to restore channel.
 			</arg>
 		</cmd>
+
+		<cmd name="abort_calibration" id="9">
+			<comment
+			title="Abort current calibration"
+			desc="Abort current calibration."/>
+		</cmd>
 	</msgs>
 </feature>
