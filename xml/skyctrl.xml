@@ -772,4 +772,11 @@
 		to a drone.
 	  </cmd>
 	</class>
+
+	<class name="Factory" id="25">
+	  Factory reset commands (SkyController 2 only)
+	  <cmd name="Reset" id="0">
+	    Request a factory reset for the product. The product WILL reboot
+	  </cmd>
+	</class>
 </project>
