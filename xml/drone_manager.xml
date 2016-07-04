@@ -213,5 +213,21 @@
           Name (SSID) of the drone.
         </arg>
       </evt>
+      <evt name="connection_refused" id="7">
+        <comment
+            title="Connection refused"
+            desc="Connection refused by the drone because another peer is already connected."
+            support="090f"
+            triggered="Try to connect to a drone where another peer is already connected to."/>
+        <arg name="serial" type="string">
+          Serial number of the drone.
+        </arg>
+        <arg name="model" type="u16">
+          Model of the drone.
+        </arg>
+        <arg name="name" type="string">
+          Name (SSID) of the drone.
+        </arg>
+      </evt>
     </msgs>
 </feature>
