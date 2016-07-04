@@ -199,10 +199,10 @@
       </evt>
       <evt name="authentication_failed" id="6">
         <comment
-	    title="Authentication failed"
-	    desc="Wrong WPA password"
-	    support="090f"
-	    triggered="Try to connect to a WPA protected drone with a wrong password"/>
+            title="Authentication failed"
+            desc="Wrong WPA password"
+            support="090f"
+            triggered="Try to connect to a WPA protected drone with a wrong password"/>
         <arg name="serial" type="string">
           Serial number of the drone.
         </arg>
