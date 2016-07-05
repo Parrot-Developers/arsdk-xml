@@ -420,6 +420,21 @@
                 Number of raw photos
             </arg>
         </cmd>
+        <cmd name="MassStorageContentForCurrentRun" id="13" type="MAP_ITEM">
+            Notify the device of a change in mass storage content related to the current run id
+            <arg name="mass_storage_id" type="u8">
+                Mass storage id (unique)
+            </arg>
+            <arg name="nbPhotos" type="u16">
+                Number of photos (does not include raw photos)
+            </arg>
+            <arg name="nbVideos" type="u16">
+                Number of videos
+            </arg>
+            <arg name="nbRawPhotos" type="u16">
+                Number of raw photos
+            </arg>
+        </cmd>
     </class>
 
     <class name="OverHeat" id="6">
