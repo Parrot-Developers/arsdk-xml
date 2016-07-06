@@ -638,6 +638,19 @@
                 -1 if not available.
             </arg>
         </cmd>
+
+        <cmd name="LandingStateChanged" id="10">
+            Fixed wings drone landing state changed
+            <arg name="state" type="enum">
+                Drone landing state
+                <enum name="linear">
+                    Linear landing
+                </enum>
+                <enum name="spiral">
+                    Spiral landing
+                </enum>
+            </arg>
+        </cmd>
     </class>
 
     <class name="PilotingEvent" id="34">
