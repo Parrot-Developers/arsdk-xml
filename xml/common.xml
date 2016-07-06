@@ -135,7 +135,7 @@
 
     <class name="SettingsState" id="3">
         Settings state from product
-        <cmd name="AllSettingsChanged" id="0">
+        <cmd name="AllSettingsChanged" id="0" timeout="RETRY">
             State sent when all settings has been sent.
         </cmd>
 
@@ -174,7 +174,7 @@
             </arg>
         </cmd>
 
-        <cmd name="CountryChanged" id="6">
+        <cmd name="CountryChanged" id="6" timeout="RETRY">
             Inform current Country set in product. (Answer to 'Country' command)
             <arg name="code" type="string">
                 Country code with ISO 3166 format, empty string means unknown country.
@@ -216,7 +216,7 @@
 
     <class name="CommonState" id="5">
         Common state from product
-        <cmd name="AllStatesChanged" id="0">
+        <cmd name="AllStatesChanged" id="0" timeout="RETRY">
             State sent when all product states has been sent.
         </cmd>
 
