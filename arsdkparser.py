@@ -47,10 +47,9 @@ class ArCmdBufferType(object):
 class ArCmdTimeoutPolicy(object):
     POP = 0
     RETRY = 1
-    FLUSH = 2
 
-    TO_STRING = {POP: "POP", RETRY: "RETRY", FLUSH: "FLUSH"}
-    FROM_STRING = {"POP": POP, "RETRY": RETRY, "FLUSH": FLUSH}
+    TO_STRING = {POP: "POP", RETRY: "RETRY"}
+    FROM_STRING = {"POP": POP, "RETRY": RETRY}
 
 #===============================================================================
 #===============================================================================
