@@ -415,10 +415,52 @@
 	Product (see libARDiscovery for list)
       </arg>
       <arg name="axis" type="i32">
-	The axis
+	Axis number
       </arg>
       <arg name="expo" type="enum:expo_type"/>
       <arg name="list_flags" type="bitfield:u8:list_flags"/>
     </evt>
+
+
+    <cmd name="set_inverted" id="14">
+      <comment
+	  title="Set/unset inverted state for a physical axis"
+	  desc="An inverted axis is not inverted when grabbed, or regarding its
+		virtual buttons."
+	  support="090f"
+	  result="update of the inverted map"/>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list). Set to 0 to apply to all products
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number
+      </arg>
+      <arg name="inverted" type="u8">
+	0 : Axis not inverted. 1 : Axis inverted
+      </arg>
+    </cmd>
+
+    <evt name="inverted_map_item" id="15" type="MAP_ITEM:uid">
+      <comment
+	  title="Item of the inverted map"
+	  desc="An inverted axis is not inverted when grabbed, or regarding its
+		virtual buttons."
+	  support="090f"
+	  triggered="Triggered by the set_inverted command"/>
+      <arg name="uid" type="u32">
+	Unique ID (for MAP_ITEM type)
+      </arg>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list)
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number
+      </arg>
+      <arg name="inverted" type="u8">
+	0 : Axis not inverted. 1 : Axis inverted
+      </arg>
+      <arg name="list_flags" type="bitfield:u8:list_flags"/>
+    </evt>
+
   </msgs>
 </feature>
