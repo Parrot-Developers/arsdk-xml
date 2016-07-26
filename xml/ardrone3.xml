@@ -1568,7 +1568,7 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="VideoMode" id="9">
+        <cmd name="VideoResolutionMode" id="9">
             Set video mode (streaming and recording resolutions)
             <arg name="mode" type="enum">
                 Video mode
@@ -1715,7 +1715,7 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="VideoModeChanged" id="9">
+        <cmd name="VideoResolutionModeChanged" id="9">
             Video mode (streaming and recording resolutions)
             <arg name="mode" type="enum">
                 Video mode
