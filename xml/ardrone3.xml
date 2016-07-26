@@ -375,7 +375,42 @@
                 </enum>
             </arg>
         </cmd>
-
+        <cmd name="VideoResolutionState" id="4">
+            Video resolution state
+            Streaming and recording resolutions.
+            This is only an indication of what the resolution should be.
+            To know the real resolution, you should get it from the frame.
+            <arg name="streaming" type="enum">
+                Streaming resolution
+                <enum name="res360p">
+                    360p resolution.
+                </enum>
+                <enum name="res480p">
+                    480p resolution.
+                </enum>
+                <enum name="res720p">
+                    720p resolution.
+                </enum>
+                <enum name="res1080p">
+                    1080p resolution.
+                </enum>
+            </arg>
+            <arg name="recording" type="enum">
+                Recording resolution
+                <enum name="res360p">
+                    360p resolution.
+                </enum>
+                <enum name="res480p">
+                    480p resolution.
+                </enum>
+                <enum name="res720p">
+                    720p resolution.
+                </enum>
+                <enum name="res1080p">
+                    1080p resolution.
+                </enum>
+            </arg>
+        </cmd>
     </class>
 
     <class name="MediaRecordEvent" id="3">
