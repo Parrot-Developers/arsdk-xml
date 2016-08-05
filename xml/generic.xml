@@ -60,7 +60,7 @@
             <comment 
                 title="default"
                 desc="default"
-                support="0901;0902;0904;0905;0906;090c"
+                support="all"
                 result="default"/>
         </cmd>
     </msgs>
