@@ -106,8 +106,8 @@
             <comment
                 title="Scan wifi network"
                 desc="Launches wifi network scan for a given band to get a list of all wifi networks found by the drone."
-                support="0901;0902;0904;0905;0906;090c"
-                result="Event [WifiScanListChanged](#133-2) is triggered with all networks found."/>
+                support="0901;0902;0905;0906;090c"
+                result="Event [WifiScanListChanged](#135-2) is triggered with all networks found."/>
             <arg name="band" type="bitfield:u8:band"/>
         </cmd>
 
@@ -115,8 +115,8 @@
             <comment
                 title="Wifi scan results"
                 desc="Wifi scan results."
-                support="0901;0902;0904;0905;0906;090c"
-                triggered="Triggered for each wifi scanned after a [ScanWifi](#133-1)."/>
+                support="0901;0902;0905;0906;090c"
+                triggered="Triggered for each wifi scanned after a [ScanWifi](#135-1)."/>
             <arg name="ssid" type="string">
                 SSID of the AP
             </arg>
@@ -144,16 +144,16 @@
             <comment
                 title="Get all available Wifi channels"
                 desc="Get all available Wifi channels.\nThe list of available Wifi channels is related to the country of the drone. You can get this country with the event [WifiCountryChanged](#wifi-CountryChanged)."
-                support="0901;0902;0904;0905;0906;090c"
-                result="Event [AvailableChannelListChanged](#133-4) is triggered with all authorized channels."/>
+                support="0901;0902;0905;0906;090c"
+                result="Event [AvailableChannelListChanged](#135-4) is triggered with all authorized channels."/>
         </cmd>
 
         <evt name="authorized_channel" id="4" type="LIST_ITEM">
             <comment
                 title="Available channel results"
                 desc="Available channel results."
-                support="0901;0902;0904;0905;0906;090c"
-                triggered="Triggered for each channels found after a [UpdateAvailableChannels](#133-3)."/>
+                support="0901;0902;0905;0906;090c"
+                triggered="Triggered for each channels found after a [UpdateAvailableChannels](#135-3)."/>
             <arg name="band" type="enum:band">
             </arg>
             <arg name="channel" type="u8">
@@ -176,8 +176,8 @@
             <comment
                 title="Wifi selection"
                 desc="Select channel of choosen band to put the drone's access point on this channel."
-                support="0901;0902;0904;0905;0906;090c"
-                result="The wifi channel changes according to given parameters. Watch out, a disconnection might appear.\nThen, event [WifiSelectionChanged](#133-6) is triggered."/>
+                support="0901;0902;0905;0906;090c"
+                result="The wifi channel changes according to given parameters. Watch out, a disconnection might appear.\nThen, event [WifiSelectionChanged](#135-6) is triggered."/>
             <arg name="type" type="enum:selection_type"/>
             <arg name="band" type="enum:band" desc="Used only when type is manual"/>
             <arg name="channel" type="u8">
@@ -188,8 +188,8 @@
             <comment
                 title="Wifi selection changed"
                 desc="Wifi selection changed."
-                support="0901;0902;0904;0905;0906;090c"
-                triggered="Triggered by [WifiSelection](#133-5)."/>
+                support="0901;0902;0905;0906;090c"
+                triggered="Triggered by [WifiSelection](#135-5)."/>
             <arg name="type" type="enum:selection_type"/>
             <arg name="band" type="enum:band"/>
             <arg name="channel" type="u8">
@@ -201,8 +201,8 @@
             <comment
                 title="Set the wifi security"
                 desc="Set the wifi security.\nThe security is changed on the next boot."
-                support="0901;0902;0904;0905;0906;090c:3.1.0"
-                result="The wifi security is set.\nThen, event [WifiSecurityChanged](#133-8) is triggered."/>
+                support="0901;0902;0905;0906;090c:3.1.0"
+                result="The wifi security is set.\nThen, event [WifiSecurityChanged](#135-8) is triggered."/>
             <arg name="type" type="enum:security_type"/>
             <arg name="key" type="string">
                 The key to secure the network. Not used if type is open
@@ -213,8 +213,8 @@
         <evt name="security_changed" id="8">
             <comment
                 title="Wifi security changed"
-                support="0901;0902;0904;0905;0906;090c:3.1.0"
-                triggered="Triggered by [SetWifiSecurity](#133-7)."/>
+                support="0901;0902;0905;0906;090c:3.1.0"
+                triggered="Triggered by [SetWifiSecurity](#135-7)."/>
             <arg name="key" type="string">
                   The key to secure the network. Not used if type is open
             </arg>
@@ -225,8 +225,8 @@
             <comment
                 title="Set the wifi country"
                 desc="Set the wifi country."
-                support="0901;0902;0904;0905;0906;090c"
-                result="The country of the product is changed.\nThen, it will trigger [CountryChanged](#133-10)."/>
+                support="0901;0902;0905;0906;090c"
+                result="The country of the product is changed.\nThen, it will trigger [CountryChanged](#135-10)."/>
             <arg name="selection_mode" type="enum:country_selection"/>
             <arg name="code" type="string">
                 Country code with ISO 3166 format. Not used if automatic is 1.
@@ -237,8 +237,8 @@
             <comment
                 title="Wifi country changed"
                 desc="Wifi country changed."
-                support="0901;0902;0904;0905;0906;090c"
-                triggered="Triggered by [SetCountry](#133-9)."/>
+                support="0901;0902;0905;0906;090c"
+                triggered="Triggered by [SetCountry](#135-9)."/>
             <arg name="selection_mode" type="enum:country_selection"/>
             <arg name="code" type="string">
                 Country code with ISO 3166 format, empty string means unknown country.
@@ -249,8 +249,8 @@
             <comment
                 title="Set indoor/outdoor wifi settings"
                 desc="Set indoor or outdoor wifi settings."
-                support="0901;0902;0904;0905;0906;090c"
-                result="The product change its indoor/outdoor wifi settings.\nThen, it will trigger [OutdoorChanged](#133-12).\nAccording to the country (defined by [SetAutoCountry](#wifi-AutoCountry) or [SetCountry](#wifi-Country)) laws the drone might change its wifi band and channel. So a disconnection might appear."/>
+                support="0901;0902;0905;0906;090c"
+                result="The product change its indoor/outdoor wifi settings.\nThen, it will trigger [OutdoorChanged](#135-12).\nAccording to the country (defined by [SetAutoCountry](#wifi-AutoCountry) or [SetCountry](#wifi-Country)) laws the drone might change its wifi band and channel. So a disconnection might appear."/>
             <arg name="environment" type="enum:environment"/>
         </cmd>
 
@@ -258,8 +258,8 @@
             <comment
                 title="Outdoor setting changed"
                 desc="Status of the wifi config : either indoor or outdoor."
-                support="0901;0902;0904;0905;0906;090c"
-                triggered="Triggered by [SetOutdoor](#133-11)."/>
+                support="0901;0902;0905;0906;090c"
+                triggered="Triggered by [SetOutdoor](#135-11)."/>
             <arg name="environment" type="enum:environment">
                 1 if it uses outdoor wifi settings, 0 otherwise
             </arg>
@@ -269,7 +269,7 @@
             <comment
                 title="Rssi changed"
                 desc="Rssi Changed. This is an information about the Wifi link quality."
-                support="0901;0902;0904;0905;0906;090c"
+                support="0901;0902;0905;0906;090c"
                 triggered="Triggered regularly when the link quality changes."/>
             <arg name="rssi" type="i16">
                 Rssi on the connected wifi network. Rssi values are generally between -30 and -120dBm. The nearest of 0 is the better.

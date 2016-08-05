@@ -130,6 +130,9 @@
 		</evt>
 
 		<evt name="channel_value" id="4" type="MAP_ITEM:id">
+			<comment
+				title="RC channels value"
+				desc="RC Channel value sent by drone"/>
 			<arg name="id" type="u8">
 				RC channel id.
 			</arg>

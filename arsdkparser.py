@@ -62,6 +62,13 @@ class ArCmdContent(object):
 
 #===============================================================================
 #===============================================================================
+class ArCmdDeprecation(object):
+
+    TO_STRING = {True: "true", False: "false"}
+    FROM_STRING = {"true": True, "false": False}
+
+#===============================================================================
+#===============================================================================
 class ArArgType(object):
     I8 = 0
     U8 = 1
@@ -179,10 +186,10 @@ class ArFeature(object):
                 msgName = cmd.name
                 if "event" in cl.name.lower() or "state" in cl.name.lower():
                     msgObj = ArEvt(msgName, msgId, cmd.doc, cmd.listType,
-                    cmd.bufferType, cmd.timeoutPolicy, cmd.content)
+                    cmd.bufferType, cmd.timeoutPolicy, cmd.content, cmd.isDeprecated)
                 else:
                     msgObj = ArCmd(msgName, msgId, cmd.doc, cmd.listType,
-                    cmd.bufferType, cmd.timeoutPolicy, cmd.content)
+                    cmd.bufferType, cmd.timeoutPolicy, cmd.content, cmd.isDeprecated)
 
                 if cmd.listType == ArCmdListType.MAP:
                     msgObj.mapKey = cmd.args[0]
@@ -234,7 +241,7 @@ class ArClass(object):
 #===============================================================================
 class ArMsg(object):
     def __init__(self, name, cmdId, doc, listType, bufferType, timeoutPolicy,
-            content):
+            content, isDeprecated):
         self.name = name
         self.cmdId = cmdId
         self.doc = doc
@@ -242,41 +249,42 @@ class ArMsg(object):
         self.bufferType = bufferType
         self.timeoutPolicy = timeoutPolicy
         self.content = content
-        self.comment = None
         self.mapKey = None
         self.args = []
         self.argsByName = {}
         self.cls = None #only for project conversion
+        self.isDeprecated = isDeprecated
 
     def __repr__(self):
         return ("{name='%s', cmdId=%d, doc='%s', listType='%s', "
                 "bufferType='%s', timeoutPolicy='%s', content='%s', "
-                "args=%s comment=%s}" % (
+                "args=%s comment=%s isDeprecated=%r}" % (
                 self.name,
                 self.cmdId,
                 repr(self.doc),
-                ArCmdListType.TO_STRING[self.listType],
+                ListType.TO_STRING[self.listType],
                 ArCmdBufferType.TO_STRING[self.bufferType],
                 ArCmdTimeoutPolicy.TO_STRING[self.timeoutPolicy],
                 ArCmdContent.TO_STRING[self.content],
                 pprint.pformat(self.args),
-                pprint.pformat(self.comment)))
+                pprint.pformat(self.comment),
+                self.isDeprecated))
 
 #===============================================================================
 #===============================================================================
 class ArCmd(ArMsg):
     def __init__(self, name, cmdId, doc, listType, bufferType, timeoutPolicy,
-            content):
+            content, isDeprecated):
         ArMsg.__init__(self, name, cmdId, doc, listType, bufferType,
-                    timeoutPolicy, content)
+                    timeoutPolicy, content, isDeprecated)
 
 #===============================================================================
 #===============================================================================
 class ArEvt(ArMsg):
     def __init__(self, name, cmdId, doc, listType, bufferType, timeoutPolicy,
-            content):
+            content, isDeprecated):
         ArMsg.__init__(self, name, cmdId, doc, listType, bufferType,
-                    timeoutPolicy, content)
+                    timeoutPolicy, content, isDeprecated)
 
 #===============================================================================
 #===============================================================================
@@ -495,29 +503,28 @@ def _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj):
                             filePath, attr))
                 msgContent = ArCmdContent.FROM_STRING[attr]
 
+            # Get if the message is deprecated
+            mgsIsDeprecated = False
+            if msgNode.hasAttribute("deprecated"):
+                attr = msgNode.getAttribute("deprecated")
+                if attr not in ArCmdDeprecation.FROM_STRING:
+                    mgsIsDeprecated = ArCmdDeprecation.FROM_STRING[attr]
+
             # Create msg object
             if msgNode in msgsNode.getElementsByTagName("cmd"):
                 #is command
                 msgObj = ArCmd (msgName, msgId, msgDoc,
-                msgType, msgBufferType, msgTimeoutPolicy, msgContent)
+                msgType, msgBufferType, msgTimeoutPolicy, msgContent,
+                mgsIsDeprecated)
 
             else:
                 #is event
                 msgObj = ArEvt(msgName, msgId, msgDoc,
-                msgType, msgBufferType, msgTimeoutPolicy, msgContent)
+                msgType, msgBufferType, msgTimeoutPolicy, msgContent,
+                mgsIsDeprecated)
 
             # Parse msg node
             _parse_msg_node(ctx, filePath, featureObj, msgNode, msgObj)
-
-            #If cmd has no doc get its comment.desc or comment.title has doc
-            if not msgObj.doc and msgObj.comment:
-                if msgObj.comment.desc:
-                    msgObj.doc = msgObj.comment.desc
-                elif msgObj.comment.title:
-                    msgObj.doc = msgObj.comment.title
-                else:
-                    raise ArParserError("%s: No comment found for msg:'%s'" % (
-                            filePath, msgObj.name))
 
             # Find map key
             if mapKey :
@@ -541,7 +548,7 @@ def _parse_class_node(filePath, classNode, classObj):
     for cmdNode in classNode.getElementsByTagName("cmd"):
         cmdName = cmdNode.getAttribute("name")
         cmdId = int(cmdNode.getAttribute("id"))
-        cmdDoc = _get_node_content(cmdNode).strip()
+        cmdDoc = _get_cmt_node(cmdNode)
 
         if cmdId < _MIN_CMD_ID or cmdId > _MAX_CMD_ID:
             raise ArParserError("%s: Invalid cmd id %d" % (
@@ -588,9 +595,17 @@ def _parse_class_node(filePath, classNode, classObj):
                         filePath, attr))
             cmdContent = ArCmdContent.FROM_STRING[attr]
 
+        # Get if the message is deprecated
+        mgsIsDeprecated = False
+        if cmdNode.hasAttribute("deprecated"):
+            attr = cmdNode.getAttribute("deprecated")
+            if attr == "true":
+                mgsIsDeprecated = True
+
         # Create cmd object
         cmdObj = ArCmd(cmdName, cmdId, cmdDoc, cmdListType, cmdBufferType,
-                    cmdTimeoutPolicy, cmdContent)
+                    cmdTimeoutPolicy, cmdContent, mgsIsDeprecated)
+        cmdObj.cls = classObj
         classObj.cmds.append(cmdObj)
         classObj.cmdsById[cmdId] = cmdObj
         classObj.cmdsByName[cmdName] = cmdObj
@@ -625,16 +640,49 @@ def _parse_prj_cmd_node(filePath, cmdNode, cmdObj):
         # Parse arg node
         _parse_arg_node(filePath, argNode, argObj)
 
-#===============================================================================
-#===============================================================================
-def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
-    for commentNode in msgNode.getElementsByTagName("comment"):
+def _get_cmt_node(msgNode):
+    if msgNode.getElementsByTagName("comment"):
+        commentNode = msgNode.getElementsByTagName("comment")[0]
         cmtTitle = commentNode.getAttribute("title")
         cmtSupport = commentNode.getAttribute("support")
 
         desc = commentNode.getAttribute("desc")
         # Remove whitespaces after '\n'
-        lines = [l.strip() for l in desc.split('\\n')]
+        lines = [l.strip() for l in desc.split(r'\n')]
+        cmtDesc = '\n'.join(lines)
+
+        if commentNode.hasAttribute("triggered"):
+            triggered = commentNode.getAttribute("triggered")
+            lines = [l.strip() for l in triggered.split(r'\n')]
+            cmtTriggered = '\n'.join(lines)
+        else:
+            cmtTriggered = None
+
+        if commentNode.hasAttribute("result"):
+            result = commentNode.getAttribute("result")
+            lines = [l.strip() for l in result.split(r'\n')]
+            cmtResult = '\n'.join(lines)
+        else:
+            cmtResult = None
+
+        # Create comment object
+        return ArComment(cmtTitle, cmtDesc, cmtSupport,
+                cmtTriggered, cmtResult)
+    else:
+        oldComment = _get_node_content(msgNode)
+        return ArComment(oldComment.splitlines()[0], oldComment, None, None, None)
+
+#===============================================================================
+#===============================================================================
+def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
+    if msgNode.getElementsByTagName("comment"):
+        commentNode = msgNode.getElementsByTagName("comment")[0]
+        cmtTitle = commentNode.getAttribute("title")
+        cmtSupport = commentNode.getAttribute("support")
+
+        desc = commentNode.getAttribute("desc")
+        # Remove whitespaces after '\n'
+        lines = [l.strip() for l in desc.split(r'\n')]
         cmtDesc = '\n'.join(lines)
 
         if commentNode.hasAttribute("triggered"):
@@ -648,8 +696,11 @@ def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
             cmtResult = None
 
         # Create comment object
-        msgObj.comment = ArComment(cmtTitle, cmtDesc, cmtSupport,
+        msgObj.doc = ArComment(cmtTitle, cmtDesc, cmtSupport,
                 cmtTriggered, cmtResult)
+    else:
+        oldComment = _get_node_content(msgNode)
+        msgObj.doc = ArComment(oldComment.splitlines()[0], oldComment, None, None, None)
 
     _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj)
 
@@ -703,7 +754,7 @@ def _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj):
 
             # Check Compatibility between Enum max value and bitfield length
             if ArBitfield.TYPE_TO_LENGTH[btfType] < btfEnum.getMaxBitfieldVal():
-                raise ArParserError("%s: To Small bitfield length '%s.%s'"
+                raise ArParserError("%s: Too Small bitfield length '%s.%s'"
                         % (filePath, msgObj.name, argName))
 
             argType = ArBitfield(btfEnum, btfType)
