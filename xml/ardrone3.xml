@@ -75,37 +75,96 @@
     All ARDrone3-only commands
 
     <class name="Piloting" id="0">
-        All commands related to piloting the totoDrone
+        All commands related to piloting the drone
 
         <cmd name="FlatTrim" id="0">
-            Do a flat trim
+            <comment
+                title="Do a flat trim"
+                desc="Do a flat trim of the accelerometer/gyro.\n
+                Could be useful when the drone is sliding in hover mode."
+                support="0901;090c;090e"
+                result="Accelerometer and gyroscope are calibrated then event [FlatTrimChanged](#1-4-0) is triggered."/>
         </cmd>
 
         <cmd name="TakeOff" id="1">
-            Ask the drone to take off
+            <comment
+                title="Take off"
+                desc="Ask the drone to take off.\n
+                On the fixed wings (such as Disco): not used except to cancel a land."
+                support="0901;090c;090e"
+                result="On the quadcopters: the drone takes off if its [FlyingState](#1-4-1) was landed.\n
+                On the fixed wings, the landing process is aborted if the [FlyingState](#1-4-1) was landing.\n
+                Then, event [FlyingState](#1-4-1) is triggered."/>
         </cmd>
 
         <cmd name="PCMD" id="2" buffer="NON_ACK">
-            Ask the drone to move around.
-
+            <comment
+                title="Move the drone"
+                desc="Move the drone.\n
+                The libARController is sending the command each 50ms.\n\n
+                **Please note that you should call setPilotingPCMD and not sendPilotingPCMD because the libARController is handling the periodicity and the buffer on which it is sent.**"
+                support="0901;090c;090e"
+                result="The drone moves! Yaaaaay!\n
+                Event [SpeedChanged](), [AttitudeChanged] and [PositionChanged]() (only if gps of the drone has fixed) are triggered."/>
             <arg name="flag" type="u8">
-                Boolean flag to activate roll/pitch movement
+                Boolean flag: 1 if the roll and pitch values should be taken in consideration. 0 otherwise
             </arg>
 
             <arg name="roll" type="i8">
-                Roll consign for the drone [-100;100]
+                Roll angle as signed percentage.
+                On copters:
+                Roll angle expressed as signed percentage of the max pitch/roll setting, in range [-100, 100]
+                -100 corresponds to a roll angle of max pitch/roll to the left (drone will fly left)
+                100 corresponds to a roll angle of max pitch/roll to the right (drone will fly right)
+                This value may be clamped if necessary, in order to respect the maximum supported physical tilt of the copter.
+                
+                On fixed wings:
+                Roll angle expressed as signed percentage of the physical max roll of the wing, in range [-100, 100]
+                Negative value makes the plane fly to the left
+                Positive value makes the plane fly to the right
             </arg>
 
             <arg name="pitch" type="i8">
-                Pitch consign for the drone [-100;100]
+                Pitch angle as signed percentage.
+                On copters:
+                Expressed as signed percentage of the max pitch/roll setting, in range [-100, 100]
+                -100 corresponds to a pitch angle of max pitch/roll towards sky (drone will fly backward)
+                100 corresponds to a pitch angle of max pitch/roll towards ground (drone will fly forward)
+                This value may be clamped if necessary, in order to respect the maximum supported physical tilt of the copter.
+                
+                On fixed wings:
+                Expressed as signed percentage of the physical max pitch of the wing, in range [-100, 100]
+                Negative value makes the plane fly in direction of the sky
+                Positive value makes the plane fly in direction of the ground
             </arg>
 
             <arg name="yaw" type="i8">
-                Yaw consign for the drone [-100;100]
+                Yaw rotation speed as signed percentage.
+                On copters:
+                Expressed as signed percentage of the max yaw rotation speed setting, in range [-100, 100].
+                -100 corresponds to a counter-clockwise rotation of max yaw rotation speed
+                100 corresponds to a clockwise rotation of max yaw rotation speed
+                This value may be clamped if necessary, in order to respect the maximum supported physical tilt of the copter.
+                
+                On fixed wings:
+                Giving more than a fixed value (75% for the moment) triggers a circle.
+                Positive value will trigger a clockwise circling
+                Negative value will trigger a counter-clockwise circling
             </arg>
 
             <arg name="gaz" type="i8">
-                Gaz consign for the drone [-100;100]
+                Throttle as signed percentage.
+                On copters:
+                Expressed as signed percentage of the max vertical speed setting, in range [-100, 100]
+                -100 corresponds to a max vertical speed towards ground
+                100 corresponds to a max vertical speed towards sky
+                This value may be clamped if necessary, in order to respect the maximum supported physical tilt of the copter.
+                During the landing phase, putting some positive gaz will cancel the land.
+                
+                On fixed wings:
+                Expressed as signed percentage of the physical max throttle, in range [-100, 100]
+                Negative value makes the plane fly slower
+                Positive value makes the plane fly faster
             </arg>
 
             <arg name="timestampAndSeqNum" type="u32">
@@ -114,34 +173,61 @@
         </cmd>
 
         <cmd name="Landing" id="3">
-            Ask the drone to land
+            <comment
+                title="Land"
+                desc="Land.\n
+                Please note that on copters, if you put some positive gaz (in the [PilotingCommand](#1-0-2)) during the landing, it will cancel it."
+                support="0901;090c;090e"
+                result="On the copters, the drone lands if its [FlyingState](#1-4-1) was taking off, hovering or flying.\n
+                On the fixed wings, the drone lands if its [FlyingState](#1-4-1) was hovering or flying.\n
+                Then, event [FlyingState](#1-4-1) is triggered."/>
         </cmd>
 
         <cmd name="Emergency" id="4" buffer="HIGH_PRIO" timeout="RETRY">
-            Put drone in emergency user state
+            <comment
+                title="Cut out the motors"
+                desc="Cut out the motors.\n
+                This cuts immediatly the motors. The drone will fall.\n
+                This command is sent on a dedicated high priority buffer which will infinitely retry to send it if the command is not delivered."
+                support="0901;090c;090e"
+                result="The drone immediatly cuts off its motors.\n
+                Then, event [FlyingState](#1-4-1) is triggered."/>
         </cmd>
 
         <cmd name="NavigateHome" id="5">
-            Ask the drone to fly to home
+            <comment
+                title="Return home"
+                desc="Return home.\n
+                Ask the drone to fly to its [HomePosition](#1-24-0).\n
+                The availability of the return home can be get from [ReturnHomeState](#1-4-3).\n
+                Please note that the drone will wait to be hovering to start its return home. This means that it will wait to have a [flag](#1-0-2) set at 0."
+                support="0901;090c;090e"
+                result="The drone will fly back to its home position.\n
+                Then, event [ReturnHomeState](#1-4-3]) is triggered.\n
+                You can get a state pending if the drone is not ready to start its return home process but will do it as soon as it is possible."/>
             <arg name="start" type="u8">
                 1 to start the navigate home, 0 to stop it
             </arg>
         </cmd>
-        <cmd name="AutoTakeOffMode" id="6">
-            @deprecated
-            [NOT USED] Set Drone3 in automatic take off mode
+        <cmd name="AutoTakeOffMode" id="6" deprecated="true">
+            <comment
+                title="Auto take off mode"
+                desc="Auto take off mode."/>
             <arg name="state" type="u8">
                 State of automatic take off mode (1 for autotake off enabled)
             </arg>
         </cmd>
 
         <cmd name="moveBy" id="7">
-            [DRAFT] Move the drone to a relative position and rotate heading by a given angle
-            The frame is horizontal and relative to the current drone orientation:
-            - X is front
-            - Y is right
-            - Z is down
-            The movement settings of the device are those set for the autonomous flight.
+            <comment
+                title="Move the drone to a relative position"
+                desc="Move the drone to a relative position and rotate heading by a given angle.\n
+                Moves are relative to the current drone orientation, (drone's reference).\n
+                Also note that the given rotation will not modify the move (i.e. moves are always rectilinear)."
+                support="0901:3.3.0;090c:3.3.0"
+                result="The drone will move of the given offsets.\n
+                Then, event [RelativeMoveEnded](#1-34-0]) is triggered.\n
+                If you send a second relative move command, the drone will trigger a [RelativeMoveEnded](#1-34-0]) with the offsets it managed to do before this new command and the value of error set to interrupted."/>
             <arg name="dX" type="float">
                 Wanted displacement along the front axis [m]
             </arg>
@@ -156,7 +242,16 @@
             </arg>
         </cmd>
         <cmd name="UserTakeOff" id="8">
-            Set drone in user take off state
+            <comment
+                title="Prepare the drone to take off"
+                desc="Prepare the drone to take off.\n
+                This is the command that initiates the take off process on the fixed wings.\n
+                Setting the state to 0 will cancel the preparation. You can cancel it before that the drone takes off."
+                support="090e"
+                result="The drone will arm its motors if not already armed.\n
+                Then, event [FlyingState](#1-4-1) is triggered with state set at motor ramping.\n
+                Then, event [FlyingState](#1-4-1) is triggered with state set at userTakeOff.\n
+                Then user can throw the drone to make it take off."/>
             <arg name="state" type="u8">
                 State of user take off mode
                 - 1 to enter in user take off.
@@ -164,7 +259,13 @@
             </arg>
         </cmd>
         <cmd name="Circle" id="9">
-            Ask Fixed wings to circle
+            <comment
+                title="Circle"
+                desc="Make the fixed wing circle.\n
+                The circle will use the [CirclingAltitude](#1-6-14) and the [CirclingRadius](#1-6-13)"
+                support="090e"
+                result="The fixed wing will circle in the given direction.\n
+                Then, event [FlyingState](#1-4-1) is triggered with state set at hovering."/>
              <arg name="direction" type="enum">
                 The circling direction
                 <enum name="CW">
@@ -184,7 +285,11 @@
         Animation commands
 
         <cmd name="Flip" id="0">
-            Make a flip
+            <comment
+                title="Make a flip"
+                desc="Make a flip."
+                support="0901;090c"
+                result="The drone will make a flip if it has enough battery."/>
             <arg name="direction" type="enum">
                 Direction for the flip
                 <enum name="front">
@@ -207,8 +312,13 @@
         Ask the drone to move camera
 
         <cmd name="Orientation" id="0" buffer="NON_ACK">
-            Ask the drone to move camera.
-
+            <comment
+                title="Move the camera"
+                desc="Move the camera.\n
+                You can get min and max values for tilt and pan using [CameraInfo](#0-15-0)."
+                support="0901;090c;090e"
+                result="The drone moves its camera.\n
+                Then, event [CameraOrientation](#1-25-0) is triggered."/>
             <arg name="tilt" type="i8">
                 Tilt camera consign for the drone (in degree)
                 The value is saturated by the drone.
@@ -226,17 +336,19 @@
     <class name="MediaRecord" id="7">
         Media recording management
 
-        <cmd name="Picture" id="0">
-            @deprecated
-            Take picture
+        <cmd name="Picture" id="0" deprecated="true">
+            <comment
+                title="Take a picture"
+                desc="Take a picture."/>
             <arg name="mass_storage_id" type="u8">
                 Mass storage id to take picture
             </arg>
         </cmd>
 
-        <cmd name="Video" id="1">
-            @deprecated
-            Video record
+        <cmd name="Video" id="1" deprecated="true">
+            <comment
+                title="Record a video"
+                desc="Record a video."/>
             <arg name="record" type="enum">
                 Command to record video
                 <enum name="stop">
@@ -252,11 +364,31 @@
         </cmd>
 
         <cmd name="PictureV2" id="2">
-            Take picture
+            <comment
+                title="Take a picture"
+                desc="Take a picture.\n
+                The type of picture taken is related to the picture setting.\n
+                You can set the picture format by sending the command [SetPictureFormat](#1-19-0). You can also get the current picture format with [PictureFormat](#1-20-0).\n
+                Please note that the time required to take the picture is highly related to this format.\n\n
+                You can check if the picture taking is available with [PictureState](#1-8-2).\n
+                Also, please note that if your picture format is different from snapshot, picture taking will stop video recording (it will restart after that the picture has been taken)."
+                support="0901:2.0.1;090c;090e"
+                result="Event [PictureState](#1-8-2) will be triggered with a state busy.\n
+                The drone will take a picture.\n
+                Then, when picture has been taken, notification [PictureEvent](#1-3-0) is triggered.\n
+                And normally [PictureState](#1-8-2) will be triggered with a state ready."/>
         </cmd>
 
         <cmd name="VideoV2" id="3">
-            Video record
+            <comment
+                title="Record a video"
+                desc="Record a video (or start timelapse).\n
+                You can check if the video recording is available with [VideoState](#1-8-3).\n
+                This command can start a video (obvious huh?), but also a timelapse if the timelapse mode is set. You can check if the timelapse mode is set with the event [TimelapseMode](#1-20-4).\n
+                Also, please note that if your picture format is different from snapshot, picture taking will stop video recording (it will restart after the picture has been taken)."
+                support="0901:2.0.1;090c;090e"
+                result="The drone will begin or stop to record the video (or timelapse).\n
+                Then, event [VideoState](#1-8-3]) will be triggered. Also, notification [VideoEvent](#1-3-1) is triggered."/>
             <arg name="record" type="enum">
                 Command to record video
                 <enum name="stop">
@@ -272,9 +404,10 @@
     <class name="MediaRecordState" id="8">
         State of media recording
 
-        <cmd name="PictureStateChanged" id="0">
-            @deprecated
-            State of picture recording
+        <cmd name="PictureStateChanged" id="0" deprecated="true">
+            <comment
+                title="Picture state"
+                desc="Picture state."/>
             <arg name="state" type="u8">
                 1 if picture has been taken, 0 otherwise
             </arg>
@@ -283,9 +416,10 @@
             </arg>
         </cmd>
 
-        <cmd name="VideoStateChanged" id="1">
-            @deprecated
-            State of video recording
+        <cmd name="VideoStateChanged" id="1" deprecated="true">
+            <comment
+                title="Video record state"
+                desc="Picture record state."/>
             <arg name="state" type="enum">
                 State of video
                 <enum name="stopped">
@@ -307,7 +441,11 @@
         </cmd>
 
         <cmd name="PictureStateChangedV2" id="2">
-            State of device picture recording changed
+            <comment
+                title="Picture state"
+                desc="Picture state."
+                support="0901:2.0.1;090c;090e"
+                triggered="by [TakePicture](#1-7-2) or by a change in the picture state"/>
             <arg name="state" type="enum">
                 State of device picture recording
                 <enum name="ready">
@@ -342,7 +480,11 @@
         </cmd>
 
         <cmd name="VideoStateChangedV2" id="3">
-            State of device video recording changed
+            <comment
+                title="Video record state"
+                desc="Video record state."
+                support="0901:2.0.1;090c;090e"
+                triggered="by [RecordVideo](#1-7-3) or by a change in the video state"/>
             <arg name="state" type="enum">
                 State of device video recording
                 <enum name="stopped">
@@ -376,10 +518,13 @@
             </arg>
         </cmd>
         <cmd name="VideoResolutionState" id="4">
-            Video resolution state
-            Streaming and recording resolutions.
-            This is only an indication of what the resolution should be.
-            To know the real resolution, you should get it from the frame.
+            <comment
+                title="Video resolution"
+                desc="Video resolution.\n
+                Informs about streaming and recording video resolutions.\n
+                Note that this is only an indication about what the resolution should be. To know the real resolution, you should get it from the frame."
+                support="none"
+                triggered="when the resolution changes."/>
             <arg name="streaming" type="enum">
                 Streaming resolution
                 <enum name="res360p">
@@ -417,7 +562,12 @@
         Events of media recording
 
         <cmd name="PictureEventChanged" id="0" content="NOTIFICATION">
-            Event of picture recording
+            <comment
+                title="Picture taken"
+                desc="Picture taken.\n\n
+                **This event is a notification, you can't retrieve it in the cache of the device controller.**"
+                support="0901:2.0.1;090c;090e"
+                triggered="after a [TakePicture](#1-7-2), when the picture has been taken (or it has failed)."/>
             <arg name="event" type="enum">
                 Last event of picture recording
                 <enum name="taken">
@@ -452,7 +602,12 @@
         </cmd>
 
         <cmd name="VideoEventChanged" id="1" content="NOTIFICATION">
-            Event of video recording
+            <comment
+                title="Video record notification"
+                desc="Video record notification.\n\n
+                **This event is a notification, you can't retrieve it in the cache of the device controller.**"
+                support="0901:2.0.1;090c;090e"
+                triggered="by [RecordVideo](#1-7-3) or a change in the video state."/>
             <arg name="event" type="enum">
                 Event of video recording
                 <enum name="start">
@@ -498,11 +653,19 @@
         State from drone
 
         <cmd name="FlatTrimChanged" id="0">
-            Drone acknowledges that flat trim was correctly processed
+            <comment
+                title="Flat trim changed"
+                desc="Drone acknowledges that flat trim was correctly processed."
+                support="0901;090c;090e"
+                triggered="by [FlatTrim](#1-0-0)."/>
         </cmd>
 
         <cmd name="FlyingStateChanged" id="1">
-            Drone flying state changed
+            <comment
+                title="Flying state"
+                desc="Flying state."
+                support="0901;090c;090e"
+                triggered="when the flying state changes."/>
             <arg name="state" type="enum">
                 Drone flying state
                 <enum name="landed">
@@ -533,7 +696,11 @@
         </cmd>
 
         <cmd name="AlertStateChanged" id="2">
-            Drone alert state changed
+            <comment
+                title="Alert state"
+                desc="Alert state."
+                support="0901;090c;090e"
+                triggered="when an alert happens on the drone."/>
             <arg name="state" type="enum">
                 Drone alert state
                 <enum name="none">
@@ -558,7 +725,12 @@
         </cmd>
 
         <cmd name="NavigateHomeStateChanged" id="3">
-            Navigating home state
+            <comment
+                title="Return home state"
+                desc="Return home state.\n
+                Availability is related to gps fix, magnetometer calibration."
+                support="0901;090c;090e"
+                triggered="by [ReturnHome](#1-0-5) or when the state of the return home changes."/>
             <arg name="state" type="enum">
                 State of navigate home
                 <enum name="available">
@@ -601,7 +773,11 @@
         </cmd>
 
         <cmd name="PositionChanged" id="4">
-            Drone position changed
+            <comment
+                title="Drone's position changed"
+                desc="Drone's position changed."
+                support="0901;090c;090e"
+                triggered="regularly."/>
             <arg name="latitude" type="double">
                 Latitude position in decimal degrees (500.0 if not available)
             </arg>
@@ -613,7 +789,12 @@
             </arg>
         </cmd>
         <cmd name="SpeedChanged" id="5" buffer="NON_ACK">
-            Drone speed changed
+            <comment
+                title="Drone's speed changed"
+                desc="Drone's speed changed.\n
+                Expressed in the drone's referential."
+                support="0901;090c;090e"
+                triggered="regularly."/>
             <arg name="speedX" type="float">
                 Speed on the x axis (when drone moves forward, speed is > 0) (in m/s)
             </arg>
@@ -625,7 +806,11 @@
             </arg>
         </cmd>
         <cmd name="AttitudeChanged" id="6" buffer="NON_ACK">
-            Drone attitude changed
+            <comment
+                title="Drone's attitude changed"
+                desc="Drone's attitude changed."
+                support="0901;090c;090e"
+                triggered="regularly."/>
             <arg name="roll" type="float">
                 roll value (in radian)
             </arg>
@@ -636,21 +821,33 @@
                 Yaw value (in radian)
             </arg>
         </cmd>
-        <cmd name="AutoTakeOffModeChanged" id="7">
-            @deprecated
-            Status of the drone3 automatic take off mode
+        <cmd name="AutoTakeOffModeChanged" id="7" deprecated="true">
+            <comment
+                title="Auto takeoff mode"
+                desc="Auto takeoff mode"/>
             <arg name="state" type="u8">
                 State of automatic take off mode (1 if enabled)
             </arg>
         </cmd>
         <cmd name="AltitudeChanged" id="8" buffer="NON_ACK">
-            Drone altitude changed
+            <comment
+                title="Drone's altitude changed"
+                desc="Drone's altitude changed.\n
+                The altitude reported is the altitude above the take off point.\n
+                To get the altitude above sea level, see [PositionChanged](#1-4-4)."
+                support="0901;090c;090e"
+                triggered="regularly."/>
             <arg name="altitude" type="double">
                 Altitude in meters
             </arg>
         </cmd>
         <cmd name="GpsLocationChanged" id="9">
-            Drone Gps location changed
+            <comment
+                title="Drone's location changed"
+                desc="Drone's location changed.\n
+                This event is meant to replace [PositionChanged](#1-4-4)."
+                support="none"
+                triggered="regularly."/>
             <arg name="latitude" type="double">
                 Latitude location in decimal degrees (500.0 if not available)
             </arg>
@@ -675,7 +872,12 @@
         </cmd>
 
         <cmd name="LandingStateChanged" id="10">
-            Fixed wings drone landing state changed
+            <comment
+                title="Landing state"
+                desc="Landing state.\n
+                Only available for fixed wings (which have two landing modes)."
+                support="090e"
+                triggered="when the landing state changes."/>
             <arg name="state" type="enum">
                 Drone landing state
                 <enum name="linear">
@@ -692,11 +894,12 @@
         Events of Piloting
 
         <cmd name="moveByEnd" id="0" content="NOTIFICATION">
-            [NOT USED] End of relative displacement of the drone
-            The frame is horizontal and relative to the current drone orientation:
-            - X is front
-            - Y is right
-            - Z is down
+            <comment
+                title="Relative move ended"
+                desc="Relative move ended.\n
+                Informs about the move that the drone managed to do and why it stopped."
+                support="0901:3.3.0;090c:3.3.0"
+                triggered="when the landing state changes."/>
             <arg name="dX" type="float">
                 Distance traveled along the front axis [m]
             </arg>
@@ -734,7 +937,12 @@
         Network related commands
 
         <cmd name="WifiScan" id="0">
-            Launches wifi network scan
+            <comment
+                title="Scan wifi network"
+                desc="Scan wifi network to get a list of all networks found by the drone"
+                support="0901;090c;090e"
+                result="Event [WifiScanResults](#1-14-0) is triggered with all networks found.\n
+                When all networks have been sent, event [WifiScanEnded](#1-14-1) is triggered."/>
             <arg name="band" type="enum">
                 The band(s) : 2.4 Ghz, 5 Ghz, or both
                <enum name="2_4ghz">
@@ -750,7 +958,12 @@
         </cmd>
 
         <cmd name="WifiAuthChannel" id="1">
-            Controller inquire the list of authorized wifi channels.
+            <comment
+                title="Ask for available wifi channels"
+                desc="Ask for available wifi channels.\n
+                The list of available Wifi channels is related to the country of the drone. You can get this country from the event [CountryChanged](#0-3-6)."
+                support="0901;090c;090e"
+                result="Event [AvailableWifiChannels](#1-14-2) is triggered with all available channels. When all channels have been sent, event [AvailableWifiChannelsCompleted](#1-14-3) is triggered."/>
         </cmd>
 
     </class>
@@ -759,7 +972,12 @@
         Network state from Product
 
         <cmd name="WifiScanListChanged" id="0" type="MAP_ITEM">
-            One scanning result found
+            <comment
+                title="Wifi scan results"
+                desc="Wifi scan results.\n
+                Please note that the list is not complete until you receive the event [WifiScanEnded](#1-14-1)."
+                support="0901;090c;090e"
+                triggered="for each wifi network scanned after a [ScanWifi](#1-13-0)"/>
             <arg name="ssid" type="string">
                 SSID of the AP
             </arg>
@@ -781,11 +999,21 @@
         </cmd>
 
         <cmd name="AllWifiScanChanged" id="1">
-            State sent when all scanning result sent
+            <comment
+                title="Wifi scan ended"
+                desc="Wifi scan ended.\n
+                When receiving this event, the list of [WifiScanResults](#1-14-0) is complete."
+                support="0901;090c;090e"
+                triggered="after the last [WifiScanResult](#1-14-0) has been sent."/>
         </cmd>
 
         <cmd name="WifiAuthChannelListChanged" id="2" type="LIST_ITEM">
-            Notify of an Authorized Channel.
+            <comment
+                title="Available wifi channels"
+                desc="Available wifi channels.\n
+                Please note that the list is not complete until you receive the event [AvailableWifiChannelsCompleted](#1-14-3)."
+                support="0901;090c;090e"
+                triggered="for each available channel after a [GetAvailableWifiChannels](#1-13-1)."/>
             <arg name="band" type="enum">
                 The band of this channel : 2.4 GHz or 5 GHz
                 <enum name="2_4ghz">
@@ -804,92 +1032,177 @@
         </cmd>
 
         <cmd name="AllWifiAuthChannelChanged" id="3">
-            Notify the end of the list of Authorized wifi Channel.
+            <comment
+                title="Available wifi channels completed"
+                desc="Available wifi channels completed.\n
+                When receiving this event, the list of [AvailableWifiChannels](#1-14-2) is complete."
+                support="0901;090c;090e"
+                triggered="after the last [AvailableWifiChannel](#1-14-2) has been sent."/>
         </cmd>
     </class>
 
     <class name="PilotingSettings" id="2">
         Piloting Settings commands
         <cmd name="MaxAltitude" id="0">
-            Set Max Altitude
+            <comment
+                title="Set max altitude"
+                desc="Set max altitude.\n
+                The drone will not fly over this max altitude when it is in manual piloting.\n
+                Please note that if you set a max altitude which is below the current drone altitude, the drone will not go to given max altitude.\n
+                You can get the bounds in the event [MaxAltitude](#1-6-0)."
+                support="0901;090c;090e"
+                result="The max altitude is set.\n
+                Then, event [MaxAltitude](#1-6-0) is triggered."/>
             <arg name="current" type="float">
                 Current altitude max in m
             </arg>
         </cmd>
         <cmd name="MaxTilt" id="1">
-            Set Max Tilt
+            <comment
+                title="Set max pitch/roll"
+                desc="Set max pitch/roll.\n
+                This represent the max inclination allowed by the drone.\n
+                You can get the bounds with the commands [MaxPitchRoll](#1-6-1)."
+                support="0901;090c"
+                result="The max pitch/roll is set.\n
+                Then, event [MaxPitchRoll](#1-6-1) is triggered."/>
             <arg name="current" type="float">
                 Current tilt max in degree
             </arg>
         </cmd>
-        <cmd name="AbsolutControl" id="2">
-            @deprecated
-            Enable/Disable absolut control
+        <cmd name="AbsolutControl" id="2" deprecated="true">
+            <comment
+                title="Set absolut control"
+                desc="Set absolut control."/>
             <arg name="on" type="u8">
                 1 to enable, 0 to disable
             </arg>
         </cmd>
         <cmd name="MaxDistance" id="3">
-            Set the distance max of the drone
+            <comment
+                title="Set max distance"
+                desc="Set max distance.\n
+                You can get the bounds from the event [MaxDistance](#1-6-3).\n\n
+                If [Geofence](#1-6-4) is activated, the drone won't fly over the given max distance."
+                support="0901;090c;090e"
+                result="The max distance is set.\n
+                Then, event [MaxDistance](#1-6-3) is triggered."/>
             <arg name="value" type="float">
                 Current max distance in meter
             </arg>
         </cmd>
         <cmd name="NoFlyOverMaxDistance" id="4">
-            Indication about how the product handle flying over the max distance limitation
+            <comment
+                title="Enable geofence"
+                desc="Enable geofence.\n
+                If geofence is enabled, the drone won't fly over the given max distance.\n
+                You can get the max distance from the event [MaxDistance](#1-6-3). \n
+                For copters: the distance is computed from the controller position, if this position is not known, it will use the take off.\n
+                For fixed wings: the distance is computed from the take off position."
+                support="0901;090c;090e"
+                result="Geofencing is enabled or disabled.\n
+                Then, event [Geofencing](#1-6-4) is triggered."/>
             <arg name="shouldNotFlyOver" type="u8">
                 1 if the drone can't fly further than max distance, 0 if no limitation on the drone should be done
             </arg>
         </cmd>
 
         <cmd name="setAutonomousFlightMaxHorizontalSpeed" id="5">
-            [NOT USED] Set the maximum horizontal speed used by the autonomous flight
+            <comment
+                title="Set autonomous flight max horizontal speed"
+                desc="Set autonomous flight max horizontal speed.\n
+                This will only be used during autonomous flights such as moveBy."
+                support="0901:3.3.0;090c:3.3.0"
+                result="The max horizontal speed is set.\n
+                Then, event [AutonomousFlightMaxHorizontalSpeed](#1-6-5) is triggered."/>
             <arg name="value" type="float">
                 maximum horizontal speed [m/s]
             </arg>
         </cmd>
 
         <cmd name="setAutonomousFlightMaxVerticalSpeed" id="6">
-            [NOT USED] Set the maximum vertical speed used by the autonomous flight
+            <comment
+                title="Set autonomous flight max vertical speed"
+                desc="Set autonomous flight max vertical speed.\n
+                This will only be used during autonomous flights such as moveBy."
+                support="0901:3.3.0;090c:3.3.0"
+                result="The max vertical speed is set.\n
+                Then, event [AutonomousFlightMaxVerticalSpeed](#1-6-6) is triggered."/>
             <arg name="value" type="float">
                 maximum vertical speed [m/s]
             </arg>
         </cmd>
 
         <cmd name="setAutonomousFlightMaxHorizontalAcceleration" id="7">
-            [NOT USED] Set the maximum horizontal acceleration used by the autonomous flight
+            <comment
+                title="Set autonomous flight max horizontal acceleration"
+                desc="Set autonomous flight max horizontal acceleration.\n
+                This will only be used during autonomous flights such as moveBy."
+                support="0901:3.3.0;090c:3.3.0"
+                result="The max horizontal acceleration is set.\n
+                Then, event [AutonomousFlightMaxHorizontalAcceleration](#1-6-7) is triggered."/>
             <arg name="value" type="float">
                 maximum horizontal acceleration [m/s2]
             </arg>
         </cmd>
 
         <cmd name="setAutonomousFlightMaxVerticalAcceleration" id="8">
-            [NOT USED] Set the maximum vertical acceleration used by the autonomous flight
+            <comment
+                title="Set autonomous flight max vertical acceleration"
+                desc="Set autonomous flight max vertical acceleration.\n
+                This will only be used during autonomous flights such as moveBy."
+                support="0901:3.3.0;090c:3.3.0"
+                result="The max vertical acceleration is set.\n
+                Then, event [AutonomousFlightMaxVerticalAcceleration](#1-6-8) is triggered."/>
             <arg name="value" type="float">
                 maximum vertical acceleration [m/s2]
             </arg>
         </cmd>
 
         <cmd name="setAutonomousFlightMaxRotationSpeed" id="9">
-            Set the maximum yaw rotation speed used by the autonomous flight
+            <comment
+                title="Set autonomous flight max rotation speed"
+                desc="Set autonomous flight max rotation speed.\n
+                This will only be used during autonomous flights such as moveBy."
+                support="0901:3.3.0;090c:3.3.0"
+                result="The max rotation speed is set.\n
+                Then, event [AutonomousFlightMaxRotationSpeed](#1-6-9) is triggered."/>
             <arg name="value" type="float">
                 maximum yaw rotation speed [deg/s]
             </arg>
         </cmd>
         <cmd name="BankedTurn" id="10">
-            Enable / Disable Banked Turn mode.
+            <comment
+                title="Set banked turn mode"
+                desc="Set banked turn mode.\n
+                When banked turn mode is enabled, the drone will use yaw values from the piloting command to infer with roll and pitch on the drone when its horizontal speed is not null."
+                support="0901:3.2.0;090c:3.2.0"
+                result="The banked turn mode is enabled or disabled.\n
+                Then, event [BankedTurnMode](#1-6-10) is triggered."/>
             <arg name="value" type="u8">
                 1 to enable, 0 to disable
             </arg>
         </cmd>
         <cmd name="MinAltitude" id="11">
-            Set Min Altitude
+            <comment
+                title="Set minimum altitude"
+                desc="Set minimum altitude.\n
+                Only available for fixed wings."
+                support="090e"
+                result="The minimum altitude is set.\n
+                Then, event [MinimumAltitude](#1-6-11) is triggered."/>
             <arg name="current" type="float">
                 Current altitude min in m
             </arg>
         </cmd>
         <cmd name="CirclingDirection" id="12">
-             Set Fixed wings circling default direction
+            <comment
+                title="Set default circling direction"
+                desc="Set default circling direction. This direction will be used when the drone use an automatic circling or when [CIRCLE](#1-0-9) is sent with direction *default*.\n
+                Only available for fixed wings."
+                support="090e"
+                result="The circling direction is set.\n
+                Then, event [DefaultCirclingDirection](#1-6-12) is triggered."/>
              <arg name="value" type="enum">
                 The circling direction
                 <enum name="CW">
@@ -901,19 +1214,37 @@
             </arg>
         </cmd>
         <cmd name="CirclingRadius" id="13">
-            Set Fixed wings circling radius
+            <comment
+                title="Set circling radius"
+                desc="Set circling radius.\n
+                Only available for fixed wings."
+                support="090e"
+                result="The circling radius is set.\n
+                Then, event [CirclingRadius](#1-6-13) is triggered."/>
             <arg name="value" type="u16">
                 The circling radius in meter
             </arg>
         </cmd>
         <cmd name="CirclingAltitude" id="14">
-            Set Fixed wings circling altitude
+            <comment
+                title="Set min circling altitude"
+                desc="Set min circling altitude (not used during take off).\n
+                Only available for fixed wings."
+                support="090e"
+                result="The circling altitude is set.\n
+                Then, event [CirclingAltitude](#1-6-14) is triggered."/>
             <arg name="value" type="u16">
                 The circling altitude in meter
             </arg>
         </cmd>
         <cmd name="PitchMode" id="15">
-            Set pitch mode
+            <comment
+                title="Set pitch mode"
+                desc="Set pitch mode.\n
+                Only available for fixed wings."
+                support="090e"
+                result="The pitch mode is set.\n
+                Then, event [PitchMode](#1-6-15) is triggered."/>
             <arg name="value" type="enum">
                 The Pitch mode
                 <enum name="NORMAL">
@@ -932,7 +1263,12 @@
     <class name="PilotingSettingsState" id="6">
         Piloting Settings state from product
         <cmd name="MaxAltitudeChanged" id="0">
-            Max Altitude sent by product
+            <comment
+                title="Max altitude"
+                desc="Max altitude.\n
+                The drone will not fly higher than this altitude (above take off point)."
+                support="0901;090c;090e"
+                triggered="by [SetMaxAltitude](#1-2-0)."/>
             <arg name="current" type="float">
                 Current altitude max
             </arg>
@@ -944,7 +1280,12 @@
             </arg>
         </cmd>
         <cmd name="MaxTiltChanged" id="1">
-            Max tilt sent by product
+            <comment
+                title="Max pitch/roll"
+                desc="Max pitch/roll.\n
+                The drone will not fly higher than this altitude (above take off point)."
+                support="0901;090c"
+                triggered="by [SetMaxAltitude](#1-2-0)."/>
             <arg name="current" type="float">
                 Current max tilt
             </arg>
@@ -955,15 +1296,20 @@
                 Range max of tilt
             </arg>
         </cmd>
-        <cmd name="AbsolutControlChanged" id="2">
-            @deprecated
-            Absolut control boolean sent by product
+        <cmd name="AbsolutControlChanged" id="2" deprecated="true">
+            <comment
+                title="Absolut control"
+                desc="Absolut control."/>
             <arg name="on" type="u8">
                 1 if enabled, 0 if disabled
             </arg>
         </cmd>
         <cmd name="MaxDistanceChanged" id="3">
-            Max distance sent by the drone
+            <comment
+                title="Max distance"
+                desc="Max distance."
+                support="0901;090c;090e"
+                triggered="by [SetMaxDistance](#1-2-3)."/>
             <arg name="current" type="float">
                 Current max distance in meter
             </arg>
@@ -975,55 +1321,90 @@
             </arg>
         </cmd>
         <cmd name="NoFlyOverMaxDistanceChanged" id="4">
-            Indication about how the product handle flying over the max distance limitation
+            <comment
+                title="Geofencing"
+                desc="Geofencing.\n
+                If set, the drone won't fly over the [MaxDistance](#1-6-3)."
+                support="0901;090c;090e"
+                triggered="by [EnableGeofence](#1-2-4)."/>
             <arg name="shouldNotFlyOver" type="u8">
                 1 if the drone won't fly further than max distance, 0 if no limitation on the drone will be done
             </arg>
         </cmd>
 
         <cmd name="AutonomousFlightMaxHorizontalSpeed" id="5">
-            [NOT USED] Maximum horizontal speed used by the autonomous flight
+            <comment
+                title="Autonomous flight max horizontal speed"
+                desc="Autonomous flight max horizontal speed."
+                support="0901:3.3.0;090c:3.3.0"
+                triggered="by [SetAutonomousFlightMaxHorizontalSpeed](#1-2-5)."/>
             <arg name="value" type="float">
                 maximum horizontal speed [m/s]
             </arg>
         </cmd>
 
         <cmd name="AutonomousFlightMaxVerticalSpeed" id="6">
-            [NOT USED] Maximum vertical speed used by the autonomous flight
+            <comment
+                title="Autonomous flight max vertical speed"
+                desc="Autonomous flight max vertical speed."
+                support="0901:3.3.0;090c:3.3.0"
+                triggered="by [SetAutonomousFlightMaxVerticalSpeed](#1-2-6)."/>
             <arg name="value" type="float">
                 maximum vertical speed [m/s]
             </arg>
         </cmd>
 
         <cmd name="AutonomousFlightMaxHorizontalAcceleration" id="7">
-            [NOT USED] Maximum horizontal acceleration used by the autonomous flight
+            <comment
+                title="Autonomous flight max horizontal acceleration"
+                desc="Autonomous flight max horizontal acceleration."
+                support="0901:3.3.0;090c:3.3.0"
+                triggered="by [SetAutonomousFlightMaxHorizontalAcceleration](#1-2-7)."/>
             <arg name="value" type="float">
                 maximum horizontal acceleration [m/s2]
             </arg>
         </cmd>
 
         <cmd name="AutonomousFlightMaxVerticalAcceleration" id="8">
-            [NOT USED] Maximum vertical acceleration used by the autonomous flight
+            <comment
+                title="Autonomous flight max vertical acceleration"
+                desc="Autonomous flight max vertical acceleration."
+                support="0901:3.3.0;090c:3.3.0"
+                triggered="by [SetAutonomousFlightMaxVerticalAcceleration](#1-2-8)."/>
             <arg name="value" type="float">
                 maximum vertical acceleration [m/s2]
             </arg>
         </cmd>
 
         <cmd name="AutonomousFlightMaxRotationSpeed" id="9">
-            [NOT USED] Maximum yaw rotation speed used by the autonomous flight
+            <comment
+                title="Autonomous flight max rotation speed"
+                desc="Autonomous flight max rotation speed."
+                support="0901:3.3.0;090c:3.3.0"
+                triggered="by [SetAutonomousFlightMaxRotationSpeed](#1-2-9)."/>
             <arg name="value" type="float">
                 maximum yaw rotation speed [deg/s]
             </arg>
         </cmd>
 
         <cmd name="BankedTurnChanged" id="10">
-            Banked Turn state.
+            <comment
+                title="Banked Turn mode"
+                desc="Banked Turn mode.\n
+                If banked turn mode is enabled, the drone will use yaw values from the piloting command to infer with roll and pitch on the drone when its horizontal speed is not null."
+                support="0901:3.2.0;090c:3.2.0"
+                triggered="by [SetBankedTurnMode](#1-2-10)."/>
             <arg name="state" type="u8">
                 1 if enabled, 0 if disabled
             </arg>
         </cmd>
         <cmd name="MinAltitudeChanged" id="11">
-            Min Altitude sent by product
+            <comment
+                title="Min altitude"
+                desc="Min altitude.\n
+                Only sent by fixed wings."
+                support="090e"
+                triggered="by [SetMinAltitude](#1-2-11)."/>
             <arg name="current" type="float">
                 Current altitude min
             </arg>
@@ -1035,7 +1416,12 @@
             </arg>
         </cmd>
         <cmd name="CirclingDirectionChanged" id="12">
-            Fixed wings circling default direction changed
+            <comment
+                title="Circling direction"
+                desc="Circling direction.\n
+                Only sent by fixed wings."
+                support="090e"
+                triggered="by [SetCirclingDirection](#1-2-12)."/>
             <arg name="value" type="enum">
                 The circling direction
                 <enum name="CW">
@@ -1047,7 +1433,12 @@
             </arg>
         </cmd>
         <cmd name="CirclingRadiusChanged" id="13">
-            Fixed wings circling radius changed
+            <comment
+                title="Circling radius"
+                desc="Circling radius.\n
+                Only sent by fixed wings."
+                support="090e"
+                triggered="by [SetCirclingRadius](#1-2-13)."/>
             <arg name="current" type="u16">
                 The current circling radius in meter
             </arg>
@@ -1059,7 +1450,13 @@
             </arg>
         </cmd>
         <cmd name="CirclingAltitudeChanged" id="14">
-            Fixed wings circling altitude changed
+            <comment
+                title="Circling altitude"
+                desc="Circling altitude.\n
+                Bounds will be automatically adjusted according to the [MaxAltitude](#1-6-0).\n
+                Only sent by fixed wings."
+                support="090e"
+                triggered="by [SetCirclingRadius](#1-2-14) or when bounds change due to [SetMaxAltitude](#1-2-0)."/>
             <arg name="current" type="u16">
                 The current circling altitude in meter
             </arg>
@@ -1071,7 +1468,11 @@
             </arg>
          </cmd>
          <cmd name="PitchModeChanged" id="15">
-           Pitch mode changed
+            <comment
+                title="Pitch mode"
+                desc="Pitch mode."
+                support="090e"
+                triggered="by [SetPitchMode](#1-2-15)."/>
            <arg name="value" type="enum">
                The Pitch mode
                <enum name="NORMAL">
@@ -1089,32 +1490,53 @@
     <class name="SpeedSettings" id="11">
         Speed Settings commands
         <cmd name="MaxVerticalSpeed" id="0">
-            Set Max Vertical speed
+            <comment
+                title="Set max vertical speed"
+                desc="Set max vertical speed."
+                support="0901;090c"
+                result="The max vertical speed is set.\n
+                Then, event [MaxVerticalSpeed](#1-12-0) is triggered."/>
             <arg name="current" type="float">
                 Current max vertical speed in m/s
             </arg>
         </cmd>
         <cmd name="MaxRotationSpeed" id="1">
-            Set Max Yaw Rotation speed
+            <comment
+                title="Set max rotation speed"
+                desc="Set max rotation speed."
+                support="0901;090c"
+                result="The max rotation speed is set.\n
+                Then, event [MaxRotationSpeed](#1-12-1) is triggered."/>
             <arg name="current" type="float">
                 Current max yaw rotation speed in degree/s
             </arg>
         </cmd>
         <cmd name="HullProtection" id="2">
-            Presence of hull protection
+            <comment
+                title="Set the presence of hull protection"
+                desc="Set the presence of hull protection."
+                support="0901;090c"
+                result="The drone knows that it has a hull protection.\n
+                Then, event [HullProtection](#1-12-2) is triggered."/>
             <arg name="present" type="u8">
                 1 if present, 0 if not present
             </arg>
         </cmd>
-        <cmd name="Outdoor" id="3">
-            @deprecated
-            Outdoor property
+        <cmd name="Outdoor" id="3" deprecated="true">
+            <comment
+                title="Set outdoor mode"
+                desc="Set outdoor mode."/>
             <arg name="outdoor" type="u8">
                 1 if outdoor flight, 0 if indoor flight
             </arg>
         </cmd>
         <cmd name="MaxPitchRollRotationSpeed" id="4">
-            Set Max Pitch/Rool Rotation speed
+            <comment
+                title="Set max pitch/roll rotation speed"
+                desc="Set max pitch/roll rotation speed."
+                support="0901;090c"
+                result="The max pitch/roll rotation speed is set.\n
+                Then, event [MaxPitchRollRotationSpeed](#1-12-4) is triggered."/>
             <arg name="current" type="float">
                 Current max pitch/roll rotation speed in degree/s
             </arg>
@@ -1124,7 +1546,11 @@
     <class name="SpeedSettingsState" id="12">
         Speed Settings state from product
         <cmd name="MaxVerticalSpeedChanged" id="0">
-            Max vertical speed sent by product
+            <comment
+                title="Max vertical speed"
+                desc="Max vertical speed."
+                support="0901;090c"
+                triggered="by [SetMaxVerticalSpeed](#1-11-0)."/>
             <arg name="current" type="float">
                 Current max vertical speed in m/s
             </arg>
@@ -1136,7 +1562,11 @@
             </arg>
         </cmd>
         <cmd name="MaxRotationSpeedChanged" id="1">
-            Max yaw rotation speed sent by product
+            <comment
+                title="Max rotation speed"
+                desc="Max rotation speed."
+                support="0901;090c"
+                triggered="by [SetMaxRotationSpeed](#1-11-1)."/>
             <arg name="current" type="float">
                 Current max yaw rotation speed in degree/s
             </arg>
@@ -1148,20 +1578,29 @@
             </arg>
         </cmd>
         <cmd name="HullProtectionChanged" id="2">
-            Presence of hull protection sent by product
+            <comment
+                title="Presence of hull protection"
+                desc="Presence of hull protection."
+                support="0901;090c"
+                triggered="by [SetHullProtectionPresence](#1-11-2)."/>
             <arg name="present" type="u8">
                 1 if present, 0 if not present
             </arg>
         </cmd>
-        <cmd name="OutdoorChanged" id="3">
-            @deprecated
-            Outdoor property sent by product
+        <cmd name="OutdoorChanged" id="3" deprecated="true">
+            <comment
+                title="Outdoor mode"
+                desc="Outdoor mode."/>
             <arg name="outdoor" type="u8">
                 1 if outdoor flight, 0 if indoor flight
             </arg>
         </cmd>
         <cmd name="MaxPitchRollRotationSpeedChanged" id="4">
-            Max pitch/roll rotation speed sent by product
+            <comment
+                title="Max pitch/roll rotation speed"
+                desc="Max pitch/roll rotation speed."
+                support="0901;090c"
+                triggered="by [SetMaxPitchRollRotationSpeed](#1-11-4)."/>
             <arg name="current" type="float">
                 Current max pitch/roll rotation speed in degree/s
             </arg>
@@ -1177,7 +1616,12 @@
     <class name="NetworkSettings" id="9">
         Network settings commands
         <cmd name="WifiSelection" id="0">
-            Auto-select channel of choosen band
+            <comment
+                title="Select Wifi"
+                desc="Select or auto-select channel of choosen band."
+                support="0901;090c;090e"
+                result="The wifi channel changes according to given parameters. Watch out, a disconnection might appear.\n
+                Then, event [WifiSelection](#1-10-0) is triggered."/>
             <arg name="type" type="enum">
                 The type of wifi selection (auto, manual)
                 <enum name="auto">
@@ -1204,7 +1648,13 @@
             </arg>
         </cmd>
         <cmd name="wifiSecurity" id="1">
-            Sent by the controller to set the wifi security
+            <comment
+                title="Set wifi security type"
+                desc="Set wifi security type.\n
+                The security will be changed on the next restart"
+                support="0901;090c;090e"
+                result="The wifi security is set (but not applied until next restart).\n
+                Then, event [WifiSecurityType](#1-10-2) is triggered."/>
             <arg name="type" type="enum">
                 The type of wifi security (open, wpa2)
                 <enum name="open">
@@ -1229,7 +1679,11 @@
     <class name="NetworkSettingsState" id="10">
         Network settings state from product
         <cmd name="WifiSelectionChanged" id="0">
-            Wifi selection from product
+            <comment
+                title="Wifi selection"
+                desc="Wifi selection."
+                support="0901;090c;090e"
+                triggered="by [SelectWifi](#1-9-0)."/>
             <arg name="type" type="enum">
                 The type of wifi selection settings
                 <enum name="auto_all">
@@ -1261,9 +1715,10 @@
                 The channel (depends of the band)
             </arg>
         </cmd>
-        <cmd name="wifiSecurityChanged" id="1">
-            @deprecated
-            Sent by the drone when its wifi security changes
+        <cmd name="wifiSecurityChanged" id="1" deprecated="true">
+            <comment
+                title="Wifi security type"
+                desc="Wifi security type."/>
             <arg name="type" type="enum">
                 The type of wifi security (open, wpa2)
                 <enum name="open">
@@ -1275,7 +1730,11 @@
             </arg>
         </cmd>
         <cmd name="wifiSecurity" id="2">
-            Sent by the drone when its wifi security changes
+            <comment
+                title="Wifi security type"
+                desc="Wifi security type."
+                support="0901;090c;090e"
+                triggered="by [SetWifiSecurityType](#1-9-1)."/>
             <arg name="type" type="enum">
                 The type of wifi security (open, wpa2)
                 <enum name="open">
@@ -1300,9 +1759,10 @@
     <class name="SettingsState" id="16">
         Settings state from product
 
-        <cmd name="ProductMotorVersionListChanged" id="0" type="MAP_ITEM">
-            @deprecated
-            Product Motor version (the first argument is the unique identifier for the list)
+        <cmd name="ProductMotorVersionListChanged" id="0" type="MAP_ITEM" deprecated="true">
+            <comment
+                title="Motor version"
+                desc="Motor version."/>
             <arg name="motor_number" type="u8">
                 Product Motor number
             </arg>
@@ -1317,7 +1777,11 @@
             </arg>
         </cmd>
         <cmd name="ProductGPSVersionChanged" id="1">
-            Product GPS versions
+            <comment
+                title="GPS version"
+                desc="GPS version."
+                support="0901;090c;090e"
+                triggered="at connection."/>
             <arg name="software" type="string">
                 Product GPS software version
             </arg>
@@ -1326,9 +1790,18 @@
             </arg>
         </cmd>
         <cmd name="MotorErrorStateChanged" id="2">
-            Motor status changed
+            <comment
+                title="Motor error"
+                desc="Motor error.\n
+                This event is sent back to *noError* as soon as the motor error disappear. To get the last motor error, see [LastMotorError](#1-16-5)"
+                support="0901;090c;090e"
+                triggered="when a motor error occurs."/>
             <arg name="motorIds" type="u8">
                 Bit field for concerned motor. If bit 0 = 1, motor 1 is affected by this error. Same with bit 1, 2 and 3.
+                Motor 1: front left
+                Motor 2: front right
+                Motor 3: back right
+                Motor 4: back left
             </arg>
             <arg name="motorError" type="enum">
                 Enumeration of the motor error
@@ -1376,15 +1849,20 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="MotorSoftwareVersionChanged" id="3">
-            @deprecated
-            Motor software version status
+        <cmd name="MotorSoftwareVersionChanged" id="3" deprecated="true">
+            <comment
+                title="Motor version"
+                desc="Motor version."/>
             <arg name="version" type="string">
                 name of the version : dot separated fields (major version - minor version - firmware type - nb motors handled). Firmware types : Release, Debug, Alpha, Test-bench
             </arg>
         </cmd>
         <cmd name="MotorFlightsStatusChanged" id="4">
-            Motor flights status
+            <comment
+                title="Motor flight status"
+                desc="Motor flight status."
+                support="0901;090c;090e"
+                triggered="at connection."/>
             <arg name="nbFlights" type="u16">
                 total number of flights
             </arg>
@@ -1396,7 +1874,12 @@
             </arg>
         </cmd>
         <cmd name="MotorErrorLastErrorChanged" id="5">
-            Motor status about last error
+            <comment
+                title="Last motor error"
+                desc="Last motor error.\n
+                This is a reminder of the last error. To know if a motor error is currently happening, see [MotorError](#1-16-2)."
+                support="0901;090c;090e"
+                triggered="at connection and when an error occurs."/>
             <arg name="motorError" type="enum">
                 Enumeration of the motor error
                 <enum name="noError">
@@ -1443,9 +1926,10 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="P7ID" id="6">
-            @deprecated
-            Product P7ID
+        <cmd name="P7ID" id="6" deprecated="true">
+            <comment
+                title="P7ID"
+                desc="P7ID."/>
             <arg name="serialID" type="string">
                 Product P7ID
             </arg>
@@ -1462,7 +1946,14 @@
     <class name="PictureSettings" id="19">
         Photo settings chosen by the user
         <cmd name="PictureFormatSelection" id="0">
-            The format of the photo
+            <comment
+                title="Set picture format"
+                desc="Set picture format.\n
+                Please note that the time required to take the picture is highly related to this format.\n
+                Also, please note that if your picture format is different from snapshot, picture taking will stop video recording (it will restart after the picture has been taken)."
+                support="0901;090c;090e"
+                result="The picture format is set.\n
+                Then, event [PictureFormat](#1-20-0) is triggered."/>
             <arg name="type" type="enum">
                 The type of photo format
                 <enum name="raw">
@@ -1480,7 +1971,12 @@
             </arg>
         </cmd>
         <cmd name="AutoWhiteBalanceSelection" id="1">
-            AutoWhiteBalance mode
+            <comment
+                title="Set White Balance mode"
+                desc="Set White Balance mode."
+                support="0901;090c;090e"
+                result="The white balance mode is set.\n
+                Then, event [WhiteBalanceMode](#1-20-1) is triggered."/>
             <arg name="type" type="enum">
                 The type auto white balance
                 <enum name="auto">
@@ -1501,19 +1997,36 @@
             </arg>
         </cmd>
         <cmd name="ExpositionSelection" id="2">
-            The exposition of the image
+            <comment
+                title="Set image exposure"
+                desc="Set image exposure."
+                support="0901;090c;090e"
+                result="The exposure is set.\n
+                Then, event [ImageExposure](#1-20-2) is triggered."/>
             <arg name="value" type="float">
                 Exposition value (bounds given by ExpositionChanged arg min and max, by default [-3:3])
             </arg>
         </cmd>
         <cmd name="SaturationSelection" id="3">
-            The saturation of the image
+            <comment
+                title="Set image saturation"
+                desc="Set image saturation."
+                support="0901;090c;090e"
+                result="The saturation is set.\n
+                Then, event [ImageSaturation](#1-20-3) is triggered."/>
             <arg name="value" type="float">
                 Saturation value (bounds given by SaturationChanged arg min and max, by default [-100:100])
             </arg>
         </cmd>
         <cmd name="TimelapseSelection" id="4">
-            Picture taken periodically
+            <comment
+                title="Set timelapse mode"
+                desc="Set timelapse mode.\n
+                If timelapse mode is set, instead of taking a video, the drone will take picture regularly.\n
+                Watch out, this command only configure the timelapse mode. Once it is configured, you can start/stop the timelapse with the [RecordVideo](#1-7-3) command."
+                support="0901;090c;090e"
+                result="The timelapse mode is set (but not started).\n
+                Then, event [TimelapseMode](#1-20-4) is triggered."/>
             <arg name="enabled" type="u8">
                 1 if timelapse is enabled, 0 otherwise
             </arg>
@@ -1522,7 +2035,13 @@
             </arg>
         </cmd>
         <cmd name="VideoAutorecordSelection" id="5">
-            Video autorecord
+            <comment
+                title="Set video autorecord mode"
+                desc="Set video autorecord mode.\n
+                If autorecord is set, video record will be automatically started when the drone takes off and stopped slightly after landing."
+                support="0901;090c;090e"
+                result="The autorecord mode is set.\n
+                Then, event [AutorecordMode](#1-20-5) is triggered."/>
             <arg name="enabled" type="u8">
                 1 if video autorecord is enabled, 0 otherwise
             </arg>
@@ -1531,7 +2050,12 @@
             </arg>
         </cmd>
         <cmd name="VideoStabilizationMode" id="6">
-            Set Video stabilization mode
+            <comment
+                title="Set video stabilization mode"
+                desc="Set video stabilization mode."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                result="The video stabilization mode is set.\n
+                Then, event [VideoStabilizationMode](#1-20-6) is triggered."/>
             <arg name="mode" type="enum">
                 Video stabilization mode
                 <enum name="roll_pitch">
@@ -1549,7 +2073,12 @@
             </arg>
         </cmd>
         <cmd name="VideoRecordingMode" id="7">
-            Set Video recording mode
+            <comment
+                title="Set video recording mode"
+                desc="Set video recording mode."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                result="The video recording mode is set.\n
+                Then, event [VideoRecordingMode](#1-20-7) is triggered."/>
             <arg name="mode" type="enum">
                 Video recording mode
                 <enum name="quality">
@@ -1561,7 +2090,12 @@
             </arg>
         </cmd>
         <cmd name="VideoFramerate" id="8">
-            Set Video framerate
+            <comment
+                title="Set video framerate"
+                desc="Set video framerate."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                result="The video framerate is set.\n
+                Then, event [VideoFramerate](#1-20-8) is triggered."/>
             <arg name="framerate" type="enum">
                 Video framerate
                 <enum name="24_FPS">
@@ -1576,7 +2110,12 @@
             </arg>
         </cmd>
         <cmd name="VideoResolutionMode" id="9">
-            Set video mode (streaming and recording resolutions)
+            <comment
+                title="Set video resolution"
+                desc="Set video resolution."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                result="The video resolution is set.\n
+                Then, event [VideoResolution](#1-20-9) is triggered."/>
             <arg name="mode" type="enum">
                 Video mode
                 <enum name="priority_recording">
@@ -1591,7 +2130,11 @@
     <class name="PictureSettingsState" id="20">
         Photo settings state from product
         <cmd name="PictureFormatChanged" id="0">
-        The format of the photo
+            <comment
+                title="Picture format"
+                desc="Picture format."
+                support="0901;090c;090e"
+                triggered="by [SetPictureFormat](#1-19-0)."/>
             <arg name="type" type="enum">
                 The type of photo format
                 <enum name="raw">
@@ -1609,7 +2152,11 @@
             </arg>
         </cmd>
         <cmd name="AutoWhiteBalanceChanged" id="1">
-            AutoWhiteBalance mode
+            <comment
+                title="White balance mode"
+                desc="White balance mode."
+                support="0901;090c;090e"
+                triggered="by [SetWhiteBalanceMode](#1-19-1)."/>
             <arg name="type" type="enum">
                 The type auto white balance
                 <enum name="auto">
@@ -1630,19 +2177,27 @@
             </arg>
         </cmd>
         <cmd name="ExpositionChanged" id="2">
-            The exposition of the image
+            <comment
+                title="Image exposure"
+                desc="Image exposure."
+                support="0901;090c;090e"
+                triggered="by [SetImageExposure](#1-19-2)."/>
             <arg name="value" type="float">
-                Exposition value
+                Exposure value
             </arg>
             <arg name="min" type="float">
-                Min exposition value
+                Min exposure value
             </arg>
             <arg name="max" type="float">
-                Max exposition value
+                Max exposure value
             </arg>
         </cmd>
         <cmd name="SaturationChanged" id="3">
-            The saturation of the image
+            <comment
+                title="Image saturation"
+                desc="Image saturation."
+                support="0901;090c;090e"
+                triggered="by [SetImageSaturation](#1-19-3)."/>
             <arg name="value" type="float">
                 Saturation value
             </arg>
@@ -1654,7 +2209,11 @@
             </arg>
         </cmd>
         <cmd name="TimelapseChanged" id="4">
-            Picture taken periodically
+            <comment
+                title="Timelapse mode"
+                desc="Timelapse mode."
+                support="0901;090c;090e"
+                triggered="by [SetTimelapseMode](#1-19-4)."/>
             <arg name="enabled" type="u8">
                 1 if timelapse is enabled, 0 otherwise
             </arg>
@@ -1669,7 +2228,11 @@
             </arg>
         </cmd>
         <cmd name="VideoAutorecordChanged" id="5">
-            Video autorecord
+            <comment
+                title="Video Autorecord mode"
+                desc="Video Autorecord mode."
+                support="0901;090c;090e"
+                triggered="by [SetVideoAutorecordMode](#1-19-5)."/>
             <arg name="enabled" type="u8">
                 1 if video autorecord is enabled, 0 otherwise
             </arg>
@@ -1678,7 +2241,11 @@
             </arg>
         </cmd>
         <cmd name="VideoStabilizationModeChanged" id="6">
-            Video stabilization mode
+            <comment
+                title="Video stabilization mode"
+                desc="Video stabilization mode."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                triggered="by [SetVideoStabilizationMode](#1-19-6)."/>
             <arg name="mode" type="enum">
                 Video stabilization mode
                 <enum name="roll_pitch">
@@ -1696,7 +2263,11 @@
             </arg>
         </cmd>
         <cmd name="VideoRecordingModeChanged" id="7">
-            Video recording mode
+            <comment
+                title="Video recording mode"
+                desc="Video recording mode."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                triggered="by [SetVideoRecordingMode](#1-19-7)."/>
             <arg name="mode" type="enum">
                 Video recording mode
                 <enum name="quality">
@@ -1708,7 +2279,11 @@
             </arg>
         </cmd>
         <cmd name="VideoFramerateChanged" id="8">
-            Video framerate
+            <comment
+                title="Video framerate"
+                desc="Video framerate."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                triggered="by [SetVideoFramerateMode](#1-19-8)."/>
             <arg name="framerate" type="enum">
                 Video framerate
                 <enum name="24_FPS">
@@ -1723,7 +2298,12 @@
             </arg>
         </cmd>
         <cmd name="VideoResolutionModeChanged" id="9">
-            Video mode (streaming and recording resolutions)
+            <comment
+                title="Video resolution mode"
+                desc="Video resolution mode.\n
+                This event informs about the recording AND streaming resolutions."
+                support="0901:3.4.0;090c:3.4.0;090e"
+                triggered="by [SetVideResolutionMode](#1-19-9)."/>
             <arg name="mode" type="enum">
                 Video mode
                 <enum name="priority_recording">
@@ -1739,7 +2319,12 @@
     <class name="MediaStreaming" id="21">
         Control media streaming behavior.
         <cmd name="VideoEnable" id="0">
-            Enable/disable video streaming.
+            <comment
+                title="Enable/disable video streaming"
+                desc="Enable/disable video streaming."
+                support="0901;090c;090e"
+                result="The video stream is started or stopped.\n
+                Then, event [VideoStreamState](#1-22-0) is triggered."/>
             <arg name="enable" type="u8">
                 1 to enable, 0 to disable.
             </arg>
@@ -1764,7 +2349,11 @@
     <class name="MediaStreamingState" id="22">
         Media streaming status.
         <cmd name="VideoEnableChanged" id="0">
-            Return video streaming status.
+            <comment
+                title="Video stream state"
+                desc="Video stream state."
+                support="0901;090c;090e"
+                triggered="by [EnableOrDisableVideoStream](#1-21-0)."/>
             <arg name="enabled" type="enum">
                 Current video streaming status.
                 <enum name="enabled">
@@ -1797,9 +2386,10 @@
 
     <class name="GPSSettings" id="23">
         GPS settings
-        <cmd name="SetHome" id="0">
-            @deprecated
-            Set home location
+        <cmd name="SetHome" id="0" deprecated="true">
+            <comment
+                title="Set home position"
+                desc="Set home position."/>
             <arg name="latitude" type="double">
                 Home latitude in decimal degrees
             </arg>
@@ -1811,10 +2401,21 @@
             </arg>
         </cmd>
         <cmd name="ResetHome" id="1">
-            Reset home location and let the drone make its own home
+            <comment
+                title="Reset home position"
+                desc="Reset home position."
+                support="0901;090c;090e"
+                result="The home position is reset.\n
+                Then, event [HomeLocationReset](#1-24-1) is triggered."/>
         </cmd>
         <cmd name="SendControllerGPS" id="2">
-            send controller GPS location
+            <comment
+                title="Set controller gps location"
+                desc="Set controller gps location.\n
+                The user location might be used in case of return home, according to the home type and the accuracy of the given position. You can get the current home type with the event [HomeType](#1-24-4)."
+                support="0901;090c;090e"
+                result="The controller position is known by the drone.\n
+                Then, event [HomeLocation](#1-24-2) is triggered."/>
             <arg name="latitude" type="double">
                 GPS latitude in decimal degrees
             </arg>
@@ -1832,7 +2433,14 @@
             </arg>
         </cmd>
         <cmd name="HomeType" id="3">
-            Set user preference for the type of the home position. Note that this is only a preference
+            <comment
+                title="Set the preferred home type"
+                desc="Set the preferred home type.\n
+                Please note that this is only a preference. The actual type chosen is given by the event [HomeType](#1-31-2).\n
+                You can get the currently available types with the event [HomeTypeAvailability](#1-31-1)."
+                support="0901;090c;090e"
+                result="The user choice is known by the drone.\n
+                Then, event [PreferredHomeType](#1-24-4) is triggered."/>
             <arg name="type" type="enum">
                 The type of the home position
                 <enum name="TAKEOFF">
@@ -1844,7 +2452,12 @@
             </arg>
         </cmd>
         <cmd name="ReturnHomeDelay" id="4">
-            Set the delay after which the drone will automatically try to return home
+            <comment
+                title="Set the return home delay"
+                desc="Set the delay after which the drone will automatically try to return home after a disconnection."
+                support="0901;090c;090e"
+                result="The delay of the return home is set.\n
+                Then, event [ReturnHomeDelay](#1-24-5) is triggered."/>
             <arg name="delay" type="u16">
                 Delay in second
             </arg>
@@ -1854,7 +2467,11 @@
     <class name="GPSSettingsState" id="24">
         GPS settings state
         <cmd name="HomeChanged" id="0">
-            Return home status
+            <comment
+                title="Home location"
+                desc="Home location."
+                support="0901;090c;090e"
+                triggered="by [SetHomeLocation](#1-23-2)."/>
             <arg name="latitude" type="double">
                 Home latitude in decimal degrees
             </arg>
@@ -1866,7 +2483,11 @@
             </arg>
         </cmd>
         <cmd name="ResetHomeChanged" id="1">
-            Reset home status
+            <comment
+                title="Home location has been reset"
+                desc="Home location has been reset."
+                support="0901;090c;090e"
+                triggered="by [ResetHomeLocation](#1-23-1)."/>
             <arg name="latitude" type="double">
                 Home latitude in decimal degrees
             </arg>
@@ -1878,13 +2499,21 @@
             </arg>
         </cmd>
         <cmd name="GPSFixStateChanged" id="2">
-            GPS fix state
+            <comment
+                title="Gps fix info"
+                desc="Gps fix info."
+                support="0901;090c;090e"
+                triggered="on change."/>
             <arg name="fixed" type="u8">
                 1 if gps on drone is fixed, 0 otherwise
             </arg>
         </cmd>
         <cmd name="GPSUpdateStateChanged" id="3">
-            GPS update state
+            <comment
+                title="Gps update state"
+                desc="Gps update state."
+                support="0901;090c;090e"
+                triggered="on change."/>
             <arg name="state" type="enum">
                 The state of the gps update
                 <enum name="updated">
@@ -1899,7 +2528,12 @@
             </arg>
         </cmd>
         <cmd name="HomeTypeChanged" id="4">
-            State of the type of the home position. This type is the user preference. The prefered home type may not be available, see HomeTypeStatesChanged to get the drone home type.
+            <comment
+                title="Preferred home type"
+                desc="User preference for the home type.\n
+                See [HomeType](#1-31-2) to get the drone actual home type."
+                support="0901;090c;090e"
+                triggered="by [SetPreferredHomeType](#1-23-3)."/>
             <arg name="type" type="enum">
                 The type of the home position
                 <enum name="TAKEOFF">
@@ -1911,7 +2545,11 @@
             </arg>
         </cmd>
         <cmd name="ReturnHomeDelayChanged" id="5">
-            State of the delay after which the drone will automatically try to return home
+            <comment
+                title="Return home delay"
+                desc="Return home trigger delay. This delay represents the time after which the return home is automatically triggered after a disconnection."
+                support="0901;090c;090e"
+                triggered="by [SetReturnHomeDelay](#1-23-4)."/>
             <arg name="delay" type="u16">
                 Delay in second
             </arg>
@@ -1922,8 +2560,11 @@
         Camera state
 
         <cmd name="Orientation" id="0">
-            Camera orientation
-
+            <comment
+                title="Camera orientation"
+                desc="Camera orientation."
+                support="0901;090c;090e"
+                triggered="by [SetCameraOrientation](#1-1-0)."/>
             <arg name="tilt" type="i8">
                 Tilt camera consign for the drone [-100;100]
             </arg>
@@ -1934,8 +2575,12 @@
         </cmd>
 
         <cmd name="defaultCameraOrientation" id="1">
-            Orientation of the camera center.
-            This is the value to send when we want to center the camera.
+            <comment
+                title="Orientation of the camera center"
+                desc="Orientation of the center of the camera.\n
+                This is the value to send when you want to center the camera."
+                support="0901;090c;090e"
+                triggered="at connection."/>
             <arg name="tilt" type="i8">
                 Tilt value (in degree)
             </arg>
@@ -1948,7 +2593,13 @@
     <class name="Antiflickering" id="29">
         Anti-flickering related commands
         <cmd name="electricFrequency" id="0">
-            Electric frequency of the country determined by the position of the controller
+            <comment
+                title="Set the electric frequency"
+                desc="Set the electric frequency of the surrounding lights.\n
+                This is used to avoid the video flickering in auto mode. You can get the current antiflickering mode with the event [AntiflickeringModeChanged](#1-30-1)."
+                support="0901;090c;090e"
+                result="The electric frequency is set.\n
+                Then, event [ElectricFrequency](#1-30-0) is triggered."/>
             <arg name="frequency" type="enum">
                 Type of the electric frequency
                 <enum name="fiftyHertz">
@@ -1960,7 +2611,15 @@
             </arg>
         </cmd>
         <cmd name="setMode" id="1">
-            Set the anti flickering mode
+            <comment
+                title="Set the antiflickering mode"
+                desc="Set the antiflickering mode.\n
+                If auto, the drone will detect when flickers appears on the video and trigger the antiflickering.\n
+                In this case, this electric frequency it will use will be the one specified in the event [ElectricFrequency](#1-29-0).\n
+                Forcing the antiflickering (FixedFiftyHertz or FixedFiftyHertz) can reduce luminosity of the video."
+                support="0901;090c;090e"
+                result="The antiflickering mode is set.\n
+                Then, event [AntiflickeringMode](#1-30-1) is triggered."/>
             <arg name="mode" type="enum">
                 Mode of the anti flickering functionnality
                 <enum name="auto">
@@ -1979,7 +2638,12 @@
     <class name="AntiflickeringState" id="30">
         Anti-flickering related states
         <cmd name="electricFrequencyChanged" id="0">
-            Electric frequency of the country determined by the position of the controller
+            <comment
+                title="Electric frequency"
+                desc="Electric frequency.\n
+                This piece of information is used for the antiflickering when the [AntiflickeringMode](#1-30-1) is set to *auto*."
+                support="0901;090c;090e"
+                triggered="by [SetElectricFrequency](#1-29-0)."/>
             <arg name="frequency" type="enum">
                 Type of the electric frequency
                 <enum name="fiftyHertz">
@@ -1991,7 +2655,11 @@
             </arg>
         </cmd>
         <cmd name="modeChanged" id="1">
-            Anti flickering mode
+            <comment
+                title="Antiflickering mode"
+                desc="Antiflickering mode."
+                support="0901;090c;090e"
+                triggered="by [SetAntiflickeringMode](#1-29-1)."/>
             <arg name="mode" type="enum">
                 Mode of the anti flickering functionnality
                 <enum name="auto">
@@ -2010,13 +2678,22 @@
     <class name="GPSState" id="31">
         GPS related States
         <cmd name="NumberOfSatelliteChanged" id="0">
-            The number of satellite used to compute the gps position
+            <comment
+                title="Number of GPS satellites"
+                desc="Number of GPS satellites."
+                support="0901;090c;090e"
+                triggered="on change."/>
             <arg name="numberOfSatellite" type="u8">
                 The number of satellite
             </arg>
         </cmd>
         <cmd name="HomeTypeAvailabilityChanged" id="1" type="MAP_ITEM">
-            Availability of the return home types in a map : for each type other args will be sent by the drone
+            <comment
+                title="Home type availability"
+                desc="Home type availability."
+                support="0901;090c;090e"
+                triggered="when the availability of, at least, one type changes.\n
+                This might be due to controller position availability, gps fix before take off or other reason."/>
             <arg name="type" type="enum">
                 The type of the return home
                 <enum name="TAKEOFF">
@@ -2036,7 +2713,13 @@
         </cmd>
 
         <cmd name="HomeTypeChosenChanged" id="2">
-            The return home type chosen
+            <comment
+                title="Home type"
+                desc="Home type.\n
+                This choice is made by the drone, according to the [PreferredHomeType](#1-24-4) and the [HomeTypeAvailability](#1-31-1). The drone will choose the type matching with the user preference only if this type is available."
+                support="0901;090c;090e"
+                triggered="when the return home type chosen by the drone changes.\n
+                This might be produced by a user preference triggered by [SetPreferedHomeType](#1-23-3) or by a change in the [HomeTypesAvailabilityChanged](#1-31-1)."/>
             <arg name="type" type="enum">
                 The type of the return home chosen
                 <enum name="TAKEOFF">
@@ -2053,10 +2736,11 @@
     </class>
 
     <class name="PROState" id="32">
-        @deprecated
         Pro features enabled on the Bebop
-        <cmd name="Features" id="0">
-            Features enabled
+        <cmd name="Features" id="0" deprecated="true">
+            <comment
+                title="Pro features"
+                desc="Pro features."/>
             <arg name="features" type="u64">
                 Bitfield representing enabled features.
             </arg>
