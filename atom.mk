@@ -73,12 +73,6 @@ $(if $(wildcard $(arsdkgen-macro-path)/arsdkgen.py), \
 $$(arsdkgen_gen_files): $$(arsdkgen_done_file)
 	$(empty)
 
-# Force suppression of done file if any of the generated file is missing
-# This will force trigerring the generation
-$$(foreach __f,$$(arsdkgen_gen_files), \
-	$$(if $$(wildcard $$(__f)),,$$(shell rm -f $$(arsdkgen_done_file))) \
-)
-
 # Actual generation rule
 # The copy of xml is staging is done in 2 steps because several modules could use
 # the same xml the move ensure atomicity of the copy.
