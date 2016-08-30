@@ -581,6 +581,12 @@
                 1 if the calibration should be started, 0 if it should be aborted
             </arg>
         </cmd>
+        <cmd name="PitotCalibration" id="1">
+            Sent when a calibration of the pitot is asked or is aborted
+            <arg name="calibrate" type="u8">
+                1 if the calibration should be started, 0 if it should be aborted
+            </arg>
+        </cmd>
     </class>
     <class name="CalibrationState" id="14">
         Status of the calibration
@@ -627,6 +633,27 @@
             Status of the calibration process
             <arg name="started" type="u8">
                 1 if calibration has started, 0 otherwise
+            </arg>
+        </cmd>
+        <cmd name="PitotCalibrationStateChanged" id="4">
+            Sent when the state of the pitot calibration has changed
+            <arg name="state" type="enum">
+                State of pitot calibration
+                <enum name="done">
+                    Calibration is ok
+                </enum>
+                <enum name="ready">
+                    Calibration is started, waiting user action
+                </enum>
+                <enum name="in_progress">
+                    Calibration is in progress
+                </enum>
+                <enum name="required">
+                    Calibration is required
+                </enum>
+            </arg>
+            <arg name="lastError" type="u8">
+                lastError : 1 if an error occured and 0 if not
             </arg>
         </cmd>
     </class>
