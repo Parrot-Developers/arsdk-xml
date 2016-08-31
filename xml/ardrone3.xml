@@ -1737,6 +1737,21 @@
                 1 to enable, 0 to disable.
             </arg>
         </cmd>
+        <cmd name="VideoStreamMode" id="1">
+            Video stream mode
+            <arg name="mode" type="enum">
+                stream mode
+                <enum name="low_latency">
+                    Minimize latency with average reliability (best for piloting).
+                </enum>
+                <enum name="high_reliability">
+                    Maximize the reliability with an average latency (best when streaming quality is important but not the latency).
+                </enum>
+                <enum name="high_reliability_low_framerate">
+                    Maximize the reliability using a framerate decimation with an average latency (best when streaming quality is important but not the latency).
+                </enum>
+            </arg>
+        </cmd>
     </class>
 
     <class name="MediaStreamingState" id="22">
@@ -1753,6 +1768,21 @@
                 </enum>
                 <enum name="error">
                     Video streaming failed to start.
+                </enum>
+            </arg>
+        </cmd>
+        <cmd name="VideoStreamModeChanged" id="1">
+            Video stream mode state
+            <arg name="mode" type="enum">
+                stream mode
+                <enum name="low_latency">
+                    Minimize latency with average reliability (best for piloting).
+                </enum>
+                <enum name="high_reliability">
+                    Maximize the reliability with an average latency (best when streaming quality is important but not the latency).
+                </enum>
+                <enum name="high_reliability_low_framerate">
+                    Maximize the reliability using a framerate decimation with an average latency (best when streaming quality is important but not the latency).
                 </enum>
             </arg>
         </cmd>
