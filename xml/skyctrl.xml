@@ -362,7 +362,7 @@
 	    </enum>
 	  </arg>
 	</cmd>
-	<cmd name="AttitudeChanged" id="4">
+	<cmd name="AttitudeChanged" id="4" buffer="NON_ACK">
 	  SkyController Attitude in north-east-down (NED) coordinate system.
 	  Attitude is provided as a quaternion.
 	  <arg name="q0" type="float">
