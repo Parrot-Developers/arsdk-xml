@@ -1450,6 +1450,13 @@
                 Product P7ID
             </arg>
         </cmd>
+        <cmd name="CPUID" id="7">
+            Product main cpu id
+            <arg name="id" type="string">
+                Product main cpu id
+            </arg>
+        </cmd>
+
     </class>
 
     <class name="PictureSettings" id="19">
