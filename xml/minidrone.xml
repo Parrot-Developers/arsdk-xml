@@ -784,4 +784,56 @@
             </arg>
         </cmd>
     </class>
+    <class name="NavigationDataState" id="18">
+        Navigation Data.
+        <cmd name="DronePosition" id="0">
+            Get the drone position from takeoff point (0, 0, 0, 0).
+            The orthonormal basis is fixed at this point. The axis are
+            oriented the following way :
+            * X : From the rear of the drone to its front.
+            * Y : From the right of the drone to its left.
+            * Z : Orthogonal to X and Y and oriented upward.
+            * Psi : From 180 to -180 in the clockwise direction,
+                    with Psi = 0 at takeoff position.
+
+                                - X Psi=0
+                               /|\
+                      ---       |       ---
+                     /   \      |      /   \
+                     | \ |      |      | / |
+                     \  \/    FRONT    \/  /
+                      ---\   ++ | ++   /---
+                          \--++-+-++--/
+                          |     |     |
+                          |   +-+-+   |
+              /           |   |*|*|   |
+  Psi=-90  Y |----- LEFT -+---+*+*|   |	RIGHT Psi=90
+              \           |   |* *|   |
+                          |   +---+   |
+                          |           |
+                          /-----------\
+                      ---/             \---
+                     /  /\    REAR     /\  \
+                     | / |             | \ |
+                     \   /             \   /
+                      ---               ---
+                            Psi=180
+
+            <arg name="posx" type="float">
+              Position on X axis, relative to take off position (cm).
+            </arg>
+            <arg name="posy" type="float">
+              Position on Y axis, relative to take off position (cm).
+            </arg>
+            <arg name="posz" type="i16">
+              Position on Z axis, relative to take off position (cm).
+            </arg>
+            <arg name="psi" type="i16">
+              Psi angle [-180; 180], relative to take off orientation.
+            </arg>
+            <arg name="ts" type="i16">
+              Time elapsed since last data send (ms).
+            </arg>
+        </cmd>
+    </class>
 </project>
