@@ -216,5 +216,11 @@
 			title="Abort current calibration"
 			desc="Abort current calibration."/>
 		</cmd>
+
+		<cmd name="reset_calibration" id="10">
+			<comment
+			title="Reset calibration to default values"
+			desc="Reset calibration to default values."/>
+		</cmd>
 	</msgs>
 </feature>
