@@ -83,15 +83,16 @@ class ArArgType(object):
     STRING = 10
     ENUM = 11
     BITFIELD = 12
+    MULTISETTING = 13
 
     TO_STRING = {I8: "i8", U8: "u8", I16: "i16", U16: "u16",
             I32: "i32", U32: "u32", I64: "i64", U64: "u64",
             FLOAT: "float", DOUBLE: "double", STRING: "string",
-            ENUM: "enum", BITFIELD: "bitfield"}
+            ENUM: "enum", BITFIELD: "bitfield", MULTISETTING: "multisetting"}
     FROM_STRING = {"i8": I8, "u8": U8, "i16": I16, "u16": U16,
             "i32": I32, "u32": U32, "i64": I64, "u64": U64,
             "float": FLOAT, "double": DOUBLE, "string": STRING,
-            "enum": ENUM, "bitfield": BITFIELD}
+            "enum": ENUM, "bitfield": BITFIELD, "multisetting": MULTISETTING}
 
 #===============================================================================
 #===============================================================================
@@ -142,6 +143,8 @@ class ArFeature(object):
         self.doc = doc
         self.enums = []
         self.enumsByName = {}
+        self.multisets = []
+        self.multisetsByName = {}
         self.cmds = []
         self.cmdsById = {} #only for real feature, empty for project
         self.cmdsByName = {} #only for real feature, empty for project
@@ -164,12 +167,13 @@ class ArFeature(object):
         return dict(self.cmdsByName, **self.evtsByName)
 
     def __repr__(self):
-        return ("{name='%s', featureId=%d, doc='%s', enums='%s', cmds='%s', "
-                "evts='%s'}" % (
+        return ("{name='%s', featureId=%d, doc='%s', enums='%s', "
+                "multisets='%s', cmds='%s', evts='%s'}" % (
                 self.name,
                 self.featureId,
                 repr(self.doc),
                 pprint.pformat(self.enums),
+                pprint.pformat(self.multisets),
                 pprint.pformat(self.cmds),
                 pprint.pformat(self.evts)))
 
@@ -186,10 +190,12 @@ class ArFeature(object):
                 msgName = cmd.name
                 if "event" in cl.name.lower() or "state" in cl.name.lower():
                     msgObj = ArEvt(msgName, msgId, cmd.doc, cmd.listType,
-                    cmd.bufferType, cmd.timeoutPolicy, cmd.content, cmd.isDeprecated)
+                            cmd.bufferType, cmd.timeoutPolicy, cmd.content,
+                            cmd.isDeprecated, ftrObj)
                 else:
                     msgObj = ArCmd(msgName, msgId, cmd.doc, cmd.listType,
-                    cmd.bufferType, cmd.timeoutPolicy, cmd.content, cmd.isDeprecated)
+                            cmd.bufferType, cmd.timeoutPolicy, cmd.content,
+                            cmd.isDeprecated, ftrObj)
 
                 if cmd.listType == ArCmdListType.MAP:
                     msgObj.mapKey = cmd.args[0]
@@ -242,7 +248,7 @@ class ArClass(object):
 #===============================================================================
 class ArMsg(object):
     def __init__(self, name, cmdId, doc, listType, bufferType, timeoutPolicy,
-            content, isDeprecated):
+            content, isDeprecated, ftr):
         self.name = name
         self.cmdId = cmdId
         self.doc = doc
@@ -255,6 +261,7 @@ class ArMsg(object):
         self.argsByName = {}
         self.cls = None #only for project conversion
         self.isDeprecated = isDeprecated
+        self.ftr = ftr
 
     def __repr__(self):
         return ("{name='%s', cmdId=%d, doc='%s', listType='%s', "
@@ -275,17 +282,17 @@ class ArMsg(object):
 #===============================================================================
 class ArCmd(ArMsg):
     def __init__(self, name, cmdId, doc, listType, bufferType, timeoutPolicy,
-            content, isDeprecated):
+            content, isDeprecated, ftr):
         ArMsg.__init__(self, name, cmdId, doc, listType, bufferType,
-                    timeoutPolicy, content, isDeprecated)
+                    timeoutPolicy, content, isDeprecated, ftr)
 
 #===============================================================================
 #===============================================================================
 class ArEvt(ArMsg):
     def __init__(self, name, cmdId, doc, listType, bufferType, timeoutPolicy,
-            content, isDeprecated):
+            content, isDeprecated, ftr):
         ArMsg.__init__(self, name, cmdId, doc, listType, bufferType,
-                    timeoutPolicy, content, isDeprecated)
+                    timeoutPolicy, content, isDeprecated, ftr)
 
 #===============================================================================
 #===============================================================================
@@ -327,6 +334,21 @@ class ArArg(object):
                 argTypeRep,
                 repr(self.doc),
                 pprint.pformat(self.enums)))
+
+#===============================================================================
+#===============================================================================
+class ArMultiSetting(object):
+    def __init__(self, name, doc):
+        self.name = name
+        self.doc = doc
+        self.links = []
+        self.msgs = []
+
+    def __repr__(self):
+        return ("{name='%s', doc='%s', msgs=%s}" % (
+                self.name,
+                repr(self.doc),
+                pprint.pformat(self.msgs)))
 
 #===============================================================================
 #===============================================================================
@@ -439,7 +461,36 @@ def _parse_feature_node(ctx, filePath, featureNode, featureObj):
             # Parse enum node
             _parse_enum_node(filePath, enumNode, enumObj)
 
+    _parse_feature_node_multisets(ctx, filePath, featureNode, featureObj)
+
     _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj)
+
+#===============================================================================
+#===============================================================================
+def _parse_feature_node_multisets(ctx, filePath, featureNode, featureObj):
+    for multisetsNode in featureNode.getElementsByTagName("multisettings"):
+        for multisetNode in multisetsNode.getElementsByTagName("multisetting"):
+            multisetName = multisetNode.getAttribute("name")
+            multisetDoc = _get_node_content(multisetNode).strip()
+
+            # Check multiset name
+            if multisetName in featureObj.multisetsByName:
+                raise ArParserError("%s: Duplicate multiset name '%s'" % (
+                        filePath, multisetName))
+
+            # Create multiset object
+            multisetObj = ArMultiSetting(multisetName, multisetDoc)
+            featureObj.multisets.append(multisetObj)
+            featureObj.multisetsByName[multisetName] = multisetObj
+
+            # Parse multiset node
+            _parse_multiset_node(filePath, multisetNode, multisetObj)
+
+#===============================================================================
+#===============================================================================
+def _parse_multiset_node(filePath, multisetNode, multisetObj):
+    for memberNode in multisetNode.getElementsByTagName("member"):
+        multisetObj.links.append(memberNode.getAttribute("link"))
 
 #===============================================================================
 #===============================================================================
@@ -515,14 +566,14 @@ def _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj):
             if msgNode in msgsNode.getElementsByTagName("cmd"):
                 #is command
                 msgObj = ArCmd (msgName, msgId, msgDoc,
-                msgType, msgBufferType, msgTimeoutPolicy, msgContent,
-                mgsIsDeprecated)
+                        msgType, msgBufferType, msgTimeoutPolicy, msgContent,
+                        mgsIsDeprecated, featureObj)
 
             else:
                 #is event
                 msgObj = ArEvt(msgName, msgId, msgDoc,
-                msgType, msgBufferType, msgTimeoutPolicy, msgContent,
-                mgsIsDeprecated)
+                        msgType, msgBufferType, msgTimeoutPolicy, msgContent,
+                        mgsIsDeprecated, featureObj)
 
             # Parse msg node
             _parse_msg_node(ctx, filePath, featureObj, msgNode, msgObj)
@@ -605,7 +656,7 @@ def _parse_class_node(filePath, classNode, classObj):
 
         # Create cmd object
         cmdObj = ArCmd(cmdName, cmdId, cmdDoc, cmdListType, cmdBufferType,
-                    cmdTimeoutPolicy, cmdContent, mgsIsDeprecated)
+                    cmdTimeoutPolicy, cmdContent, mgsIsDeprecated, None)
         cmdObj.cls = classObj
         classObj.cmds.append(cmdObj)
         classObj.cmdsById[cmdId] = cmdObj
@@ -670,12 +721,40 @@ def _get_cmt_node(msgNode):
                 cmtTriggered, cmtResult)
     else:
         oldComment = _get_node_content(msgNode)
-        return ArComment(oldComment.splitlines()[0], oldComment, None, None, None)
+        return ArComment(oldComment.splitlines()[0], oldComment, None,
+                None, None)
 
 #===============================================================================
 #===============================================================================
 def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
-    msgObj.doc = _get_cmt_node(msgNode)
+    if msgNode.getElementsByTagName("comment"):
+        commentNode = msgNode.getElementsByTagName("comment")[0]
+        cmtTitle = commentNode.getAttribute("title")
+        cmtSupport = commentNode.getAttribute("support")
+
+        desc = commentNode.getAttribute("desc")
+        # Remove whitespaces after '\n'
+        lines = [l.strip() for l in desc.split(r'\n')]
+        cmtDesc = '\n'.join(lines)
+
+        if commentNode.hasAttribute("triggered"):
+            cmtTriggered = commentNode.getAttribute("triggered")
+        else:
+            cmtTriggered = None
+
+        if commentNode.hasAttribute("result"):
+            cmtResult = commentNode.getAttribute("result")
+        else:
+            cmtResult = None
+
+        # Create comment object
+        msgObj.doc = ArComment(cmtTitle, cmtDesc, cmtSupport,
+                cmtTriggered, cmtResult)
+    else:
+        oldComment = _get_node_content(msgNode)
+        msgObj.doc = ArComment(oldComment.splitlines()[0], oldComment, None,
+                None, None)
+
     _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj)
 
 #===============================================================================
@@ -733,6 +812,18 @@ def _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj):
 
             argType = ArBitfield(btfEnum, btfType)
             btfEnum.usedLikeBitfield = True
+        elif ArArgType.FROM_STRING[attr1] == ArArgType.MULTISETTING:
+            # Find multi setting
+            if attr2 not in ftr.multisetsByName and \
+                    (_FTR_GEN not in ctx.featuresByName or \
+                    attr2 not in ctx.featuresByName[_FTR_GEN].multisetsByName):
+                raise ArParserError("%s: Invalid multisetting arg type '%s'"
+                        % (filePath, attr2))
+
+            if attr2 in ftr.multisetsByName:
+                argType = ftr.multisetsByName[attr2]
+            else:
+                argType = ctx.featuresByName[_FTR_GEN].multisetsByName[attr2]
         else:
             argType = ArArgType.FROM_STRING[attr1]
 
@@ -881,6 +972,45 @@ def parse_ftr_xml(ctx, filePath):
 
 #===============================================================================
 #===============================================================================
+def _link_to_msg(ctx, link):
+    parts = link.split(".")
+
+    if len(parts) < 2:
+        return None
+
+    if not parts[0] in ctx.featuresByName:
+        return None
+    ftr = ctx.featuresByName[parts[0]]
+
+    if len(parts) == 2:
+        return ftr.getMsgsByName[parts[1]]
+
+    # Project part
+    clsName = parts[1]
+    cmdName = parts[2]
+
+    for cmd in ftr.cmds + ftr.evts:
+        if cmd.name == cmdName and cmd.cls and cmd.cls.name == clsName:
+            return cmd
+
+    return None
+
+#===============================================================================
+#===============================================================================
+def finalize_ftrs(ctx):
+    # Finalize features
+    for ftr in ctx.features:
+        # Finalize multi settings
+        for multiset in ftr.multisets:
+            for link in multiset.links:
+                msg = _link_to_msg(ctx, link)
+                if not msg:
+                    raise ArParserError("%s: Bad multisetting link '%s'" % (
+                            filePath, link))
+                multiset.msgs.append(msg)
+
+#===============================================================================
+#===============================================================================
 def parse_xml(ctx, filePath):
     # Parse xml file
     try:
@@ -902,12 +1032,16 @@ def main():
     ctx = ArParserCtx()
     path, filename = os.path.split(os.path.realpath(__file__))
     path = os.path.join(path, "xml")
+
     # first load generic.xml
     parse_xml(ctx, os.path.join(path, "generic.xml"))
     for f in sorted(os.listdir(path)):
         if not f.endswith(".xml") or f == "generic.xml":
             continue
         parse_xml(ctx, os.path.join(path, f))
+
+    # Finalize MultiSettings
+    finalize_ftrs(ctx)
 
     #for prj in ctx.projects:
     #    print prj
