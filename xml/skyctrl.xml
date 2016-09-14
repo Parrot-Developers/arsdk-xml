@@ -252,7 +252,7 @@
 
     <class name="SettingsState" id="5">
         Settings state from product
-        <cmd name="AllSettingsChanged" id="0">
+        <cmd name="AllSettingsChanged" id="0" timeout="RETRY">
             State sent when all settings has been sent
         </cmd>
 
@@ -281,6 +281,16 @@
             </enum>
           </arg>
         </cmd>
+
+        <cmd name="ProductVersionChanged" id="4">
+            Product versions
+            <arg name="software" type="string">
+                Product software version
+            </arg>
+            <arg name="hardware" type="string">
+                Product hardware version
+            </arg>
+        </cmd>
     </class>
 
     <class name="Common" id="6">
@@ -292,7 +302,7 @@
 
     <class name="CommonState" id="7">
         Common state from product
-        <cmd name="AllStatesChanged" id="0">
+        <cmd name="AllStatesChanged" id="0" timeout="RETRY">
             State sent when all product states has been sent
         </cmd>
     </class>
@@ -302,7 +312,8 @@
         <cmd name="BatteryChanged" id="0">
             State sent when SkyController battery has changed
             <arg name="percent" type="u8">
-                SkyController battery
+                SkyController battery: from 0 to 100 (full charge)
+                value of 255 when charging.
             </arg>
         </cmd>
 
@@ -313,23 +324,60 @@
             </arg>
         </cmd>
 
-		<cmd name="GpsPositionChanged" id="2">
-		  State sent when the SkyController gps position has changed
-		  <arg name="latitude" type="double">
-			SkyController latitude (500. if not available)
-		  </arg>
-		  <arg name="longitude" type="double">
-			SkyController longiture (500. if not available)
-		  </arg>
-		  <arg name="altitude" type="double">
-			Altitude (in meters) above sea level
-			Only meaningful if latitude and longiture are available
-		  </arg>
-		  <arg name="heading" type="float">
-			SkyController heading relative to magnetic north (500.f if not available)
-		  </arg>
-		</cmd>
+	<cmd name="GpsPositionChanged" id="2">
+	  State sent when the SkyController gps position has changed
+	  <arg name="latitude" type="double">
+	    SkyController latitude (500. if not available)
+	  </arg>
+	  <arg name="longitude" type="double">
+	    SkyController longiture (500. if not available)
+	  </arg>
+	  <arg name="altitude" type="double">
+	    Altitude (in meters) above sea level
+	    Only meaningful if latitude and longiture are available
+	  </arg>
+	  <arg name="heading" type="float">
+	    SkyController heading relative to magnetic north (500.f if not available)
+	  </arg>
+	</cmd>
 
+	<cmd name="BatteryState" id="3">
+	  State of the SkyController 2 battery
+	  <arg name="state" type="enum">
+	    Current battery state
+	    <enum name="charging">
+	      Battery is charging
+	    </enum>
+	    <enum name="charged">
+	      Battery is fully charged
+	    </enum>
+	    <enum name="discharging">
+	      Battery is discharging (normal case when on and unplugged)
+	    </enum>
+	    <enum name="discharging_low">
+	      Battery is low (Can still work for a few minutes)
+	    </enum>
+	    <enum name="discharging_critical">
+	      Battery is critically low (the product will automatically shut down if not plugged)
+	    </enum>
+	  </arg>
+	</cmd>
+	<cmd name="AttitudeChanged" id="4" buffer="NON_ACK">
+	  SkyController Attitude in north-east-down (NED) coordinate system.
+	  Attitude is provided as a quaternion.
+	  <arg name="q0" type="float">
+	    SkyController Attitude q0 (quaternion scalar part)
+	  </arg>
+	  <arg name="q1" type="float">
+	    SkyController Attitude q1 (quaternion vector part)
+	  </arg>
+	  <arg name="q2" type="float">
+	    SkyController Attitude q2 (quaternion vector part)
+	  </arg>
+	  <arg name="q3" type="float">
+	    SkyController Attitude q3 (quaternion vector part)
+	  </arg>
+	</cmd>
     </class>
 
     <class name="AccessPointSettings" id="9">
@@ -722,6 +770,13 @@
 		Event sent when the settings button is pressed.
 		This event is sent only when the sky controller is connected
 		to a drone.
+	  </cmd>
+	</class>
+
+	<class name="Factory" id="25">
+	  Factory reset commands (SkyController 2 only)
+	  <cmd name="Reset" id="0">
+	    Request a factory reset for the product. The product WILL reboot
 	  </cmd>
 	</class>
 </project>

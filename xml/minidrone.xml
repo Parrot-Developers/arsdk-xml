@@ -155,6 +155,21 @@
                 </enum>
             </arg>
         </cmd>
+        <cmd name="PlaneGearBox" id="7">
+            Set Plane Gear Box. Only supported by WingX
+            <arg name="state" type="enum">
+                Plane Gear Box
+                <enum name="gear_1">
+                    Gear 1. Low speed
+                </enum>
+                <enum name="gear_2">
+                    Gear 2. Middle speed
+                </enum>
+                <enum name="gear_3">
+                    Gear 3. High speed
+                </enum>
+            </arg>
+        </cmd>
     </class>
 
     <class name="PilotingState" id="3">
@@ -236,6 +251,22 @@
                 </enum>
                 <enum name="plane_backward">
                     Fly as a plane in backward mode
+                </enum>
+            </arg>
+        </cmd>
+
+        <cmd name="PlaneGearBoxChanged" id="5">
+            Plane Gear Box changed. Only supported by WingX
+            <arg name="state" type="enum">
+                Plane Gear Box
+                <enum name="gear_1">
+                    Gear 1. Low speed
+                </enum>
+                <enum name="gear_2">
+                    Gear 2. Middle speed
+                </enum>
+                <enum name="gear_3">
+                    Gear 3. High speed
                 </enum>
             </arg>
         </cmd>
@@ -751,6 +782,75 @@
                 <enum name="FIRE">
                     Fire.
                 </enum>
+            </arg>
+        </cmd>
+    </class>
+    <class name="RemoteController" id="17">
+        Remote controller related commands.
+        <cmd name="SetPairedRemote" id="0">
+            Send the address of the remote controller on which the drone should be paired
+            This is used to pair a Tinos controller
+			Where mac address: MSB-MID-LSB.
+            <arg name="msb_mac" type="u16">
+                2 most significant bytes of mac address
+            </arg>
+            <arg name="mid_mac" type="u16">
+                2 middle bytes of mac address
+            </arg>
+            <arg name="lsb_mac" type="u16">
+                2 least significant bytes of mac address
+            </arg>
+        </cmd>
+    </class>
+    <class name="NavigationDataState" id="18">
+        Navigation Data.
+        <cmd name="DronePosition" id="0">
+            Get the drone position from takeoff point (0, 0, 0, 0).
+            The orthonormal basis is fixed at this point. The axis are
+            oriented the following way :
+            * X : From the rear of the drone to its front.
+            * Y : From the right of the drone to its left.
+            * Z : Orthogonal to X and Y and oriented upward.
+            * Psi : From 180 to -180 in the clockwise direction,
+                    with Psi = 0 at takeoff position.
+
+                                - X Psi=0
+                               /|\
+                      ---       |       ---
+                     /   \      |      /   \
+                     | \ |      |      | / |
+                     \  \/    FRONT    \/  /
+                      ---\   ++ | ++   /---
+                          \--++-+-++--/
+                          |     |     |
+                          |   +-+-+   |
+              /           |   |*|*|   |
+  Psi=-90  Y |----- LEFT -+---+*+*|   |	RIGHT Psi=90
+              \           |   |* *|   |
+                          |   +---+   |
+                          |           |
+                          /-----------\
+                      ---/             \---
+                     /  /\    REAR     /\  \
+                     | / |             | \ |
+                     \   /             \   /
+                      ---               ---
+                            Psi=180
+
+            <arg name="posx" type="float">
+              Position on X axis, relative to take off position (cm).
+            </arg>
+            <arg name="posy" type="float">
+              Position on Y axis, relative to take off position (cm).
+            </arg>
+            <arg name="posz" type="i16">
+              Position on Z axis, relative to take off position (cm).
+            </arg>
+            <arg name="psi" type="i16">
+              Psi angle [-180; 180], relative to take off orientation.
+            </arg>
+            <arg name="ts" type="i16">
+              Time elapsed since last data send (ms).
             </arg>
         </cmd>
     </class>

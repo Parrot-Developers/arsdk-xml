@@ -115,6 +115,9 @@
       <value name="flip_back">
 	Flip back
       </value>
+      <value name="emergency">
+	Emergency motors shutdown
+      </value>
       <!-- Todo : add more actions -->
     </enum>
 
@@ -191,11 +194,30 @@
 
     <enum name="button_event">
       Button event
+      <value name="release">
+	button released
+      </value>
       <value name="press">
 	button pressed
       </value>
-      <value name="release">
-	button released
+    </enum>
+
+    <enum name="expo_type">
+      Expo type
+      <value name="linear">
+	No expo applied, axis is linear
+      </value>
+      <value name="expo_0">
+	Light exponential curve
+      </value>
+      <value name="expo_1">
+	Medium exponential curve
+      </value>
+      <value name="expo_2">
+	Heavy exponential curve
+      </value>
+      <value name="expo_4">
+	Maximum exponential curve
       </value>
     </enum>
 
@@ -356,7 +378,7 @@
 
     <cmd name="reset_mapping" id="11">
       <comment
-	  title="Reset mapping to default values"
+	  title="Reset mapping/expo to default values"
 	  desc="TODO"
 	  support="090f"
 	  result="update of the mapping"/>
@@ -364,6 +386,81 @@
 	The product to reset, or 0 to reset all products.
       </arg>
     </cmd>
+
+    <cmd name="set_expo" id="12">
+      <comment
+	  title="Set exponential type for the given axis, for the given product"
+	  desc="TODO"
+	  support="090f"
+	  result="update of the expo map"/>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list). Set to 0 to apply to all products
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number. Set to -1 to apply to all axes.
+      </arg>
+      <arg name="expo" type="enum:expo_type"/>
+    </cmd>
+
+    <evt name="expo_map_item" id="13" type="MAP_ITEM:uid">
+      <comment
+	  title="Item of the expo map"
+	  desc="TODO"
+	  support="090f"
+	  triggered="Triggered by the set_expo command"/>
+      <arg name="uid" type="u32">
+	Unique ID (for MAP_ITEM type)
+      </arg>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list)
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number
+      </arg>
+      <arg name="expo" type="enum:expo_type"/>
+      <arg name="list_flags" type="bitfield:u8:list_flags"/>
+    </evt>
+
+
+    <cmd name="set_inverted" id="14">
+      <comment
+	  title="Set/unset inverted state for a physical axis"
+	  desc="An inverted axis is not inverted when grabbed, or regarding its
+		virtual buttons."
+	  support="090f"
+	  result="update of the inverted map"/>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list). Set to 0 to apply to all products
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number
+      </arg>
+      <arg name="inverted" type="u8">
+	0 : Axis not inverted. 1 : Axis inverted
+      </arg>
+    </cmd>
+
+    <evt name="inverted_map_item" id="15" type="MAP_ITEM:uid">
+      <comment
+	  title="Item of the inverted map"
+	  desc="An inverted axis is not inverted when grabbed, or regarding its
+		virtual buttons."
+	  support="090f"
+	  triggered="Triggered by the set_inverted command"/>
+      <arg name="uid" type="u32">
+	Unique ID (for MAP_ITEM type)
+      </arg>
+      <arg name="product" type="u16">
+	Product (see libARDiscovery for list)
+      </arg>
+      <arg name="axis" type="i32">
+	Axis number
+      </arg>
+      <arg name="inverted" type="u8">
+	0 : Axis not inverted. 1 : Axis inverted
+      </arg>
+      <arg name="list_flags" type="bitfield:u8:list_flags"/>
+    </evt>
 
   </msgs>
 </feature>
