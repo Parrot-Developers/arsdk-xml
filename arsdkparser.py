@@ -381,12 +381,12 @@ class ArBitfield(object):
 #===============================================================================
 #===============================================================================
 def _get_node_content(node):
-    if node.childNodes is not None and len(node.childNodes) >= 1:
+    try:
         content = node.childNodes[0].nodeValue.strip()
         lines = [l.strip() for l in content.split('\n')]
         return '\n'.join(lines)
-    else:
-        return ""
+    except:
+        return ''
 
 #===============================================================================
 #===============================================================================
@@ -640,28 +640,27 @@ def _parse_prj_cmd_node(filePath, cmdNode, cmdObj):
         # Parse arg node
         _parse_arg_node(filePath, argNode, argObj)
 
+def _fmt_cmt_node(raw_cmt):
+    one_line = ' '.join(raw_cmt.split())
+    lines = [l.strip() for l in one_line.split(r'\n')]
+    res = '\n'.join(lines)
+    return res
+
 def _get_cmt_node(msgNode):
     if msgNode.getElementsByTagName("comment"):
         commentNode = msgNode.getElementsByTagName("comment")[0]
         cmtTitle = commentNode.getAttribute("title")
         cmtSupport = commentNode.getAttribute("support")
 
-        desc = commentNode.getAttribute("desc")
-        # Remove whitespaces after '\n'
-        lines = [l.strip() for l in desc.split(r'\n')]
-        cmtDesc = '\n'.join(lines)
+        cmtDesc = _fmt_cmt_node(commentNode.getAttribute("desc"))
 
         if commentNode.hasAttribute("triggered"):
-            triggered = commentNode.getAttribute("triggered")
-            lines = [l.strip() for l in triggered.split(r'\n')]
-            cmtTriggered = '\n'.join(lines)
+            cmtTriggered = _fmt_cmt_node(commentNode.getAttribute("triggered"))
         else:
             cmtTriggered = None
 
         if commentNode.hasAttribute("result"):
-            result = commentNode.getAttribute("result")
-            lines = [l.strip() for l in result.split(r'\n')]
-            cmtResult = '\n'.join(lines)
+            cmtResult = _fmt_cmt_node(commentNode.getAttribute("result"))
         else:
             cmtResult = None
 
@@ -675,33 +674,7 @@ def _get_cmt_node(msgNode):
 #===============================================================================
 #===============================================================================
 def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
-    if msgNode.getElementsByTagName("comment"):
-        commentNode = msgNode.getElementsByTagName("comment")[0]
-        cmtTitle = commentNode.getAttribute("title")
-        cmtSupport = commentNode.getAttribute("support")
-
-        desc = commentNode.getAttribute("desc")
-        # Remove whitespaces after '\n'
-        lines = [l.strip() for l in desc.split(r'\n')]
-        cmtDesc = '\n'.join(lines)
-
-        if commentNode.hasAttribute("triggered"):
-            cmtTriggered = commentNode.getAttribute("triggered")
-        else:
-            cmtTriggered = None
-
-        if commentNode.hasAttribute("result"):
-            cmtResult = commentNode.getAttribute("result")
-        else:
-            cmtResult = None
-
-        # Create comment object
-        msgObj.doc = ArComment(cmtTitle, cmtDesc, cmtSupport,
-                cmtTriggered, cmtResult)
-    else:
-        oldComment = _get_node_content(msgNode)
-        msgObj.doc = ArComment(oldComment.splitlines()[0], oldComment, None, None, None)
-
+    msgObj.doc = _get_cmt_node(msgNode)
     _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj)
 
 #===============================================================================
