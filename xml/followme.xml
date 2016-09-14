@@ -378,7 +378,7 @@
                 Target longitude (in degrees)
             </arg>
             <arg name="altitude" type="float">
-                Target altitude (in meters, relative to take off altitude)
+                Target altitude (in meters, relative to sea level)
             </arg>
             <arg name="north_speed" type="float">
                 Target north speed (in m/s)
