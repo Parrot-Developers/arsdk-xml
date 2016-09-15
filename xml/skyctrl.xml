@@ -76,8 +76,15 @@
 
     <class name="WifiState" id="0">
         Wifi state
+
         <cmd name="WifiList" id="0" type="MAP_ITEM">
-            Return the available wifi list
+	  <comment
+	      title="Visible wifi networks"
+	      desc="List of visible wifi networks.\n
+		    The application must clear the list before sending the
+		    [RequestWifiList](#4-1-0) command."
+	      support="0903"
+	      triggered="by a [RequestWifiList](#4-1-0) command."/>
             <arg name="bssid" type="string">
                 Wifi bssid
             </arg>
@@ -99,7 +106,16 @@
         </cmd>
 
         <cmd name="ConnexionChanged" id="1">
-            Return connexion status
+	  <comment
+	      title="Wifi connection status"
+	      desc="Describes the current wifi connection status of the
+		    SkyController.\n The connection to a wifi network does not
+		    guarantee a connection to a drone. To get the drone
+		    connection state, use the [device ConnectionChanged](#4-3-1)
+		    event."
+	      support="0903"
+	      triggered="when the wifi connection status changes, or after
+			 a [RequestCurrentWifi](#4-1-1) command."/>
             <arg name="ssid" type="string">
                 Wifi ssid
             </arg>
@@ -118,7 +134,15 @@
         </cmd>
 
         <cmd name="WifiAuthChannelListChanged" id="2" type="LIST_ITEM">
-            Notify of an Authorized Channel
+	  <comment
+	      title="Authorized channel list"
+	      desc="Each element represent an authorized wifi channel for the
+		    current country regulatory domain.\n Note that some channels
+		    might be only authorized for indoor or outdoor use.\n
+		    The list is complete when the
+		    [AllWifiAuthChannelChanged](#4-0-3) event is recieved."
+	      support="0903"
+	      triggered="by a [WifiAuthChannel](#4-1-4) command."/>
             <arg name="band" type="enum">
                 The band of this channel : 2.4 GHz or 5 GHz
                 <enum name="2_4ghz">
@@ -132,17 +156,31 @@
                 The authorized channel
             </arg>
             <arg name="in_or_out" type="u8">
-                Bit 0 is 1 if channel is authorized outside (0 otherwise) ; Bit 1 is 1 if channel is authorized inside (0 otherwise)
+                Bit 0 is 1 if channel is authorized outside (0 otherwise)
+		Bit 1 is 1 if channel is authorized inside (0 otherwise)
             </arg>
         </cmd>
 
         <cmd name="AllWifiAuthChannelChanged" id="3">
-            Notify the end of the list of Authorized wifi Channel
+	  <comment
+	      title="Authorized channel list complete"
+	      desc="This event closes the [WifiAuthChannel](#4-1-4) command
+		    response. No more [WifiAuthChannelListChanged](#4-0-2)
+		    event will be sent after this event."
+	      support="0903"
+	      triggered="by a [WifiAuthChannel](#4-1-4) command."/>
         </cmd>
         <cmd name="WifiSignalChanged" id="4">
-            State of the wifi signal
+	  <comment
+	      title="Strength of the wifi signal"
+	      desc="This event describes the signal strength for the long range
+		    wifi.\n A zero value is used when the SkyController is not
+		    connected to a wifi network."
+	      support="0903"
+	      triggered="each time the wifi signal changes"/>
             <arg name="level" type="u8">
-                Level of the signal. Levels are from 0 to 5. 0 is an unknown value. 1 is a weak wifi signal, 5 is the best.
+                Level of the signal. Levels are from 0 to 5.
+		0 is an unknown value. 1 is a weak wifi signal, 5 is the best.
             </arg>
         </cmd>
     </class>
@@ -150,15 +188,41 @@
     <class name="Wifi" id="1">
         Wifi
         <cmd name="RequestWifiList" id="0">
-            Request wifi list
+	  <comment
+	      title="Request visible wifi list"
+	      desc="After recieving this command, the SkyController will do a
+		    network scan to get the wifi list.\n Communication with the
+		    drone is stopped during the network scan, so the controller
+		    should avoid sending this command during flight.\n The
+		    controller should clear the local wifi list before sending
+		    this command."
+	      support="0903"
+	      result="Event [WifiList](#4-0-0) is triggered for each visible
+		      wifi networks."/>
         </cmd>
 
         <cmd name="RequestCurrentWifi" id="1">
+	  <comment
+	      title="Request current wifi informations"
+	      desc="This is a synchronization command. The SkyController will
+		    automatically send its current wifi info when any data
+		    changes, so this command should only be used when
+		    connecting, in order to get an initial state."
+	      support="0903"
+	      result="Event [wifi ConnectionChanged](#4-0-1) is triggered."/>
             Request current connected wifi
         </cmd>
 
         <cmd name="ConnectToWifi" id="2">
-            Connect to wifi
+	  <comment
+	      title="Connect the SkyController to a wifi network"
+	      desc="The network should be a visible network retrieved from the
+		    [WifiList](#4-0-0) event.\n If the network is secured, then
+		    the passphrase must be set. For non-secure network, the
+		    passphrase argument is ignored."
+	      support="0903"
+	      result="The SkyController should connect to the network.\n
+		      A [wifi ConnectionChanged](#4-0-1) event is triggered."/>
             <arg name="bssid" type="string">
                 Wifi bssid
             </arg>
@@ -171,30 +235,63 @@
         </cmd>
 
         <cmd name="ForgetWifi" id="3">
-            Forget wifi
+	  <comment
+	      title="Forget a wifi network"
+	      desc="Removes the network from the saved network list.\n
+		    If the network is the current network, then the
+		    SkyController will be disconnected first."
+	      support="0903"
+	      result="The next [WifiList](#4-0-0) event will report this network
+		      as not saved.\n If the SkyController is connected to this
+		      network, a [wifi ConnectionChanged](#4-0-1) event is
+		      triggered"/>
             <arg name="ssid" type="string">
                 Wifi ssid
             </arg>
         </cmd>
 
         <cmd name="WifiAuthChannel" id="4">
-            Controller inquire the list of authorized wifi channels
+	  <comment
+	      title="Request the list of authorized channels"
+	      desc="Requests the list of authorized wifi channels for the
+		    current country/regulatory domain.\n These channels are
+		    valid for the [AccessPointChannel](#4-9-1) command."
+	      support="0903"
+	      result="A list of [WifiAuthChannelListChanged](#4-0-2) events will
+		      be sent, followed by an
+		      [AllWifiAuthChannelChanged](#4-0-3) event."/>
         </cmd>
     </class>
 
     <class name="Device" id="2">
         Device Connection commands
 
-         <cmd name="RequestDeviceList" id="0">
-            Request Device list
+         <cmd name="RequestDeviceList" id="0" deprecated="true">
+	   <comment
+	       title="Request the list of visible devices"
+	       desc="This command is deprecated (The SkyController can only
+		     see one device at a time, so a device list is not
+		     required), and should not be used."
+	       support="none"
+	       result="This command is not implemented."/>
         </cmd>
 
-        <cmd name="RequestCurrentDevice" id="1">
-            Request current connected Device
+        <cmd name="RequestCurrentDevice" id="1" deprecated="true">
+	  <comment
+	      title="Request current device informations"
+	      desc="This command is deprecated and should not be used."
+	      support="none"
+	      result="This command is not implemented"/>
         </cmd>
 
-        <cmd name="ConnectToDevice" id="2">
-            ask to connect to a device
+        <cmd name="ConnectToDevice" id="2" deprecated="true">
+	  <comment
+	      title="Connect the SkyController to a given device"
+	      desc="This command is deprecated and should not be used.\n
+		    The SkyController will automatically connect to the first
+		    visible device on the current wifi network."
+	      support="none"
+	      result="This command is not implemented."/>
             <arg name="deviceName" type="string">
                 Device name
             </arg>
@@ -204,37 +301,46 @@
     <class name="DeviceState" id="3">
         Device state
 
-        <cmd name="DeviceList" id="0" type="LIST_ITEM">
-            Return the available Device list
+        <cmd name="DeviceList" id="0" type="LIST_ITEM" deprecated="true">
+	  <comment
+	      title="Visible device"
+	      desc="List of visible ARDiscoveryDevices.\n
+		    This event is deprecated and will never be sent by a
+		    SkyController"
+	      support="none"/>
             <arg name="name" type="string">
                 Device name
             </arg>
         </cmd>
 
         <cmd name="ConnexionChanged" id="1">
-            Return device connexion status
+            <comment
+                title="Connection status"
+                desc="Status of the connection to a drone."
+                support="0903;090f"
+                triggered="when the connection state to a drone has changed."/>
             <arg name="status" type="enum">
-                Wifi status to Device
+                Connection status
                 <enum name="notConnected">
                     Not Connected
                 </enum>
                 <enum name="connecting">
-                    Connecting to Device
+                    Connecting to Drone
                 </enum>
 
                 <enum name="connected">
-                    Connected to Device
+                    Connected to Drone
                 </enum>
 
                 <enum name="disconnecting">
-                    Disconnecting from Device
+                    Disconnecting from Drone
                 </enum>
             </arg>
             <arg name="deviceName" type="string">
-                Device name
+                Drone name
             </arg>
             <arg name="deviceProductID" type="u16">
-                Device name
+                Drone product IDentifier
             </arg>
         </cmd>
     </class>
@@ -242,48 +348,81 @@
     <class name="Settings" id="4">
         Settings commands
         <cmd name="AllSettings" id="0" timeout="RETRY">
-            Get all product settings, the product must send all settings
+            <comment
+                title="Ask for all controller's settings"
+                desc="Request the controller to send all its settings."
+                support="0903;090f"
+                result="The controller will trigger all settings events and
+			will finally trigger [AllSettingsChanged](#4-5-0)."/>
         </cmd>
         <cmd name="Reset" id="1">
-            Reset all settings
+	  <comment
+	      title="Reset all settings"
+	      desc="This command is not implemented."
+	      support="none"
+	      result="All settings are reset, then a [ResetChanged](#4-5-1)
+		      event is fired."/>
         </cmd>
 
     </class>
 
     <class name="SettingsState" id="5">
-        Settings state from product
+        Settings state from the controller
         <cmd name="AllSettingsChanged" id="0" timeout="RETRY">
-            State sent when all settings has been sent
+            <comment
+                title="AllSettings changed"
+                desc="All settings have been sent by the controller."
+                support="0903;090f"
+                triggered="when all settings that have been requested by
+			   [AllSettings](#4-4-0) are sent."/>
         </cmd>
 
-        <cmd name="ResetChanged" id="1">
-            State sent when all settings has been resetting
+        <cmd name="ResetChanged" id="1" deprecated="true">
+	  <comment
+	      title="Settings were reset"
+	      desc="This command is not implemented."
+	      support="none"
+	      triggered="by a [Reset](#4-4-1) command."/>
         </cmd>
 
         <cmd name="ProductSerialChanged" id="2">
-            Product serial number
+            <comment
+                title="Product serial"
+                desc="The product serial of the controller."
+		support="0903;090f"
+		triggered="during the [AllSettings](#4-4-0) phase."/>
             <arg name="serialNumber" type="string">
                 Serial number (hexadecimal value)
             </arg>
         </cmd>
 
         <cmd name="ProductVariantChanged" id="3">
-          Product variant of SkyController
+	  <comment
+	      title="Variant of the SkyController"
+	      desc="This event allow differentiation between original
+		    (red/blue/yellow) SkyControllers, and the Black Edition
+		    SkyControllers."
+	      support="0903"
+	      triggered="during the [AllSettings](#4-4-0) phase."/>
           <arg name="variant" type="enum">
             Variant of the product
             <enum name="bebop">
               SkyController of the bebop generation.
-              (Bebop battery, and original key layout)
+              (Bebop battery, original key layout, red/blue/yellow)
             </enum>
             <enum name="bebop2">
               SkyController of the bebop2 generation.
-              (Bebop2 battery, and updated key layout)
+              (Bebop2 battery, updated key layout, black)
             </enum>
           </arg>
         </cmd>
 
         <cmd name="ProductVersionChanged" id="4">
-            Product versions
+            <comment
+                title="Product versions"
+                desc="Software and hardware versions of the controller."
+		support="090f"
+		triggered="during the [AllSettings](#4-4-0) phase."/>
             <arg name="software" type="string">
                 Product software version
             </arg>
@@ -296,13 +435,24 @@
     <class name="Common" id="6">
         Common commands
         <cmd name="AllStates" id="0" timeout="RETRY">
-            Get all product states
+            <comment
+                title="Ask for all controller's states."
+                desc="Request the controller to send all its states."
+                support="0903;090f"
+                result="The controller will trigger all states events and
+			will finally trigger [AllStatesChanged](#4-7-0)."/>
         </cmd>
     </class>
 
     <class name="CommonState" id="7">
         Common state from product
         <cmd name="AllStatesChanged" id="0" timeout="RETRY">
+            <comment
+                title="AllStates changed"
+                desc="All states have been sent by the controller."
+                support="0903;090f"
+                triggered="when all states that have been requested
+			   by [AllStates](#4-6-0) are sent."/>
             State sent when all product states has been sent
         </cmd>
     </class>
@@ -310,22 +460,39 @@
     <class name="SkyControllerState" id="8">
         Sky Controller states
         <cmd name="BatteryChanged" id="0">
-            State sent when SkyController battery has changed
+            <comment
+                title="Battery state changed"
+                desc="The battery percentage has changed."
+                support="0903;090f"
+                triggered="when the battery level changes."/>
             <arg name="percent" type="u8">
-                SkyController battery: from 0 to 100 (full charge)
-                value of 255 when charging.
+                Controller battery: from 0 (empty) to 100 (full charge).
+                Value of 255 when charging.
             </arg>
         </cmd>
 
         <cmd name="GpsFixChanged" id="1">
-            State sent when SkyController gps fix has changed
+	  <comment
+	      title="GPS Fix gained/lost"
+	      desc="The SkyController GPS has gained or lost the fix. If the fix
+		    is lost, thent the [GpsPositionChanged](#4-8-2) event will
+		    contain invalid values for the position."
+	      support="0903"
+	      triggered="when the GPS accuracy goes under/over a certain level."
+	      />
             <arg name="fixed" type="u8">
                 SkyController fixed
             </arg>
         </cmd>
 
 	<cmd name="GpsPositionChanged" id="2">
-	  State sent when the SkyController gps position has changed
+	  <comment
+	      title="SkyController position/heading changed"
+	      desc="The SkyController position or heading values changed.\n
+		    Some of the values can be invalid and should be ignored."
+	      support="0903"
+	      triggered="each time the position or heading of the SkyController
+			 is updated, or when a data becomes (un)available."/>
 	  <arg name="latitude" type="double">
 	    SkyController latitude (500. if not available)
 	  </arg>
@@ -333,16 +500,21 @@
 	    SkyController longiture (500. if not available)
 	  </arg>
 	  <arg name="altitude" type="double">
-	    Altitude (in meters) above sea level
+	    Altitude (in meters) above sea level.
 	    Only meaningful if latitude and longiture are available
 	  </arg>
 	  <arg name="heading" type="float">
-	    SkyController heading relative to magnetic north (500.f if not available)
+	    SkyController heading relative to magnetic north
+	    (500.f if not available)
 	  </arg>
 	</cmd>
 
 	<cmd name="BatteryState" id="3">
-	  State of the SkyController 2 battery
+    <comment
+      title="Battery state"
+      desc="The state of the controller battery"
+      support="090f"
+      triggered="when the controller battery state has changed."/>
 	  <arg name="state" type="enum">
 	    Current battery state
 	    <enum name="charging">
@@ -363,8 +535,12 @@
 	  </arg>
 	</cmd>
 	<cmd name="AttitudeChanged" id="4" buffer="NON_ACK">
-	  SkyController Attitude in north-east-down (NED) coordinate system.
-	  Attitude is provided as a quaternion.
+    <comment
+      title="Attitude"
+      desc="SkyController Attitude in north-east-down (NED) coordinate system.\n
+      Attitude is provided as a quaternion."
+      support="090f"
+      triggered="when the SkyController attitude changes."/>
 	  <arg name="q0" type="float">
 	    SkyController Attitude q0 (quaternion scalar part)
 	  </arg>
@@ -383,19 +559,54 @@
     <class name="AccessPointSettings" id="9">
         AccessPoint settings commands
         <cmd name="AccessPointSSID" id="0">
-            Set AccessPoint SSID
+	  <comment
+	      title="Set access point SSID"
+	      desc="Set the SkyController access point SSID.\n The name will be
+		    checked, and can be modified before application. Use the
+		    [AccessPointSSIDChanged](#4-10-0) event to get the applied
+		    network name."
+	      support="0903"
+	      result="The network name will change (which will likely disconnect
+		      the controller), then an [AccessPointSSIDChanged](#4-10-0)
+		      event will be sent"/>
             <arg name="ssid" type="string">
                 AccessPoint SSID
             </arg>
         </cmd>
-        <cmd name="AccessPointChannel" id="1">
-            Set AccessPoint Channel
+        <cmd name="AccessPointChannel" id="1" deprecated="true">
+	  <comment
+	      title="Set access point channel"
+	      desc="Set the SkyController access point channel.\n The channel
+		    will be checked, and can be modified before application.
+		    Use the [AccessPointChannelChanged](#4-10-1) event to get
+		    the applied channel.\n The list of authorized channels for
+		    the current country can be retrived with the
+		    [WifiAuthChannel](#4-1-4) command.\n
+		    This command is deprecated. Use the [WifiSelection](#4-9-2)
+		    command instead."
+	      support="0903"
+	      result="The network channel will change (which will likely
+		      disconnect the controller), then an
+		      [AccessPointChannelChanged](#4-10-1) event will be sent"/>
             <arg name="channel" type="u8">
                 AccessPoint Channel
             </arg>
         </cmd>
         <cmd name="WifiSelection" id="2">
-            Set AccessPoint Band and Channel
+	  <comment
+	      title="Set access point band/channel"
+	      desc="Set the SkyController access point channel.\n The channel
+		    will be checked, and can be modified before application.
+		    Use the [WifiSelectionChanged](#4-10-2) event to get
+		    the applied channel/band.\n
+		    The list of authorized channels for the current country can
+		    be retrived with the [WifiAuthChannel](#4-1-4) command.\n
+		    This command is deprecated. Use the [WifiSelection](#4-9-2)
+		    command instead."
+	      support="0903"
+	      result="The network channel will change (which will likely
+		      disconnect the controller), then a
+		      [WifiSelectionChanged](#4-10-2) event will be sent"/>
             <arg name="type" type="enum">
                 The type of wifi selection (only manual at the moment)
                 <enum name="manual">
@@ -420,19 +631,39 @@
     <class name="AccessPointSettingsState" id="10">
         AccessPoint settings state from product
         <cmd name="AccessPointSSIDChanged" id="0">
-            State sent when AccessPoint ssid has been sent
+	  <comment
+	      title="The access point SSID was changed"
+	      desc="Changing the SSID will often (if not always) trigger a
+		    disconnection of the controller, so this event will only
+		    be recieved during the initial connexion phase."
+	      support="0903"
+	      triggered="by an [AccessPointSSID](#4-9-0) command."/>
             <arg name="ssid" type="string">
                 AccessPoint SSID
             </arg>
         </cmd>
-        <cmd name="AccessPointChannelChanged" id="1">
+        <cmd name="AccessPointChannelChanged" id="1" deprecated="true">
+	  <comment
+	      title="The access point channel was changed"
+	      desc="This command is deprecated, as the returned channel number
+		    does not contain information about the wifi band (2.4GHz or
+		    5GHz). Use the [WifiSelectionChanged](#4-10-2) event
+		    instead"
+	      support="0903"
+	      triggered="by an [AccessPointChannel](#4-9-1) command"/>
             State sent when AccessPoint channel has been sent
             <arg name="channel" type="u8">
                 AccessPoint Channel
             </arg>
         </cmd>
         <cmd name="WifiSelectionChanged" id="2">
-            Wifi selection from product
+	  <comment
+	      title="The access point channel/band was changed"
+	      desc="Changing the channel will often (if not always) trigger a
+		    disconnection of the controller, so this event will only
+		    be recieved during the initial connexion phase."
+	      support="0903"
+	      triggered="by an [WifiSelection](#4-9-2) command"/>
             <arg name="type" type="enum">
                 The type of wifi selection (only manual at the moment)
                 <enum name="manual">
@@ -456,22 +687,47 @@
 
     <class name="Camera" id="11">
         Ask the drone to move camera
-        <cmd name="ResetOrientation" id="0">
-            Reset pan and tilt to center
+        <cmd name="ResetOrientation" id="0" deprecated="true">
+	  <comment
+	      title="Reset the camera orientation"
+	      desc="This command is deprecated. The same effect can be achieved
+		    by sending a [CameraOrientation](#1-1-0) command with values
+		    retrieved from the [defaultCameraOrientation](#1-25-1)
+		    event."
+	      support="0903"
+	      result="The drone will reset its camera orientation"/>
         </cmd>
     </class>
 
 	<class name="GamepadInfos" id="18">
 	  Request infos about the gamepad of the SkyController
 	  <cmd name="getGamepadControls" id="0">
-		Asks the SkyController to send the button and axis list
+	    <comment
+		title="Get the SkyController buttons and axis list"
+		desc="This commands allow the application to get a
+		      representation of all the mappable controls on the
+		      SkyController. Some physical controls might be absent
+		      from this list because their function can not be changed."
+		support="0903"
+		result="The SkyController will send a list of
+			[GamepadControl](#4-19-0) events, describing all
+			available controls, followed by an
+			[allGamepadControlsSent](#4-19-1) event."/>
 	  </cmd>
 	</class>
 
 	<class name="GamepadInfosState" id="19">
 	  Informations about the gamepad of the SkyController
 	  <cmd name="gamepadControl" id="0" type="LIST_ITEM">
-		Describe an existing button or axis of the gamepad
+	    <comment
+		title="Gamepad control description"
+		desc="Each gamepad control element represents a mappable
+		      control on the SkyController. The control can be either
+		      a button or an analog axis.\n Each control have a
+		      human-readable english name describing its physical
+		      position on the SkyController."
+		support="0903"
+		triggered="by a [getGamepadControls](#4-18-0) command."/>
 		<arg name="type" type="enum">
 		  The type (axis/button) of the control
 		  <enum name="axis">
@@ -483,7 +739,7 @@
 		</arg>
 		<arg name="id" type="i32">
 		  The button or axis id
-		  @note A button and an axis can have the same ID, but their type is different
+		  A button and an axis can have the same ID, but their type is different
 		</arg>
 		<arg name="name" type="string">
 		  Display name for the control
@@ -491,7 +747,12 @@
 	  </cmd>
 
 	  <cmd name="allGamepadControlsSent" id="1">
-		Sent by the SkyController after sending its last 'gamepadControl' command
+	    <comment
+		title="End of the GamepadControl list"
+		desc="This event marks the end of the GamepadControl list"
+		support="0903"
+		triggered="by a [getGamepadControls](#4-18-0) command, after
+			   sending all the [GamepadControl](#4-19-0) events."/>
 	  </cmd>
 	</class>
 
@@ -499,16 +760,47 @@
 	  Controls the button mappings of the SkyController
 
 	  <cmd name="getCurrentButtonMappings" id="0">
-		Asks the SkyController to send its current button mapping
+	    <comment
+		title="Get the current button mappings"
+		desc="The SkyController will send its full button mapping. This
+		      command is mainly useful for initial synchronization, as
+		      every change to the button mapping (via the
+		      [setButtonMapping](#4-12-2) command) will trigger
+		      [currentButtonMappings](#4-13-0) events."
+		support="0903"
+		result="The SkyController will send a full list of
+			[currentButtonMappings](#4-13-0) events, followed by an
+			[allCurrentButtonMappingsSent](#4-13-1) event."/>
 	  </cmd>
 
 	  <cmd name="getAvailableButtonMappings" id="1">
-		Asks the SkyController to send the possible mappings for each button
+	    <comment
+		title="Get the available button mappings"
+		desc="The SkyController will send all the available action that
+		      can be mapped on buttons.\n As this list is static, the
+		      controller only need to request this information once."
+		support="0903"
+		result="The SkyController will send a list of
+			[availableButtonMappings](#4-13-2) events, followed by
+			an [allAvailableButtonsMappingsSent](#4-13-3) event."/>
 	  </cmd>
 
 	  <cmd name="setButtonMapping" id="2">
-		Set a button mapping to the SkyController
-		@note replaces previous mapping for the given key
+	    <comment
+		title="Set a mapping for a button"
+		desc="Any previous mapping for the given button will be removed,
+		      as a button can only be mapped to one action.\n To unmap
+		      a button, a NO_ACTION mapping can be used (see the
+		      [availableButtonMappings](#4-13-2) event).\n
+		      Some actions can not be mapped to two different buttons
+		      at the same time. In this case, the first button will
+		      automatically be set to NO_ACTION, and the corresponding
+		      [currentButtonMappings](#4-13-0) event will be fired."
+		support="0903"
+		result="The SkyController will send a list of
+			[currentButtonMappings](#4-13-0) events, describing the
+			changes to the mapping table, followed by an
+			[allCurrentButtonMappingsSent](#4-13-1) event."/>
 		<arg name="key_id" type="i32">
 		  The keycode to map
 		</arg>
@@ -518,7 +810,16 @@
 	  </cmd>
 
 	  <cmd name="defaultButtonMapping" id="3">
-		Asks the SkyController to reset the button mappings to the default value
+	    <comment
+		title="Reset the button mappings to the default value"
+		desc="The default values can change between software versions.\n
+		      The default values are different for Black Edition
+		      SkyControllers"
+		support="0903"
+		result="The SkyController will send a list of
+			[currentButtonMappings](#4-13-0) events, describing the
+			changes to the mapping table, followed by an
+			[allCurrentButtonMappingsSent](#4-13-1) event."/>
 	  </cmd>
 	</class>
 
@@ -526,7 +827,19 @@
 	  State of the button mappings of the SkyController
 
 	  <cmd name="currentButtonMappings" id="0" type="MAP_ITEM">
-		Sent by the SkyController each time a mapping changes
+	    <comment
+		title="Button to Action mapping"
+		desc="The mapping maps a key_id (as found in
+		      [gamepadControl](#4-19-0) events) to a mapping_uid (as
+		      found in the [availableButtonMappings](#4-13-2) events).\n
+		      A special mapping (NO_ACTION) is attached to unmapped
+		      buttons."
+		support="0903"
+		triggered="by a [getCurrentButtonMappings](#4-12-0) command
+			   for complete synchronization, or by either a
+			   [setButtonMapping](#4-12-2) or a
+			   [defaultButtonMapping](#4-12-3) command, only for
+			   changed mappings."/>
 		<arg name="key_id" type="i32">
 		  The keycode mapped
 		</arg>
@@ -536,11 +849,39 @@
 	  </cmd>
 
 	  <cmd name="allCurrentButtonMappingsSent" id="1">
-		Sent by the SkyController after sending its last 'currentButtonMappings' command
+	    <comment
+		title="End of the button mapping list"
+		desc="Sent by the SkyController to notify the end of a
+		      [currentButtonMappings](#4-13-0) events list.\n
+		      If the list is empty (e.g. the controller sent a
+		      [setButtonMapping](#4-12-2) command which made no change
+		      to the mapping table), then this command will be sent
+		      without any [currentButtonMappings](#4-13-0) event
+		      preceding it. This gives the controller a reliable
+		      synchronization point when editing mappings."
+		support="0903"
+		triggered="by a [getCurrentButtonMappings](#4-12-0),
+			   [setButtonMapping](#4-12-2) or
+			   [defaultButtonMapping](#4-12-3) command, to notify
+			   the end of list."/>
 	  </cmd>
 
 	  <cmd name="availableButtonMappings" id="2" type="MAP_ITEM">
-		Sent after a 'getAvailableButtonMappings' request
+	    <comment
+		title="Action mappable on a button"
+		desc="Each action that can be mapped on a button is identified
+		      by its mapping_uid, which will be used in the
+		      [setButtonMapping](#4-12-2) and
+		      [currentButtonMappings](#4-13-0) commands.\n The name is
+		      a human readable string, in english, describing the
+		      action.\n A special action named NO_ACTION serves as the
+		      unmap action. This action can be bound to multiple
+		      buttons to disable them.\n
+		      An [allAvailableButtonsMappingsSent](#4-13-3) event is
+		      sent at the end of the list."
+		support="0903"
+		triggered="by a [getAvailableButtonMappings](#4-12-1) command."
+		/>
 		<arg name="mapping_uid" type="string">
 		  The mapping UID (used in communication with the SkyController)
 		</arg>
@@ -550,7 +891,13 @@
 	  </cmd>
 
 	  <cmd name="allAvailableButtonsMappingsSent" id="3">
-		Sent by the SkyController after sending its last 'availableButtonMappings' command
+	    <comment
+		title="End of the available button actions list"
+		desc="Sent by the SkyController to notify the end of a
+		      [availableButtonMappings](#4-13-2) events list."
+		support="0903"
+		triggered="by a [getAvailableButtonMappings](#4-12-1)
+			   command, to notify the end of list."/>
 	  </cmd>
 
 	</class>
@@ -559,16 +906,47 @@
 	  Controls the axis mappings of the SkyController
 
 	  <cmd name="getCurrentAxisMappings" id="0">
-		Asks the SkyController to send its current axis mapping
+	    <comment
+		title="Get the current axis mappings"
+		desc="The SkyController will send its full axis mapping. This
+		      command is mainly useful for initial synchronization, as
+		      every change to the axis mapping (via the
+		      [setAxisMapping](#4-14-2) command) will trigger
+		      [currentAxisMappings](#4-15-0) events."
+		support="0903"
+		result="The SkyController will send a full list of
+			[currentAxisMappings](#4-15-0) events, followed by an
+			[allCurrentAxisMappingsSent](#4-15-1) event."/>
 	  </cmd>
 
 	  <cmd name="getAvailableAxisMappings" id="1">
-		Asks the SkyController to send the possible mappings for each axis
+	    <comment
+		title="Get the available axis mappings"
+		desc="The SkyController will send all the available action that
+		      can be mapped on axes.\n As this list is static, the
+		      controller only need to request this information once."
+		support="0903"
+		result="The SkyController will send a list of
+			[availableAxisMappings](#4-15-2) events, followed by
+			an [allAvailableAxissMappingsSent](#4-15-3) event."/>
 	  </cmd>
 
 	  <cmd name="setAxisMapping" id="2">
-		Set a axis mapping to the SkyController
-		@note replaces previous mapping for the given axis
+	    <comment
+		title="Set a mapping for a axis"
+		desc="Any previous mapping for the given axis will be removed,
+		      as a axis can only be mapped to one action.\n To unmap
+		      a axis, a NO_ACTION mapping can be used (see the
+		      [availableAxisMappings](#4-15-2) event).\n
+		      Some actions can not be mapped to two different axes
+		      at the same time. In this case, the first axis will
+		      automatically be set to NO_ACTION, and the corresponding
+		      [currentAxisMappings](#4-15-0) event will be fired."
+		support="0903"
+		result="The SkyController will send a list of
+			[currentAxisMappings](#4-15-0) events, describing the
+			changes to the mapping table, followed by an
+			[allCurrentAxisMappingsSent](#4-15-1) event."/>
 		<arg name="axis_id" type="i32">
 		  The axiscode to map
 		</arg>
@@ -578,7 +956,14 @@
 	  </cmd>
 
 	  <cmd name="defaultAxisMapping" id="3">
-		Asks the SkyController to reset the axis mappings to the default value
+	    <comment
+		title="Reset the axis mappings to the default value"
+		desc="The default values can change between software versions."
+		support="0903"
+		result="The SkyController will send a list of
+			[currentAxisMappings](#4-15-0) events, describing the
+			changes to the mapping table, followed by an
+			[allCurrentAxisMappingsSent](#4-15-1) event."/>
 	  </cmd>
 	</class>
 
@@ -586,7 +971,19 @@
 	  State of the axis mappings of the SkyController
 
 	  <cmd name="currentAxisMappings" id="0" type="MAP_ITEM">
-		Sent by the SkyController each time a mapping changes
+	    <comment
+		title="Axis to Action mapping"
+		desc="The mapping maps an axis_id (as found in
+		      [gamepadControl](#4-19-0) events) to a mapping_uid (as
+		      found in the [availableAxisMappings](#4-15-2) events).\n
+		      A special mapping (NO_ACTION) is attached to unmapped
+		      axes."
+		support="0903"
+		triggered="by a [getCurrentAxisMappings](#4-14-0)
+			   command for complete synchronization, or by either
+			   a [setAxisMapping](#4-14-2) or
+			   [defaultAxisMapping](#4-14-3) command, only for
+			   changed mappings."/>
 		<arg name="axis_id" type="i32">
 		  The axiscode mapped
 		</arg>
@@ -596,11 +993,38 @@
 	  </cmd>
 
 	  <cmd name="allCurrentAxisMappingsSent" id="1">
-		Sent by the SkyController after sending its last 'currentAxisMappings' command
+	    <comment
+		title="End of the axis mapping list"
+		desc="Sent by the SkyController to notify the end of a
+		      [currentAxisMappings](#4-15-0) events list.\n
+		      If the list is empty (e.g. the controller sent a
+		      [setAxisMapping](#4-14-2) command which made no change
+		      to the mapping table), then this command will be sent
+		      without any [currentAxisMappings](#4-15-0) event
+		      preceding it. This gives the controller a reliable
+		      synchronization point when editing mappings."
+		support="0903"
+		triggered="by a [getCurrentAxisMappings](#4-14-0),
+			   [setAxisMapping](#4-14-2) or
+			   [defaultAxisMapping](#4-14-3) command, to notify
+			   the end of list."/>
 	  </cmd>
 
 	  <cmd name="availableAxisMappings" id="2" type="MAP_ITEM">
-		Sent after a 'getAvailableAxisMappings' request
+	    <comment
+		title="Action mappable on an axis"
+		desc="Each action that can be mapped on an axis is identified
+		      by its mapping_uid, which will be used in the
+		      [setAxisMapping](#4-14-2) and
+		      [currentAxisMappings](#4-15-0) commands.\n The name is
+		      a human readable string, in english, describing the
+		      action.\n A special action named NO_ACTION serves as the
+		      unmap action. This action can be bound to multiple
+		      axes to disable them.\n
+		      An [allAvailableAxissMappingsSent](#4-15-3) event is
+		      sent at the end of the list."
+		support="0903"
+		triggered="by a [getAvailableAxisMappings](#4-14-1) command."/>
 		<arg name="mapping_uid" type="string">
 		  The mapping UID (used in communication with the SkyController)
 		</arg>
@@ -610,7 +1034,12 @@
 	  </cmd>
 
 	  <cmd name="allAvailableAxisMappingsSent" id="3">
-		Sent by the SkyController after sending its last 'availableAxisMappings' command
+	    <comment
+		title="End of the available axis actions list"
+		desc="Sent by the SkyController to notify the end of a
+		      [availableAxisMappings](#4-15-2) events list."
+		support="0903"
+		triggered="by a [getAvailableAxisMappings](#4-14-1) command."/>
 	  </cmd>
 
 	</class>
@@ -619,16 +1048,62 @@
 	  Controls the axis filters of the SkyController
 
 	  <cmd name="getCurrentAxisFilters" id="0">
-		Asks the SkyController to send its current axis filters
+	    <comment
+		title="Get the current axis filters"
+		desc="The SkyController will send its full axis filters map.
+		      This command is mainly useful for initial
+		      synchronization, as every change to the filters map
+		      (via the [setAxisFilter](#4-16-2) command) will trigger
+		      [currentAxisFilters](#4-17-0) events."
+		support="0903"
+		result="The SkyController will send a full list of
+			[currentAxisFilters](#4-17-0) events, followed by an
+			[allCurrentFiltersSent](#4-17-1) event."/>
 	  </cmd>
 
-	  <cmd name="getPresetAxisFilters" id="1">
-		Asks the SkyController to send the preset filters
+	  <cmd name="getPresetAxisFilters" id="1" deprecated="true">
+	    <comment
+		title="Get the available preset axis filters"
+		desc="The preset list is empty and will never be filled, so this
+		      command is flagged as deprecated."
+		support="0903"
+		result="As the preset list is empty, the SkyController will
+			just send an [allPresetFiltersSent](#4-17-3) event."/>
 	  </cmd>
 
 	  <cmd name="setAxisFilter" id="2">
-		Set an axis filter to the SkyController
-		@note replaces previous filter for the given axis
+	    <comment
+		title="Set a filter for an axis"
+		desc="A filter modifies the response curve of an axis.\n
+		      As the preset filters list is empty, all filters are to
+		      be sent using the builder syntax.\n
+		      \n
+		      The builder syntax supports two types of filters:
+		      Multilinear and Exponential.\n
+		      \n
+		      Multilinear filters create response curves made of
+		      multiple linear segments:\n
+		      * The default filter (ARMF;) is purely linear and create
+		      a single segment from the two implicit `[-1; -1]` and
+		      `[1; 1]` points.\n
+		      * Additionnal points can be added to the filter with the
+		      following syntax: `ARMF;x1>y1;...;xN>yN;`, where all
+		      numbers are floating point numbers in range `[-1; 1]`.\n
+		      * Additionnal points **must** respect the following
+		      constraints : `x(N)>x(N-1)` and `y(N)>=y(N-1)`.\n
+		      \n
+		      Exponential filters:\n
+		      * The syntax is `ARXF;CPx;CPy;`, where CPx and CPy are
+		      floating point numbers in range `[0; 1]`.\n
+		      * Best results are achieved when `CPx + CPy == 1` and
+		      `CPx > CPy`.\n
+		      * If the control point is on the diagonal (i.e.
+		      `CPx == CPy`), then the resulting filter will be linear."
+		support="0903"
+		result="The SkyController will send a list of
+			[currentAxisFilters](#4-17-0) events, describing the
+			changes to the filters table, followed by an
+			[allCurrentFiltersSent](#4-17-1) event."/>
 		<arg name="axis_id" type="i32">
 		  The axiscode to filter
 		</arg>
@@ -639,7 +1114,14 @@
 	  </cmd>
 
 	  <cmd name="defaultAxisFilters" id="3">
-		Asks the SkyController to reset the axis filters to the default value
+	    <comment
+		title="Reset the axis filters to the default value"
+		desc="The default values can change between software versions."
+		support="0903"
+		result="The SkyController will send a list of
+			[currentAxisFilters](#4-17-0) events, describing the
+			changes to the filters table, followed by an
+			[allCurrentFiltersSent](#4-17-1) event."/>
 	  </cmd>
 	</class>
 
@@ -647,7 +1129,18 @@
 	  State of the axis filters of the SkyController
 
 	  <cmd name="currentAxisFilters" id="0" type="MAP_ITEM">
-		Sent by the SkyController each time a filter changes
+	    <comment
+		title="A filter set on an axis"
+		desc="As the preset filters list is empty, all the filters are
+		      transmitted using the builder syntax. See the
+		      [setAxisFilter](#4-16-2) command documentation for details
+		      about the builder syntax."
+		support="0903"
+		triggered="by a [getCurrentAxisFilters](#4-16-0) command for
+			   complete synchronization, or after either a
+			   [setAxisFilter](#4-16-2) or
+			   [defaultAxisFilters](#4-16-3) command, only for
+			   changed filters."/>
 		<arg name="axis_id" type="i32">
 		  The axiscode filtered
 		</arg>
@@ -657,11 +1150,29 @@
 	  </cmd>
 
 	  <cmd name="allCurrentFiltersSent" id="1">
-		Sent by the SkyController after sending its last 'currentAxisFilters' command
+	    <comment
+		title="End of the axis filters list"
+		desc="Sent by the SkyController to notify the end of a
+		      [currentAxisFilters](#4-17-0) events list.\n
+		      If the list is empty (e.g. the controller sent a
+		      [setAxisFilter](#4-16-2) command which made no change
+		      to the filters table), then this command will be sent
+		      without any [currentAxisFilters](#4-17-0) event
+		      preceding it. This gives the controller a reliable
+		      synchronization point when editing mappings."
+		support="0903"
+		triggered="by a [getCurrentAxisFilters](#4-16-0),
+			   [setAxisFilter](#4-16-2) or
+			   [defaultAxisFilters](#4-16-3) command, to notify
+			   the end of list."/>
 	  </cmd>
 
-	  <cmd name="presetAxisFilters" id="2" type="MAP_ITEM">
-		Sent after a 'getPresetAxisFilters' request
+	  <cmd name="presetAxisFilters" id="2" type="MAP_ITEM" deprecated="true">
+	    <comment
+		title="Predefined axis filters"
+		desc="No preset axis filter is defined on the SkyController,
+		      so this command will never be sent by the firmware."
+		support="0903"/>
 		<arg name="filter_uid" type="string">
 		  The filter UID (used in communication with the SkyController)
 		</arg>
@@ -670,8 +1181,16 @@
 		</arg>
 	  </cmd>
 
-	  <cmd name="allPresetFiltersSent" id="3">
-		Sent by the SkyController after sending its last 'presetAxisFilters' command
+	  <cmd name="allPresetFiltersSent" id="3" deprecated="true">
+	    <comment
+		title="End of the preset axis filters list"
+		desc="As the SkyController will never send a
+		      [presetAxisFilters](#4-17-2) event, this is the only
+		      event sent when the deprecated
+		      [getPresetAxisFilters](#4-16-1) command is recieved."
+		support="0903"
+		triggered="by a [getPresetAxisFilters](#4-16-1) command."/>
+
 	  </cmd>
 
 	</class>
@@ -679,9 +1198,22 @@
 	<class name="CoPiloting" id="20">
 	  Configuration of the co-piloting feature
 	  <cmd name="setPilotingSource" id="0">
-		Set the SkyController piloting source
+	    <comment
+		title="Set piloting source"
+		desc="Change who is piloting the drone.\n By default, the
+		      SkyController is the source of piloting commands, and any
+		      connected application (i.e. FreeFlight) can not send
+		      [piloting commands](#1-0-2) commands directly to the
+		      drone. When the piloting source is set to Controller, the
+		      SkyController will forward the controller commands to the
+		      drone, and won't send any commands itself.\n The piloting
+		      source is automatically reset to SkyController when the
+		      controller is disconnected."
+		support="0903;090f"
+		result="The SkyController will sent a [pilotingSource](#4-21-0)
+			event."/>
 		<arg name="source" type="enum">
-		  The source
+		  The new piloting source
 		  <enum name="SkyController">
 			Use the SkyController joysticks
 		  </enum>
@@ -696,7 +1228,12 @@
 	<class name="CoPilotingState" id="21">
 	  State of the co-piloting feature
 	  <cmd name="pilotingSource" id="0">
-		Source of the piloting commands
+	    <comment
+		title="Piloting source"
+		desc="Define who is piloting the drone.\n The piloting source is
+		      reset to SkyController when the controller disconnects."
+		support="0903;090f"
+		triggered="by a [setPilotingSource](#4-20-0) command"/>
 		<arg name="source" type="enum">
 		  The source
 		  <enum name="SkyController">
@@ -710,24 +1247,40 @@
 	  </cmd>
 	</class>
 
-	<class name="Calibration" id="22">
-	  Commands related to the SkyController sensors calibration
-	  <cmd name="enableMagnetoCalibrationQualityUpdates" id="0">
-		Asks the SkyController to send (or not) the magneto calibration quality updates.
-		The MagnetoCalibrationState will always be sent when the status parameters changes,
-		regardless of this setting.
-		<arg name="enable" type="u8">
-		  Flag to enable the feature.
-		  1 = enable quality updates
-		  0 = disable quality updates
-		</arg>
-	  </cmd>
-	</class>
+  <class name="Calibration" id="22">
+    Commands related to the SkyController sensors calibration
+    <cmd name="enableMagnetoCalibrationQualityUpdates" id="0">
+        <comment
+          title="Enable Magneto calibration quality updates"
+          desc="Asks the SkyController to send (or not) the magneto
+		calibration quality updates.\n
+		The [MagnetoCalibrationState](#4-23-0) event will always be
+		sent when the status parameters changes, regardless of this
+		setting."
+          support="0903;090f"
+          result="The SkyController will send a
+		  [MagnetoCalibrationQualityUpdatesState](#4-23-1) event."/>
+        <arg name="enable" type="u8">
+            Flag to enable the feature:
+            1 = Enable quality updates
+            0 = Disable quality updates
+        </arg>
+    </cmd>
+  </class>
 
 	<class name="CalibrationState" id="23">
 	  State of the SkyController calibration
 	  <cmd name="MagnetoCalibrationState" id="0">
-		The current state of the magnetometer calibration
+      <comment
+        title="Magneto calibration state"
+        desc="The current state of the magnetometer calibration.\n If the
+	      calibration quality updates are enabled, this event is sent at
+	      every calibration quality update. This is useful for calibration
+	      screens, but creates a lot of traffic on network.\ When the
+	      calibration quality updates are disabled, this event is only sent
+	      when the status parameter changes."
+        support="0903;090f"
+        triggered="when the magnetometer calibration state has changed."/>
 		<arg name="status" type="enum">
 		  The global status of the calibration
 		  <enum name="Unreliable">
@@ -754,7 +1307,14 @@
 		</arg>
 	  </cmd>
 	  <cmd name="MagnetoCalibrationQualityUpdatesState" id="1">
-		State of the "send calibration state on quality change" setting.
+      <comment
+        title="Magnetometer Calibration Quality Update State"
+        desc="State of the magnetometer calibration quality sender.\n This
+	      determines the trigger of the
+	      [MagnetoCalibrationState](#4-23-0) event."
+        support="0903;090f"
+        triggered="by an [enableMagnetoCalibrationQualityUpdates](#4-22-0)
+		   command."/>
 		<arg name="enabled" type="u8">
 		  Flag (is the feature enabled).
 		  1 = The skycontroller sends updated when quality is updated
@@ -767,16 +1327,32 @@
 	  Events sent on SkyController button presses.
 	  These events are sent under certain conditions only.
 	  <cmd name="Settings" id="0">
-		Event sent when the settings button is pressed.
-		This event is sent only when the sky controller is connected
-		to a drone.
+	    <comment
+		title="Settings button pressed"
+		desc="This event notifies the application that the settings
+		      button was pressed on the device. This allow a connected
+		      application to open/close the settings screen from a
+		      physical button.\n This event is only sent when the
+		      SkyController is connected to a drone"
+		support="0903"
+		triggered="when the user presses the settings button on a
+			   connected SkyController."/>
 	  </cmd>
 	</class>
 
 	<class name="Factory" id="25">
 	  Factory reset commands (SkyController 2 only)
 	  <cmd name="Reset" id="0">
-	    Request a factory reset for the product. The product WILL reboot
+	    <comment
+		title="Reset the SkyController 2 to its factory settings"
+		desc="This command will request a factory reset from the
+		      SkyController 2. *The factory reset procedure implies an
+		      automatic reboot*, which will be done immediately after
+		      recieving this command."
+		support="090f"
+		result="The SkyController 2 will reboot, all settings will be
+			reset to their default values. Products that were
+			paired in factory will **NOT** lose this pairing."/>
 	  </cmd>
 	</class>
 </project>
