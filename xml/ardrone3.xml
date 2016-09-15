@@ -517,7 +517,7 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="VideoResolutionState" id="4">
+        <cmd name="VideoResolutionState" id="4" deprecated="true">
             <comment
                 title="Video resolution"
                 desc="Video resolution.\n
@@ -2109,20 +2109,20 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="VideoResolutionMode" id="9">
+        <cmd name="VideoResolutions" id="9">
             <comment
-                title="Set video resolution"
-                desc="Set video resolution."
+                title="Set video resolutions"
+                desc="Set video streaming and recording resolutions."
                 support="0901:3.4.0;090c:3.4.0;090e"
-                result="The video resolution is set.\n
-                Then, event [VideoResolution](#1-20-9) is triggered."/>
-            <arg name="mode" type="enum">
-                Video mode
-                <enum name="priority_recording">
-                    Priority on recording (1080p recording + best-effort streaming).
+                result="The video resolutions is set.\n
+                Then, event [VideoResolutions](#1-20-9) is triggered."/>
+            <arg name="type" type="enum">
+                Video streaming and recording resolutions
+                <enum name="rec1080_stream480">
+                    1080p recording, 480p streaming.
                 </enum>
-                <enum name="priority_streaming">
-                    Priority on streaming (720p streaming + best-effort recording).
+                <enum name="rec720_stream720">
+                    720p recording, 720p streaming.
                 </enum>
             </arg>
         </cmd>
@@ -2297,20 +2297,20 @@
                 </enum>
             </arg>
         </cmd>
-        <cmd name="VideoResolutionModeChanged" id="9">
+        <cmd name="VideoResolutionsChanged" id="9">
             <comment
-                title="Video resolution mode"
-                desc="Video resolution mode.\n
+                title="Video resolutions"
+                desc="Video resolutions.\n
                 This event informs about the recording AND streaming resolutions."
                 support="0901:3.4.0;090c:3.4.0;090e"
-                triggered="by [SetVideResolutionMode](#1-19-9)."/>
-            <arg name="mode" type="enum">
-                Video mode
-                <enum name="priority_recording">
-                    Priority on recording (1080p recording + best-effort streaming).
+                triggered="by [SetVideResolutions](#1-19-9)."/>
+            <arg name="type" type="enum">
+                Video resolution type.
+                <enum name="rec1080_stream480">
+                    1080p recording, 480p streaming.
                 </enum>
-                <enum name="priority_streaming">
-                    Priority on streaming (720p streaming + best-effort recording).
+                <enum name="rec720_stream720">
+                    720p recording, 720p streaming.
                 </enum>
             </arg>
         </cmd>
