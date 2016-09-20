@@ -107,6 +107,10 @@
 			<arg name="protocol" type="string">
 				Protocol used by RC.
 			</arg>
+			<arg name="enabled" type="u8">
+				1 if enabled, 0 otherwise.
+				If enabled, drone will apply values sent by RC receiver.
+			</arg>
 		</evt>
 
 		<cmd name="monitor_channels" id="2">
@@ -225,5 +229,16 @@
 			title="Reset calibration to default values"
 			desc="Reset calibration to default values."/>
 		</cmd>
+
+		<cmd name="enable_receiver" id="11">
+			<comment
+			title="Enable RC receiver"
+			desc="Enable or disable RC receiver. \n
+			If enable, drone will apply values sent by RC receiver."/>
+			<arg name="enable" type="u8">
+				1 for enable / 0 to disable
+			</arg>
+		</cmd>
+
 	</msgs>
 </feature>
