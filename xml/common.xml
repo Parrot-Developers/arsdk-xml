@@ -118,7 +118,7 @@
                 desc="Ask for all settings.\n\n
                 **Please note that you should not send this command if you are using the\n
                 libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 result="The product will trigger all settings events (such as [CameraSettings](#0-15-0), or product specific settings as the [MaxAltitude](#1-6-0) for the Bebop).\n
                 Then, it will trigger [AllSettingsEnd](#0-3-0)."/>
         </cmd>
@@ -126,7 +126,7 @@
             <comment
                 title="Reset all settings"
                 desc="Reset all settings."
-                support="all"
+                support="drones"
                 result="It will trigger [ResetChanged](#0-3-1).\n
                 Then, the product will trigger all settings events (such as [CameraSettings](#0-15-0), or product specific settings as the [MaxAltitude](#1-6-0) for the Bebop) with factory values."/>
         </cmd>
@@ -135,7 +135,7 @@
                 title="Set product name"
                 desc="Set the product name.\n
                 It also sets the name of the SSID for Wifi products and advertisement name for BLE products (changed after a reboot of the product)."
-                support="all"
+                support="drones"
                 result="Name is changed.\n
                 Then, it will trigger [NameChanged](#0-3-2)."/>
             <arg name="name" type="string">
@@ -179,7 +179,7 @@
                 title="All settings have been sent"
                 desc="All settings have been sent.\n\n
                 **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 triggered="when all settings values have been sent."/>
         </cmd>
 
@@ -187,7 +187,7 @@
             <comment
                 title="All settings have been reset"
                 desc="All settings have been reset."
-                support="all"
+                support="drones"
                 triggered="by [ResetSettings](#0-2-1)."/>
         </cmd>
 
@@ -195,7 +195,7 @@
             <comment
                 title="Product name changed"
                 desc="Product name changed."
-                support="all"
+                support="drones"
                 triggered="by [SetProductName](#0-2-2)."/>
             <arg name="name" type="string">
                 Product name
@@ -206,7 +206,7 @@
             <comment
                 title="Product version"
                 desc="Product version."
-                support="all"
+                support="drones"
                 triggered="during the connection process."/>
             <arg name="software" type="string">
                 Product software version
@@ -220,7 +220,7 @@
             <comment
                 title="Product serial (1st part)"
                 desc="Product serial (1st part)."
-                support="all"
+                support="drones"
                 triggered="during the connection process."/>
             <arg name="high" type="string">
                 Serial high number (hexadecimal value)
@@ -231,7 +231,7 @@
             <comment
                 title="Product serial (2nd part)"
                 desc="Product serial (2nd part)."
-                support="all"
+                support="drones"
                 triggered="during the connection process."/>
             <arg name="low" type="string">
                 Serial low number (hexadecimal value)
@@ -242,7 +242,7 @@
             <comment
                 title="Country changed"
                 desc="Country changed."
-                support="all"
+                support="drones"
                 triggered="by [SetCountry](#0-2-3)."/>
             <arg name="code" type="string">
                 Country code with ISO 3166 format, empty string means unknown country.
@@ -253,7 +253,7 @@
             <comment
                 title="Auto-country changed"
                 desc="Auto-country changed."
-                support="all"
+                support="drones"
                 triggered="by [SetAutoCountry](#0-2-4)."/>
             <arg name="automatic" type="u8">
                 Boolean : 0 : Manual / 1 : Auto
@@ -269,7 +269,7 @@
                 desc="Ask for all states.\n\n
                 **Please note that you should not send this command if you are using the\n
                 libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 result="The product will trigger all states events (such as [FlyingState](#1-4-1) for the Bebop).\n
                 Then, it will trigger [AllStatesEnd](#0-5-0)."/>
         </cmd>
@@ -282,7 +282,7 @@
                 So medias and other files will be dated from this date\n\n
                 **Please note that you should not send this command if you are using the\n
                 libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 result="The date of the product is set.\n
                 Then, it will trigger [DateChanged](#0-5-4)."/>
             <arg name="date" type="string">
@@ -298,7 +298,7 @@
                 So medias and other files will be dated from this time\n\n
                 **Please note that you should not send this command if you are using the\n
                 libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 result="The time of the product is set.\n
                 Then, it will trigger [TimeChanged](#0-5-5)."/>
             <arg name="time" type="string">
@@ -311,7 +311,7 @@
                 title="Reboot"
                 desc="Reboot the product.\n
                 The product will accept this command only if is not flying."
-                support="all"
+                support="drones"
                 result="The product will reboot if it can."/>
         </cmd>
     </class>
@@ -323,7 +323,7 @@
                 title="All states have been sent"
                 desc="All states have been sent.\n\n
                 **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 triggered="when all states values have been sent."/>
         </cmd>
 
@@ -331,7 +331,7 @@
             <comment
                 title="Battery state"
                 desc="Battery state."
-                support="all"
+                support="drones"
                 triggered="when the battery level changes."/>
             <arg name="percent" type="u8">
                 Battery percentage
@@ -342,7 +342,7 @@
             <comment
                 title="Mass storage state list"
                 desc="Mass storage state list."
-                support="all"
+                support="drones"
                 triggered="when a mass storage is inserted or ejected."/>
             <arg name="mass_storage_id" type="u8">
                 Mass storage id (unique)
@@ -381,7 +381,7 @@
                 title="Date changed"
                 desc="Date changed.\n\n
                 **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 triggered="by [SetDate](#0-4-1)."/>
             <arg name="date" type="string">
                 Date with ISO-8601 format
@@ -393,7 +393,7 @@
                 title="Time changed"
                 desc="Time changed.\n\n
                 **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
-                support="all"
+                support="drones"
                 triggered="by [SetTime](#0-4-2)."/>
             <arg name="time" type="string">
                 Time with ISO-8601 format
@@ -635,7 +635,7 @@
                 desc="Inform about hud entering.\n
                 Tell the drone that the controller enters/leaves the piloting hud.\n
                 On a non-flying products it is used to know when a run begins."
-                support="all"
+                support="drones"
                 result="If yes, the product will begin a new session (so it should send a new [runId](#0-30-0)).\n
                 Also, on the JumpingSumos, if the video is in autorecord mode, it will start recording."/>
             <arg name="piloting" type="u8">

@@ -60,7 +60,7 @@
             <comment 
                 title="default"
                 desc="default"
-                support="all"
+                support="none"
                 result="default"/>
         </cmd>
     </msgs>
