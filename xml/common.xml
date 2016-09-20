@@ -506,6 +506,12 @@
                 <enum name="JS_TUKTUK">
                     Tuk-Tuk (JS taxi) model
                 </enum>
+                <enum name="SW_BLACK">
+                    Swing black model
+                </enum>
+                <enum name="SW_WHITE">
+                    Swing white model
+                </enum>
             </arg>
         </cmd>
 
