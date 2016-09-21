@@ -39,7 +39,7 @@ def main():
 	(options, args) = parseArgs()
 	setupLog(options)
 	generator_filepath = args[0]
-	extra = args[1] if len(args) > 1 else None
+	extra = ' '.join(args[1:]) if len(args) > 1 else None
 
 	# Setup full path of output directories
 	options.outdir = os.path.abspath(options.outdir)
