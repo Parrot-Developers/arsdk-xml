@@ -238,5 +238,33 @@
           Name (SSID) of the drone.
         </arg>
       </evt>
+
+      <evt name="known_drone_item" id="8" type="MAP_ITEM:serial">
+        <comment
+            title="Known drone item"
+            desc="Item describing a known drone (already connected)."
+            support="090f:1.0.3"
+	    triggered="when [AllSettings](#4-4-0) is requested
+                      or when a drone is forgotten
+                      or connected for the first time."/>
+        <arg name="serial" type="string">
+          Serial number of the drone.
+        </arg>
+        <arg name="model" type="u16">
+          Model id of the drone.
+        </arg>
+        <arg name="name" type="string">
+          Last visible Name (SSID) of the drone.
+        </arg>
+        <arg name="security" type="enum:security">
+          Security method used by the drone.
+        </arg>
+        <arg name="has_saved_key" type="u8">
+          1 if the drone manager has a saved security key for the drone, 0 otherwise.
+          If security method is not 'none', and this value is 0, then the controller should prompt the user for a passphrase before sending a connect.
+        </arg>
+        <arg name="list_flags" type="bitfield:u8:list_flags"/>
+      </evt>
+
     </msgs>
 </feature>
