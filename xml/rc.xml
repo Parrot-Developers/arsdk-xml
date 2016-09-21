@@ -42,8 +42,8 @@
 				RC drone receiver not connected to a RC.
 			</value>
 		</enum>
-		<enum name="channel_type">
-			Channel type.
+		<enum name="channel_action">
+			Channel action.
 			<value name="invalid">
 				Invalid/Unused channel.
 			</value>
@@ -94,6 +94,27 @@
 				Min/Max specific channel calibration.
 			</value>
 		</enum>
+		<enum name="channel_type">
+			Channel physical type.
+			<value name="signed_axis">
+				Signed axis type.
+			</value>
+			<value name="unsigned_axis">
+				Unsigned axis type.
+			</value>
+			<value name="monostable_button">
+				Monostable button type.
+			</value>
+			<value name="bistable_button">
+				Bistable button type.
+			</value>
+			<value name="tristate_button">
+				Tristate button type.
+			</value>
+			<value name="rotary_button">
+				Rotary button type.
+			</value>
+		</enum>
 	</enums>
 
 	<msgs>
@@ -140,8 +161,8 @@
 			<arg name="id" type="u8">
 				RC channel id.
 			</arg>
-			<arg name="type" type="enum:channel_type">
-				RC channel type.
+			<arg name="action" type="enum:channel_action">
+				RC channel action.
 			</arg>
 			<arg name="value" type="i16">
 				RC channel value.
@@ -157,30 +178,23 @@
 			<comment
 			title="Channels calibration state"
 			desc="RC Channels calibration state sent by drone."/>
-			<arg name="type" type="enum:calibration_type">
+			<arg name="calibration_type" type="enum:calibration_type">
 				Current calibration type
 				set to 'none' if no calibration in progress.
 			</arg>
-			<arg name="channel" type="enum:channel_type">
-				Current channel calibration
-				Only used when type=min_max.
+			<arg name="channel_action" type="enum:channel_action">
+				Current channel action calibration
+				Only used when calibration_type=min_max.
 			</arg>
-			<arg name="supported" type="bitfield:u32:channel_type">
-				bitfield of supported channel types.
-				Neutral channels calibration is always supported.
-			</arg>
-			<arg name="required" type="bitfield:u32:channel_type">
-				bitfield of required channel types.
+			<arg name="required" type="bitfield:u32:channel_action">
+				bitfield of required channel actions.
 				Neutral channels calibration is always required.
 			</arg>
-			<arg name="calibrated" type="bitfield:u32:channel_type">
-				bitfield of calibrated channel types.
+			<arg name="calibrated" type="bitfield:u32:channel_action">
+				bitfield of calibrated channel actions.
 			</arg>
 			<arg name="neutral_calibrated" type="u8">
 				1 if neutral channels are calibrated, 0 otherwise.
-			</arg>
-			<arg name="inverted" type="bitfield:u32:channel_type">
-				bitfield of inverted channels.
 			</arg>
 		</evt>
 
@@ -188,12 +202,16 @@
 			<comment
 			title="Start a calibration"
 			desc="Start a calibration."/>
-			<arg name="type" type="enum:calibration_type">
+			<arg name="calibration_type" type="enum:calibration_type">
 				Type of calibration.
 			</arg>
-			<arg name="channel" type="enum:channel_type">
+			<arg name="channel_action" type="enum:channel_action">
+				Channel action.
+				only used when calibration_type=min_max.
+			</arg>
+			<arg name="channel_type" type="enum:channel_type">
 				Channel type.
-				only used when type=min_max.
+				only used when calibration_type=min_max.
 			</arg>
 		</cmd>
 
@@ -210,8 +228,8 @@
 			<comment
 			title="Invert a RC channel values"
 			desc="Invert a RC channel values"/>
-			<arg name="channel" type="enum:channel_type">
-				Channel type.
+			<arg name="action" type="enum:channel_action">
+				Channel action.
 			</arg>
 			<arg name="flag" type="u8">
 				1 to invert channel 0 to restore channel.
@@ -239,6 +257,24 @@
 				1 for enable / 0 to disable
 			</arg>
 		</cmd>
+
+		<evt name="channel_action_item" id="12" type="MAP_ITEM:action">
+			<comment
+			title="Channel action item"
+			desc="Channel action supported by drone."/>
+			<arg name="action" type="enum:channel_action">
+				Channel action.
+			</arg>
+			<arg name="supported_type" type="bitfield:u32:channel_type">
+				Bitfield of supported channel types.
+			</arg>
+			<arg name="calibrated_type" type="enum:channel_type">
+				Calibrated action channel type (none if not calibrated).
+			</arg>
+			<arg name="inverted" type="u8">
+				1 if inverted, 0 otherwise.
+			</arg>
+		</evt>
 
 	</msgs>
 </feature>
