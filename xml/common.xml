@@ -352,7 +352,7 @@
             </arg>
         </cmd>
 
-        <cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM" deprecated="true">
+        <cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM">
             <comment
                 title="Mass storage info state list"
                 desc="Mass storage info state list."/>
