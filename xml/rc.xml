@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (C) 2014 Parrot SA
+	Copyright (C) 2014 Parrot SA
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-    * Neither the name of Parrot nor the names
-      of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written
-      permission.
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-    AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-    OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    SUCH DAMAGE.
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
 -->
-
 <feature id="136" name="rc">
 	All commands/events related to Calibration and Mapping of RadioCommands
 	<enums>
@@ -116,7 +115,6 @@
 			</value>
 		</enum>
 	</enums>
-
 	<msgs>
 		<evt name="receiver_state" id="1">
 			<comment
@@ -133,7 +131,6 @@
 				If enabled, drone will apply values sent by RC receiver.
 			</arg>
 		</evt>
-
 		<cmd name="monitor_channels" id="2">
 			<comment
 			title="Monitor RC channels"
@@ -144,7 +141,6 @@
 				1 for enable / 0 to disable
 			</arg>
 		</cmd>
-
 		<evt name="channels_monitor_state" id="3">
 			<comment
 			title="RC channels monitor state"
@@ -153,7 +149,6 @@
 				1 if enabled, 0 if disabled
 			</arg>
 		</evt>
-
 		<evt name="channel_value" id="4" type="MAP_ITEM:id">
 			<comment
 				title="RC channels value"
@@ -170,10 +165,9 @@
 			<arg name="list_flags" type="bitfield:u8:list_flags">
 				Item attribute Bitfield.
 				First: indicate it's the first element of the list.
-				Last:  indicate it's the last element of the list.
+				Last: indicate it's the last element of the list.
 			</arg>
 		</evt>
-
 		<evt name="calibration_state" id="5">
 			<comment
 			title="Channels calibration state"
@@ -197,7 +191,6 @@
 				1 if neutral channels are calibrated, 0 otherwise.
 			</arg>
 		</evt>
-
 		<cmd name="start_calibration" id="6">
 			<comment
 			title="Start a calibration"
@@ -214,7 +207,6 @@
 				only used when calibration_type=min_max.
 			</arg>
 		</cmd>
-
 		<evt name="receiver_quality" id="7">
 			<comment
 			title="RC signal quality level"
@@ -223,7 +215,6 @@
 				Current RC signal quality level between 0 to 5.
 			</arg>
 		</evt>
-
 		<cmd name="invert_channel" id="8">
 			<comment
 			title="Invert a RC channel values"
@@ -235,19 +226,16 @@
 				1 to invert channel 0 to restore channel.
 			</arg>
 		</cmd>
-
 		<cmd name="abort_calibration" id="9">
 			<comment
 			title="Abort current calibration"
 			desc="Abort current calibration."/>
 		</cmd>
-
 		<cmd name="reset_calibration" id="10">
 			<comment
 			title="Reset calibration to default values"
 			desc="Reset calibration to default values."/>
 		</cmd>
-
 		<cmd name="enable_receiver" id="11">
 			<comment
 			title="Enable RC receiver"
@@ -257,7 +245,6 @@
 				1 for enable / 0 to disable
 			</arg>
 		</cmd>
-
 		<evt name="channel_action_item" id="12" type="MAP_ITEM:action">
 			<comment
 			title="Channel action item"
@@ -275,6 +262,5 @@
 				1 if inverted, 0 otherwise.
 			</arg>
 		</evt>
-
 	</msgs>
 </feature>
