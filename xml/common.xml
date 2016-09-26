@@ -701,6 +701,17 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="MissonItemExecuted" id="2" content="NOTIFICATION">
+			<comment
+				title="Mission item executed"
+				desc="Mission item has been executed."
+				support="none"
+				triggered="when a mission item has been executed during a flight plan."/>
+			<arg name="idx" type="u32">
+				Index of the mission item. This is the place of the mission item in the list of the items of the mission.
+				Begins at 0.
+			</arg>
+		</cmd>
 	</class>
 	<class name="Calibration" id="13">
 		Calibration commands
