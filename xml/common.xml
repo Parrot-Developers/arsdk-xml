@@ -286,10 +286,12 @@
 				Mass storage name
 			</arg>
 		</cmd>
-		<cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM" deprecated="true">
+		<cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM">
 			<comment
 				title="Mass storage info state list"
-				desc="Mass storage info state list."/>
+				desc="Mass storage info state list."
+				support="drones"
+				triggered="when a mass storage info changes."/>
 			<arg name="mass_storage_id" type="u8">
 				Mass storage state id (unique)
 			</arg>
