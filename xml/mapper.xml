@@ -234,11 +234,11 @@
 	<msgs>
 		<cmd name="grab" id="1">
 			<comment
-			title="Grab (or ungrab) controls"
-			desc="Grabbed buttons are sent to the app and are not
-			handled by the mapper"
-			support="090f"
-			result="The mapper will send a [grab_state](#138-2) command"/>
+				title="Grab (or ungrab) controls"
+				desc="Grabbed buttons are sent to the app and are not
+				handled by the mapper"
+				support="090f"
+				result="The mapper will send a [grab_state](#138-2) command"/>
 			<arg name="buttons" type="u32">
 				Buttons to grab/ungrab (bitfield)
 			</arg>
@@ -248,11 +248,11 @@
 		</cmd>
 		<evt name="grab_state" id="2">
 			<comment
-			title="Grabbed controls"
-			desc="Grabbed buttons are sent to the app and are not
-			handled by the mapper"
-			support="090f"
-			triggered="by a [grab](#138-1) command"/>
+				title="Grabbed controls"
+				desc="Grabbed buttons are sent to the app and are not
+				handled by the mapper"
+				support="090f"
+				triggered="by a [grab](#138-1) command"/>
 			<arg name="buttons" type="u32">
 				Grabbed buttons (bitfield)
 			</arg>
@@ -266,10 +266,10 @@
 		</evt>
 		<evt name="grab_button_event" id="3">
 			<comment
-			title="Event on a grabbed button"
-			desc="The state of a grabbed button changes"
-			support="090f"
-			triggered="when a grabbed button is pressed/released"/>
+				title="Event on a grabbed button"
+				desc="The state of a grabbed button changes"
+				support="090f"
+				triggered="when a grabbed button is pressed/released"/>
 			<arg name="button" type="u32">
 				Button id
 			</arg>
@@ -290,13 +290,13 @@
 		</evt>
 		<cmd name="map_button_action" id="5">
 			<comment
-			title="Map a button action on one or more buttons"
-			desc="An action can only be mapped to one button set.\n
-			Each action can be mapped to different buttons for
-			different products."
-			support="090f"
-			result="The mapper will send [button_mapping_item](#138-7) and
-			[axis_mapping_item](#138-8) according to the request."/>
+				title="Map a button action on one or more buttons"
+				desc="An action can only be mapped to one button set.\n
+				Each action can be mapped to different buttons for
+				different products."
+				support="090f"
+				result="The mapper will send [button_mapping_item](#138-7) and
+				[axis_mapping_item](#138-8) according to the request."/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list)
 			</arg>
@@ -308,13 +308,13 @@
 		</cmd>
 		<cmd name="map_axis_action" id="6">
 			<comment
-			title="Map an axis action to one axis and zero or more buttons"
-			desc="An action can only be mapped to one axis/button set.\n
-			Each action can be mapped to different axes/buttons for
-			different products."
-			support="090f"
-			result="The mapper will send [button_mapping_item](#138-7) and
-			[axis_mapping_item](#138-8) according to the request."/>
+				title="Map an axis action to one axis and zero or more buttons"
+				desc="An action can only be mapped to one axis/button set.\n
+				Each action can be mapped to different axes/buttons for
+				different products."
+				support="090f"
+				result="The mapper will send [button_mapping_item](#138-7) and
+				[axis_mapping_item](#138-8) according to the request."/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list)
 			</arg>
@@ -330,12 +330,12 @@
 		</cmd>
 		<evt name="button_mapping_item" id="7" type="MAP_ITEM:uid">
 			<comment
-			title="Item of the button_actions mapping list"
-			desc="The resulting map describes all active button mappings of the
-			mapper.\n Each action can only be mapped once per product."
-			support="090f"
-			triggered="by a [map_button_action](#138-5) or a
-			 [map_axis_action](#138-6) command"/>
+				title="Item of the button_actions mapping list"
+				desc="The resulting map describes all active button mappings of the
+				mapper.\n Each action can only be mapped once per product."
+				support="090f"
+				triggered="by a [map_button_action](#138-5) or a
+				 [map_axis_action](#138-6) command"/>
 			<arg name="uid" type="u32">
 				Unique ID of the mapping.
 			</arg>
@@ -350,12 +350,12 @@
 		</evt>
 		<evt name="axis_mapping_item" id="8" type="MAP_ITEM:uid">
 			<comment
-			title="Item of the axis_actions mapping list"
-			desc="The resulting map describes all active axis mappings of the
-			mapper.\n Each action can only be mapped once per product."
-			support="090f"
-			triggered="by a [map_button_action](#138-5) or a
-			 [map_axis_action](#138-6) command"/>
+				title="Item of the axis_actions mapping list"
+				desc="The resulting map describes all active axis mappings of the
+				mapper.\n Each action can only be mapped once per product."
+				support="090f"
+				triggered="by a [map_button_action](#138-5) or a
+				 [map_axis_action](#138-6) command"/>
 			<arg name="uid" type="u32">
 				Unique ID of the mapping.
 			</arg>
@@ -373,13 +373,13 @@
 		</evt>
 		<evt name="application_axis_event" id="9">
 			<comment
-			title="Application specific event"
-			desc="This event signals the controller application when an
-			application specific axis_event is triggered.\n Application
-			specific actions are typically used for UI interaction which
-			does not involves the drone."
-			support="090f"
-			triggered="when any axis action set to application_action is triggered."/>
+				title="Application specific event"
+				desc="This event signals the controller application when an
+				application specific axis_event is triggered.\n Application
+				specific actions are typically used for UI interaction which
+				does not involves the drone."
+				support="090f"
+				triggered="when any axis action set to application_action is triggered."/>
 			<arg name="action" type="enum:axis_action"/>
 			<arg name="value" type="i8">
 				The current value of the axis.
@@ -387,39 +387,39 @@
 		</evt>
 		<evt name="application_button_event" id="10">
 			<comment
-			title="Application specific event"
-			desc="This event signals the controller application when an
-			application specific button_event is triggered.\n Application
-			specific actions are typically used for UI interaction which
-			does not involves the drone."
-			support="090f"
-			triggered="when any button action set to application_action is triggered."/>
+				title="Application specific event"
+				desc="This event signals the controller application when an
+				application specific button_event is triggered.\n Application
+				specific actions are typically used for UI interaction which
+				does not involves the drone."
+				support="090f"
+				triggered="when any button action set to application_action is triggered."/>
 			<arg name="action" type="enum:button_action"/>
 		</evt>
 		<cmd name="reset_mapping" id="11">
 			<comment
-			title="Reset mapping to default values"
-			desc="Resets the mappings, axis exponential parameters, and axis
-			inversion for the given product.\n
-			If the product is given as 0 (zero), the all products are reset."
-			support="090f"
-			result="The mapper will send [button_mapping_item](#138-7),
-			[axis_mapping_item](#138-8), [expo_map_item](#138-13)
-			and [inverted_map_item](#138-15) according to the request."/>
+				title="Reset mapping to default values"
+				desc="Resets the mappings, axis exponential parameters, and axis
+				inversion for the given product.\n
+				If the product is given as 0 (zero), the all products are reset."
+				support="090f"
+				result="The mapper will send [button_mapping_item](#138-7),
+				[axis_mapping_item](#138-8), [expo_map_item](#138-13)
+				and [inverted_map_item](#138-15) according to the request."/>
 			<arg name="product" type="u16">
 				The product to reset, or 0 to reset all products.
 			</arg>
 		</cmd>
 		<cmd name="set_expo" id="12">
 			<comment
-			title="Set exponential type for the given axis, for the given product"
-			desc="By default, each axis can have a different expo value.\n
-			For some products/mappings configuration, the expo values of two
-			axes belonging to the same physical joystick can be locked to
-			the same value. In this case, setting the value for one axis
-			will automatically change both values."
-			support="090f"
-			result="The mapper will send [expo_map_item](#138-13)"/>
+				title="Set exponential type for the given axis, for the given product"
+				desc="By default, each axis can have a different expo value.\n
+				For some products/mappings configuration, the expo values of two
+				axes belonging to the same physical joystick can be locked to
+				the same value. In this case, setting the value for one axis
+				will automatically change both values."
+				support="090f"
+				result="The mapper will send [expo_map_item](#138-13)"/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list).
 				Set to 0 to apply to all products
@@ -431,14 +431,14 @@
 		</cmd>
 		<evt name="expo_map_item" id="13" type="MAP_ITEM:uid">
 			<comment
-			title="Item of the expo map"
-			desc="By default, each axis can have a different expo value.\n
-			For some products/mappings configuration, the expo values of two
-			axes belonging to the same physical joystick can be locked to
-			the same value. In this case, setting the value for one axis
-			will automatically change both values."
-			support="090f"
-			triggered="by a [set_expo](#138-12) command"/>
+				title="Item of the expo map"
+				desc="By default, each axis can have a different expo value.\n
+				For some products/mappings configuration, the expo values of two
+				axes belonging to the same physical joystick can be locked to
+				the same value. In this case, setting the value for one axis
+				will automatically change both values."
+				support="090f"
+				triggered="by a [set_expo](#138-12) command"/>
 			<arg name="uid" type="u32">
 				Unique ID (for MAP_ITEM type)
 			</arg>
@@ -453,11 +453,11 @@
 		</evt>
 		<cmd name="set_inverted" id="14">
 			<comment
-			title="Set/unset inverted state for a physical axis"
-			desc="Axis inversion has no effect on grabbed axes, nor on virtual
-			buttons that might be generated from axes."
-			support="090f"
-			result="The mapper will send [inverted_map_item](#138-15)"/>
+				title="Set/unset inverted state for a physical axis"
+				desc="Axis inversion has no effect on grabbed axes, nor on virtual
+				buttons that might be generated from axes."
+				support="090f"
+				result="The mapper will send [inverted_map_item](#138-15)"/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list).
 				Set to 0 to apply to all products
@@ -472,11 +472,11 @@
 		</cmd>
 		<evt name="inverted_map_item" id="15" type="MAP_ITEM:uid">
 			<comment
-			title="Item of the inverted map"
-			desc="Axis inversion has no effect on grabbed axes, nor on virtual
-			buttons that might be generated from axes."
-			support="090f"
-			triggered="by a [set_inverted](#138-14) command"/>
+				title="Item of the inverted map"
+				desc="Axis inversion has no effect on grabbed axes, nor on virtual
+				buttons that might be generated from axes."
+				support="090f"
+				triggered="by a [set_inverted](#138-14) command"/>
 			<arg name="uid" type="u32">
 				Unique ID (for MAP_ITEM type)
 			</arg>
