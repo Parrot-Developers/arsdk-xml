@@ -611,6 +611,12 @@
 				<enum name="motor_ramping">
 					Motor ramping state (for fixed wings).
 				</enum>
+				<enum name="emergency_landing">
+					Emergency landing state.
+					Drone autopilot has detected defective sensor(s).
+					Only Yaw argument in PCMD is taken into account.
+					All others flying commands are ignored.
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="AlertStateChanged" id="2">
