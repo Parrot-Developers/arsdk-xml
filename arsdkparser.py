@@ -196,6 +196,7 @@ class ArFeature(object):
                 msgObj.cls = cl
 
                 msgObj.args = cmd.args
+                msgObj.argsByName = cmd.argsByName
                 # Create enums
                 for arg in msgObj.args:
                     if len(arg.enums) > 0:
