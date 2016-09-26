@@ -809,6 +809,18 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="AirSpeedChanged" id="11" buffer="NON_ACK">
+			<comment
+				title="Drone's air speed changed"
+				desc="Drone's air speed changed\n
+				Expressed in the drone's referential."
+				support="none"
+				triggered="regularly."/>
+			<arg name="airSpeed" type="float">
+				Speed relative to air on x axis
+				(speed is always > 0) (in m/s)
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting
