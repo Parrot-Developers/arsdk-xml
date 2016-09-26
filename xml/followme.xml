@@ -199,7 +199,7 @@
 				Also triggers the event that informs about the current \n
 				configuration (if there is one) like event\n
 				[Geographic configuration](#134-4) or [Relative configuration](#134-6)"/>
-			 <arg name="mode" type="enum:mode"/>
+			<arg name="mode" type="enum:mode"/>
 		</cmd>
 		<cmd name="stop" id="2">
 			<comment

@@ -211,7 +211,7 @@
 				support="090e"
 				result="The fixed wing will circle in the given direction.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at hovering."/>
-			 <arg name="direction" type="enum">
+			<arg name="direction" type="enum">
 				The circling direction
 				<enum name="CW">
 					Circling ClockWise
@@ -219,7 +219,7 @@
 				<enum name="CCW">
 					Circling Counter ClockWise
 				</enum>
-				 <enum name="default">
+				<enum name="default">
 					Use drone default Circling direction set by CirclingDirection cmd
 				</enum>
 			</arg>
@@ -1101,7 +1101,7 @@
 				support="090e"
 				result="The circling direction is set.\n
 				Then, event [DefaultCirclingDirection](#1-6-12) is triggered."/>
-			 <arg name="value" type="enum">
+			<arg name="value" type="enum">
 				The circling direction
 				<enum name="CW">
 					Circling ClockWise
@@ -1155,7 +1155,7 @@
 					Negative pitch values will make the drone lower its nose.
 				</enum>
 			</arg>
-		 </cmd>
+		</cmd>
 	</class>
 	<class name="PilotingSettingsState" id="6">
 		Piloting Settings state from product
@@ -1351,10 +1351,10 @@
 			<arg name="current" type="u16">
 				The current circling altitude in meter
 			</arg>
-			 <arg name="min" type="u16">
+			<arg name="min" type="u16">
 				 Range min of circling altitude in meter
-			 </arg>
-			 <arg name="max" type="u16">
+			</arg>
+			<arg name="max" type="u16">
 				 Range max of circling altitude in meter
 			</arg>
 		</cmd>

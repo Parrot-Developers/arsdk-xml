@@ -600,8 +600,8 @@
 		</cmd>
 	</class>
 	<class name="Mavlink" id="11">
-		 Mavlink flight plans commands
-		 <cmd name="Start" id="0">
+		Mavlink flight plans commands
+		<cmd name="Start" id="0">
 			<comment
 				title="Start a FlightPlan"
 				desc="Start a FlightPlan based on a mavlink file existing on the drone.\n\n
@@ -612,10 +612,10 @@
 				support="0901:2.0.29;090c;090e"
 				result="If the FlightPlan has been started, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to *playing*.\n
 				Otherwise, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to stopped and event [MavlinkPlayErrorStateChanged](#0-12-1) is triggered with an explanation of the error."/>
-			 <arg name="filepath" type="string">
+			<arg name="filepath" type="string">
 				 flight plan file path from the mavlink ftp root
-			 </arg>
-			 <arg name="type" type="enum">
+			</arg>
+			<arg name="type" type="enum">
 				type of the played mavlink file
 				<enum name="flightPlan">
 					Mavlink file for FlightPlan
@@ -623,33 +623,33 @@
 				<enum name="mapMyHouse">
 					Mavlink file for MapMyHouse
 				</enum>
-			 </arg>
-		 </cmd>
-		 <cmd name="Pause" id="1">
+			</arg>
+		</cmd>
+		<cmd name="Pause" id="1">
 			<comment
 				title="Pause a FlightPlan"
 				desc="Pause a FlightPlan that was playing.\n
 				To unpause a FlightPlan, see [StartFlightPlan](#0-11-0)\n"
 				support="0901:2.0.29;090c;090e"
 				result="The currently playing FlightPlan will be paused. Then, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to the current state of the FlightPlan (should be *paused* if everything went well)."/>
-		 </cmd>
-		 <cmd name="Stop" id="2">
+		</cmd>
+		<cmd name="Stop" id="2">
 			<comment
 				title="Stop a FlightPlan"
 				desc="Stop a FlightPlan that was playing.\n"
 				support="0901:2.0.29;090c;090e"
 				result="The currently playing FlightPlan will be stopped. Then, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to the current state of the FlightPlan (should be *stopped* if everything went well)."/>
-		 </cmd>
-	 </class>
-	 <class name="MavlinkState" id="12">
-		 Mavlink flight plans states commands
-		 <cmd name="MavlinkFilePlayingStateChanged" id="0">
+		</cmd>
+	</class>
+	<class name="MavlinkState" id="12">
+		Mavlink flight plans states commands
+		<cmd name="MavlinkFilePlayingStateChanged" id="0">
 			<comment
 				title="Playing state of a FlightPlan"
 				desc="Playing state of a FlightPlan."
 				support="0901:2.0.29;090c;090e"
 				triggered="by [StartFlightPlan](#0-11-0), [PauseFlightPlan](#0-11-1) or [StopFlightPlan](#0-11-2)."/>
-			 <arg name="state" type="enum">
+			<arg name="state" type="enum">
 				State of the mavlink
 				<enum name="playing">
 					Mavlink file is playing
@@ -663,11 +663,11 @@
 				<enum name="loaded">
 					Mavlink file is loaded (it will be played at take-off)
 				</enum>
-			 </arg>
-			 <arg name="filepath" type="string">
+			</arg>
+			<arg name="filepath" type="string">
 				 flight plan file path from the mavlink ftp root
-			 </arg>
-			 <arg name="type" type="enum">
+			</arg>
+			<arg name="type" type="enum">
 				type of the played mavlink file
 				<enum name="flightPlan">
 					Mavlink file for FlightPlan
@@ -675,31 +675,31 @@
 				<enum name="mapMyHouse">
 					Mavlink file for MapMyHouse
 				</enum>
-			 </arg>
-		 </cmd>
-		 <cmd name="MavlinkPlayErrorStateChanged" id="1">
+			</arg>
+		</cmd>
+		<cmd name="MavlinkPlayErrorStateChanged" id="1">
 			<comment
 				title="FlightPlan error"
 				desc="FlightPlan error."
 				support="0901:2.0.29;090c;090e"
 				triggered="by [StartFlightPlan](#0-11-0) if an error occurs."/>
-			 <arg name="error" type="enum">
-				 State of play error
-				 <enum name="none">
-					 There is no error
-				 </enum>
-				 <enum name="notInOutDoorMode">
-					 The drone is not in outdoor mode
-				 </enum>
-				 <enum name="gpsNotFixed">
-					 The gps is not fixed
-				 </enum>
-				 <enum name="notCalibrated">
-					 The magnetometer of the drone is not calibrated
-				 </enum>
-			 </arg>
-		 </cmd>
-	 </class>
+			<arg name="error" type="enum">
+				State of play error
+				<enum name="none">
+					There is no error
+				</enum>
+				<enum name="notInOutDoorMode">
+					The drone is not in outdoor mode
+				</enum>
+				<enum name="gpsNotFixed">
+					The gps is not fixed
+				</enum>
+				<enum name="notCalibrated">
+					The magnetometer of the drone is not calibrated
+				</enum>
+			</arg>
+		</cmd>
+	</class>
 	<class name="Calibration" id="13">
 		Calibration commands
 		<cmd name="MagnetoCalibration" id="0">
@@ -808,31 +808,31 @@
 		</cmd>
 	</class>
 	<class name="CameraSettingsState" id="15">
-		 Status of the camera settings
-		 <cmd name="CameraSettingsChanged" id="0">
+		Status of the camera settings
+		<cmd name="CameraSettingsChanged" id="0">
 			<comment
 				title="Camera info"
 				desc="Camera info."
 				support="0901;090c;090e"
 				triggered="at connection."/>
-			 <arg name="fov" type="float">
+			<arg name="fov" type="float">
 				Value of the camera horizontal fov (in degree)
-			 </arg>
-			 <arg name="panMax" type="float">
+			</arg>
+			<arg name="panMax" type="float">
 				Value of max pan (right pan) (in degree)
-			 </arg>
-			 <arg name="panMin" type="float">
+			</arg>
+			<arg name="panMin" type="float">
 				Value of min pan (left pan) (in degree)
-			 </arg>
-			 <arg name="tiltMax" type="float">
+			</arg>
+			<arg name="tiltMax" type="float">
 				Value of max tilt (top tilt) (in degree)
-			 </arg>
-			 <arg name="tiltMin" type="float">
+			</arg>
+			<arg name="tiltMin" type="float">
 				Value of min tilt (bottom tilt) (in degree)
-			 </arg>
-		 </cmd>
-	 </class>
-	 <class name="GPS" id="16">
+			</arg>
+		</cmd>
+	</class>
+	<class name="GPS" id="16">
 		GPS related commands
 		<cmd name="ControllerPositionForRun" id="0">
 			<comment
