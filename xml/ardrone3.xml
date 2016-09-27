@@ -2348,6 +2348,9 @@
 				<enum name="PILOT">
 					The drone will try to return to the pilot position
 				</enum>
+				<enum name="FOLLOWEE">
+					The drone will try to return to the target of the current (or last) follow me
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="ReturnHomeDelay" id="4">
@@ -2369,7 +2372,11 @@
 				title="Home location"
 				desc="Home location."
 				support="0901;090c;090e"
-				triggered="by [SetHomeLocation](#1-23-2)."/>
+				triggered="when [HomeType](#1-31-2) changes.
+				Or by [SetHomeLocation](#1-23-2) when [HomeType](#1-31-2) is Pilot.
+				Or regularly after [SetControllerGPS](#140-1) when [HomeType](#1-31-2) is FollowMeTarget.
+				Or at take off [HomeType](#1-31-2) is Takeoff.
+				Or when the first fix occurs and the [HomeType](#1-31-2) is FirstFix."/>
 			<arg name="latitude" type="double">
 				Home latitude in decimal degrees
 			</arg>
@@ -2439,6 +2446,9 @@
 				</enum>
 				<enum name="PILOT">
 					The drone will try to return to the pilot position
+				</enum>
+				<enum name="FOLLOWEE">
+					The drone will try to return to the target of the current (or last) follow me
 				</enum>
 			</arg>
 		</cmd>
@@ -2596,6 +2606,9 @@
 				<enum name="FIRST_FIX">
 					The drone has not enough information, it will try to return to the first GPS fix
 				</enum>
+				<enum name="FOLLOWEE">
+					The drone will try to return to the target of the current (or last) follow me
+				</enum>
 			</arg>
 			<arg name="available" type="u8">
 				1 if this type is available, 0 otherwise
@@ -2605,7 +2618,8 @@
 			<comment
 				title="Home type"
 				desc="Home type.\n
-				This choice is made by the drone, according to the [PreferredHomeType](#1-24-4) and the [HomeTypeAvailability](#1-31-1). The drone will choose the type matching with the user preference only if this type is available."
+				This choice is made by the drone, according to the [PreferredHomeType](#1-24-4) and the [HomeTypeAvailability](#1-31-1). The drone will choose the type matching with the user preference only if this type is available. If not, it will chose a type in this order:\n
+				FIRST_FIX < PILOT < TAKEOFF < FOLLOWEE"
 				support="0901;090c;090e"
 				triggered="when the return home type chosen by the drone changes.\n
 				This might be produced by a user preference triggered by [SetPreferedHomeType](#1-23-3) or by a change in the [HomeTypesAvailabilityChanged](#1-31-1)."/>
@@ -2616,9 +2630,14 @@
 				</enum>
 				<enum name="PILOT">
 					The drone will try to return to the pilot position
+					In this case, the drone will use the position given by ARDrone3-SendControllerGPS
 				</enum>
 				<enum name="FIRST_FIX">
 					The drone has not enough information, it will try to return to the first GPS fix
+				</enum>
+				<enum name="FOLLOWEE">
+					The drone will try to return to the target of the current (or last) follow me
+					In this case, the drone will use the position of the target of the followMe (given by ControllerInfo-GPS)
 				</enum>
 			</arg>
 		</cmd>
