@@ -146,7 +146,7 @@
 				desc="An action can only be mapped to one axis/button set.\n
 				Each action can be mapped to different axes/buttons for
 				different modes."
-				support="090b;9010"
+				support="090b;0910"
 				result="The drone will send [button_mapping_item](#141-3) and
 				[axis_mapping_item](#141-4) according to the request."/>
 			<arg name="modes" type="bitfield:u8:mode">
