@@ -115,24 +115,6 @@
 			<value name="emergency">
 				Emergency motors shutdown
 			</value>
-			<value name="accessory_action">
-				Launch USB accessory default action (shoot, open/close claw, turn light on/off)
-			</value>
-			<value name="thrown_takeoff">
-				Thrown take off
-			</value>
-			<value name="cw_90_swipe">
-				90 deg clockwise swipe
-			</value>
-			<value name="ccw_90_swipe">
-				90 deg counter clockwise swipe
-			</value>
-			<value name="cw_180_swipe">
-				180 deg clockwise swipe
-			</value>
-			<value name="ccw_180_swipe">
-				180 deg counter clockwise swipe
-			</value>
 		</enum>
 		<enum name="axis_action">
 			The action (mapped on an axis)
