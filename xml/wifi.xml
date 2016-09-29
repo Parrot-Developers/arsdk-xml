@@ -253,5 +253,15 @@
 				Rssi on the connected wifi network. Rssi values are generally between -30 and -120dBm. The nearest of 0 is the better.
 			</arg>
 		</evt>
+		<evt name="supported_countries" id="14">
+			<comment
+				title="Supported countries"
+				desc="List of countries supported by the drone."
+				support="none"
+				triggered="when the supported countries list changed."/>
+			<arg name="countries" type="string">
+				List of country code in ISO 3166 format separated by ";"
+			</arg>
+		</evt>
 	</msgs>
 </feature>
