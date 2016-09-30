@@ -2619,7 +2619,7 @@
 				title="Home type"
 				desc="Home type.\n
 				This choice is made by the drone, according to the [PreferredHomeType](#1-24-4) and the [HomeTypeAvailability](#1-31-1). The drone will choose the type matching with the user preference only if this type is available. If not, it will chose a type in this order:\n
-				FIRST_FIX < PILOT < TAKEOFF < FOLLOWEE"
+				FOLLOWEE ; TAKEOFF ; PILOT ; FIRST_FIX"
 				support="0901;090c;090e"
 				triggered="when the return home type chosen by the drone changes.\n
 				This might be produced by a user preference triggered by [SetPreferedHomeType](#1-23-3) or by a change in the [HomeTypesAvailabilityChanged](#1-31-1)."/>
