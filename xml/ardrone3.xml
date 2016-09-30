@@ -59,7 +59,7 @@
 				**Please note that you should call setPilotingPCMD and not sendPilotingPCMD because the libARController is handling the periodicity and the buffer on which it is sent.**"
 				support="0901;090c;090e"
 				result="The drone moves! Yaaaaay!\n
-				Event [SpeedChanged](), [AttitudeChanged] and [PositionChanged]() (only if gps of the drone has fixed) are triggered."/>
+				Event [SpeedChanged](#1-4-5), [AttitudeChanged](#1-4-6) and [PositionChanged](#1-4-4) (only if gps of the drone has fixed) are triggered."/>
 			<arg name="flag" type="u8">
 				Boolean flag: 1 if the roll and pitch values should be taken in consideration. 0 otherwise
 			</arg>
@@ -117,7 +117,7 @@
 				Positive value makes the plane fly faster
 			</arg>
 			<arg name="timestampAndSeqNum" type="u32">
-				Command timestamp in milliseconds (low 24 bits) + command sequence number [0;255] (high 8 bits).
+				Command timestamp in milliseconds (low 24 bits) + command sequence number (high 8 bits) [0;255].
 			</arg>
 		</cmd>
 		<cmd name="Landing" id="3">
@@ -149,7 +149,7 @@
 				Please note that the drone will wait to be hovering to start its return home. This means that it will wait to have a [flag](#1-0-2) set at 0."
 				support="0901;090c;090e"
 				result="The drone will fly back to its home position.\n
-				Then, event [ReturnHomeState](#1-4-3]) is triggered.\n
+				Then, event [ReturnHomeState](#1-4-3) is triggered.\n
 				You can get a state pending if the drone is not ready to start its return home process but will do it as soon as it is possible."/>
 			<arg name="start" type="u8">
 				1 to start the navigate home, 0 to stop it
@@ -171,8 +171,8 @@
 				Also note that the given rotation will not modify the move (i.e. moves are always rectilinear)."
 				support="0901:3.3.0;090c:3.3.0"
 				result="The drone will move of the given offsets.\n
-				Then, event [RelativeMoveEnded](#1-34-0]) is triggered.\n
-				If you send a second relative move command, the drone will trigger a [RelativeMoveEnded](#1-34-0]) with the offsets it managed to do before this new command and the value of error set to interrupted."/>
+				Then, event [RelativeMoveEnded](#1-34-0) is triggered.\n
+				If you send a second relative move command, the drone will trigger a [RelativeMoveEnded](#1-34-0) with the offsets it managed to do before this new command and the value of error set to interrupted."/>
 			<arg name="dX" type="float">
 				Wanted displacement along the front axis [m]
 			</arg>
@@ -323,7 +323,7 @@
 				Also, please note that if your picture format is different from snapshot, picture taking will stop video recording (it will restart after the picture has been taken)."
 				support="0901:2.0.1;090c;090e"
 				result="The drone will begin or stop to record the video (or timelapse).\n
-				Then, event [VideoState](#1-8-3]) will be triggered. Also, notification [VideoEvent](#1-3-1) is triggered."/>
+				Then, event [VideoState](#1-8-3) will be triggered. Also, notification [VideoEvent](#1-3-1) is triggered."/>
 			<arg name="record" type="enum">
 				Command to record video
 				<enum name="stop">
