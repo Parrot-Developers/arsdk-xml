@@ -732,18 +732,15 @@ def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
         cmtTitle = commentNode.getAttribute("title")
         cmtSupport = commentNode.getAttribute("support")
 
-        desc = commentNode.getAttribute("desc")
-        # Remove whitespaces after '\n'
-        lines = [l.strip() for l in desc.split(r'\n')]
-        cmtDesc = '\n'.join(lines)
+        cmtDesc = _fmt_cmt_node(commentNode.getAttribute("desc"))
 
         if commentNode.hasAttribute("triggered"):
-            cmtTriggered = commentNode.getAttribute("triggered")
+            cmtTriggered = _fmt_cmt_node(commentNode.getAttribute("triggered"))
         else:
             cmtTriggered = None
 
         if commentNode.hasAttribute("result"):
-            cmtResult = commentNode.getAttribute("result")
+            cmtResult = _fmt_cmt_node(commentNode.getAttribute("result"))
         else:
             cmtResult = None
 
