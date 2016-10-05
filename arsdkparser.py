@@ -266,16 +266,15 @@ class ArMsg(object):
     def __repr__(self):
         return ("{name='%s', cmdId=%d, doc='%s', listType='%s', "
                 "bufferType='%s', timeoutPolicy='%s', content='%s', "
-                "args=%s comment=%s isDeprecated=%r}" % (
+                "args=%s isDeprecated=%r}" % (
                 self.name,
                 self.cmdId,
                 repr(self.doc),
-                ListType.TO_STRING[self.listType],
+                ArCmdListType.TO_STRING[self.listType],
                 ArCmdBufferType.TO_STRING[self.bufferType],
                 ArCmdTimeoutPolicy.TO_STRING[self.timeoutPolicy],
                 ArCmdContent.TO_STRING[self.content],
                 pprint.pformat(self.args),
-                pprint.pformat(self.comment),
                 self.isDeprecated))
 
 #===============================================================================
