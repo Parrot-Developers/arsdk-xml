@@ -84,12 +84,6 @@
 				Target detection is done by image detection among other things
 			</value>
 		</enum>
-		<enum name="anim_unavailability_reason">
-			Reason of unavailability of an animation
-			<value name="wrong_follow_me_type">
-				The current type of FollowMe doesn't allow this type of animation
-			</value>
-		</enum>
 		<enum name="geo_rel_configure_param">
 			Geographic and Relative follow me configuration parameters
 			<value name="distance">
