@@ -2598,16 +2598,16 @@
 			<arg name="type" type="enum">
 				The type of the return home
 				<enum name="TAKEOFF">
-					The drone will try to return to the take off position
+					The drone has enough information to return to the take off position
 				</enum>
 				<enum name="PILOT">
-					The drone will try to return to the pilot position
+					The drone has enough information to return to the pilot position
 				</enum>
 				<enum name="FIRST_FIX">
-					The drone has not enough information, it will try to return to the first GPS fix
+					The drone has not enough information, it will return to the first GPS fix
 				</enum>
 				<enum name="FOLLOWEE">
-					The drone will try to return to the target of the current (or last) follow me
+					The drone has enough information to return to the target of the current (or last) follow me
 				</enum>
 			</arg>
 			<arg name="available" type="u8">
@@ -2626,17 +2626,17 @@
 			<arg name="type" type="enum">
 				The type of the return home chosen
 				<enum name="TAKEOFF">
-					The drone will try to return to the take off position
+					The drone will return to the take off position
 				</enum>
 				<enum name="PILOT">
-					The drone will try to return to the pilot position
+					The drone will return to the pilot position
 					In this case, the drone will use the position given by ARDrone3-SendControllerGPS
 				</enum>
 				<enum name="FIRST_FIX">
-					The drone has not enough information, it will try to return to the first GPS fix
+					The drone has not enough information, it will return to the first GPS fix
 				</enum>
 				<enum name="FOLLOWEE">
-					The drone will try to return to the target of the current (or last) follow me
+					The drone will return to the target of the current (or last) follow me
 					In this case, the drone will use the position of the target of the followMe (given by ControllerInfo-GPS)
 				</enum>
 			</arg>
