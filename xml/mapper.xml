@@ -115,6 +115,9 @@
 			<value name="emergency">
 				Emergency motors shutdown
 			</value>
+			<value name="center_camera">
+				Reset camera to its default position
+			</value>
 		</enum>
 		<enum name="axis_action">
 			The action (mapped on an axis)
