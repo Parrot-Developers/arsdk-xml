@@ -252,7 +252,7 @@
 	</class>
 	<class name="Camera" id="1">
 		Ask the drone to move camera
-		<cmd name="Orientation" id="0" buffer="NON_ACK">
+		<cmd name="Orientation" id="0" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Move the camera"
 				desc="Move the camera.\n
@@ -266,6 +266,25 @@
 				Saturation value is sent by thre drone through CameraSettingsChanged command.
 			</arg>
 			<arg name="pan" type="i8">
+				Pan camera consign for the drone (in degree)
+				The value is saturated by the drone.
+				Saturation value is sent by thre drone through CameraSettingsChanged command.
+			</arg>
+		</cmd>
+		<cmd name="OrientationV2" id="1" buffer="NON_ACK">
+			<comment
+				title="Move the camera"
+				desc="Move the camera.\n
+				You can get min and max values for tilt and pan using [CameraInfo](#0-15-0)."
+				support="0901;090c;090e"
+				result="The drone moves its camera.\n
+				Then, event [CameraOrientationV2](#1-25-2) is triggered."/>
+			<arg name="tilt" type="float">
+				Tilt camera consign for the drone (in degree)
+				The value is saturated by the drone.
+				Saturation value is sent by thre drone through CameraSettingsChanged command.
+			</arg>
+			<arg name="pan" type="float">
 				Pan camera consign for the drone (in degree)
 				The value is saturated by the drone.
 				Saturation value is sent by thre drone through CameraSettingsChanged command.
@@ -2465,7 +2484,7 @@
 	</class>
 	<class name="CameraState" id="25">
 		Camera state
-		<cmd name="Orientation" id="0">
+		<cmd name="Orientation" id="0" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Camera orientation"
 				desc="Camera orientation."
@@ -2478,7 +2497,7 @@
 				Pan camera consign for the drone [-100;100]
 			</arg>
 		</cmd>
-		<cmd name="defaultCameraOrientation" id="1">
+		<cmd name="defaultCameraOrientation" id="1" deprecated="true">
 			<comment
 				title="Orientation of the camera center"
 				desc="Orientation of the center of the camera.\n
@@ -2490,6 +2509,33 @@
 			</arg>
 			<arg name="pan" type="i8">
 				Pan value (in degree)
+			</arg>
+		</cmd>
+		<cmd name="OrientationV2" buffer="NON_ACK" id="2">
+			<comment
+				title="Camera orientation"
+				desc="Camera orientation with float arguments."
+				support="0901;090c;090e"
+				triggered="by [SetCameraOrientationV2](#1-1-1)"/>
+			<arg name="tilt" type="float">
+				Tilt camera consign for the drone [deg]
+			</arg>
+			<arg name="pan" type="float">
+				Pan camera consign for the drone [deg]
+			</arg>
+		</cmd>
+		<cmd name="defaultCameraOrientationV2" id="3">
+			<comment
+				title="Orientation of the camera center"
+				desc="Orientation of the center of the camera.\n
+				This is the value to send when you want to center the camera."
+				support="0901;090c;090e"
+				triggered="at connection."/>
+			<arg name="tilt" type="float">
+				Tilt value [deg]
+			</arg>
+			<arg name="pan" type="float">
+				Pan value [deg]
 			</arg>
 		</cmd>
 	</class>
