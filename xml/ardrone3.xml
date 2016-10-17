@@ -290,6 +290,25 @@
 				Saturation value is sent by thre drone through CameraSettingsChanged command.
 			</arg>
 		</cmd>
+		<cmd name="Velocity" id="2" buffer="NON_ACK">
+			<comment
+				title="Move the camera using velocity"
+				desc="Move the camera given velocity consign.\n
+				You can get min and max values for tilt and pan using [CameraVelocityRange](#1-25-4)."
+				support="0901;090c;090e"
+				result="The drone moves its camera.\n
+				Then, event [CameraOrientationV2](#1-25-2) is triggered."/>
+			<arg name="tilt" type="float">
+				Tilt camera velocity consign [deg/s]
+				Negative tilt velocity move camera to bottom
+				Positive tilt velocity move camera to top
+			</arg>
+			<arg name="pan" type="float">
+				Pan camera velocity consign [deg/s]
+				Negative pan velocity move camera to left
+				Positive pan velocity move camera to right
+			</arg>
+		</cmd>
 	</class>
 	<class name="MediaRecord" id="7">
 		Media recording management
@@ -2536,6 +2555,19 @@
 			</arg>
 			<arg name="pan" type="float">
 				Pan value [deg]
+			</arg>
+		</cmd>
+		<cmd name="VelocityRange" id="4">
+			<comment
+				title="Camera velocity range"
+				desc="Camera Orientation velocity limits."
+				support="0901;090c;090e"
+				triggered="at connection."/>
+			<arg name="max_tilt" type="float">
+				Absolute max tilt velocity [deg/s]
+			</arg>
+			<arg name="max_pan" type="float">
+				Absolute max pan velocity [deg/s]
 			</arg>
 		</cmd>
 	</class>
