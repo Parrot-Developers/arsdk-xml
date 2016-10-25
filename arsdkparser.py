@@ -389,7 +389,7 @@ class ArEnum(object):
 #===============================================================================
 #===============================================================================
 class ArBitfield(object):
-    TYPE_TO_LENGTH = {ArArgType.U8:2**7, ArArgType.U16:2**15, ArArgType.U32:2**31}
+    TYPE_TO_LENGTH = {ArArgType.U8:2**7, ArArgType.U16:2**15, ArArgType.U32:2**31, ArArgType.U64:2**63}
 
     def __init__(self, enum, btfType):
         self.enum = enum
