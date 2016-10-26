@@ -116,6 +116,11 @@ class ArParserCtx(object):
                 for cmdObj in classObj.cmds:
                     yield (projectObj, classObj, cmdObj)
 
+    def walk_msgs(self):
+        for featureObj in self.features:
+            for msg in featureObj.getMsgs():
+                yield (featureObj, msg)
+
 #===============================================================================
 #===============================================================================
 class ArProject(object):
