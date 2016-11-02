@@ -95,6 +95,9 @@
 		</enum>
 		<enum name="channel_type">
 			Channel physical type.
+			<value name="invalid">
+				Invalid channel physical type.
+			</value>
 			<value name="signed_axis">
 				Signed axis type.
 			</value>
