@@ -55,8 +55,8 @@
 			<value name="emergency">
 				Emergency motors shutdown
 			</value>
-			<value name="accessory_action">
-				Launch USB accessory default action (shoot, open/close claw, turn light on/off)
+			<value name="accessory_gun">
+				Launch USB accessory gun action (shoot)
 			</value>
 			<value name="thrown_takeoff">
 				Thrown take off
@@ -93,6 +93,21 @@
 			</value>
 			<value name="plane_mode_toggle">
 				switch between plane mode and quad mode
+			</value>
+			<value name="accessory_claw">
+				Launch USB accessory claw action (open/close)
+			</value>
+			<value name="light_continuous">
+				switch continuous light (ON/OFF)
+			</value>
+			<value name="light_blink">
+				switch blink light (ON/OFF)
+			</value>
+			<value name="light_sinus">
+				switch sinus light (ON/OFF)
+			</value>
+			<value name="light_toggle">
+				toggle between light animations (OFF-continuous-blink-sinus-OFF)
 			</value>
 			<!-- Todo : add more actions -->
 		</enum>
