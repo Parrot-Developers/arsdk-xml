@@ -314,7 +314,8 @@
 		<cmd name="CurrentDateChanged" id="4">
 			<comment
 				title="Date changed"
-				desc="Date changed.\n\n
+				desc="Date changed.\n
+				Corresponds to the latest date set on the drone.\n\n
 				**Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
 				support="drones"
 				triggered="by [SetDate](#0-4-1)."/>
@@ -325,7 +326,8 @@
 		<cmd name="CurrentTimeChanged" id="5">
 			<comment
 				title="Time changed"
-				desc="Time changed.\n\n
+				desc="Time changed.\n
+				Corresponds to the latest time set on the drone.\n\n
 				**Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
 				support="drones"
 				triggered="by [SetTime](#0-4-2)."/>
@@ -521,6 +523,21 @@
 			</arg>
 			<arg name="nbRawPhotos" type="u16">
 				Number of raw photos
+			</arg>
+		</cmd>
+		<cmd name="VideoRecordingTimestamp" id="14">
+			<comment
+				title="Video recording timestamp"
+				desc="Current or last video recording timestamp.\n
+				Timestamp in milliseconds since 00:00:00 UTC on 1 January 1970.\n
+				**Please note that values don't persist after drone reboot**"
+				triggered="on video recording start and video recording stop or \n
+				after that the date/time of the drone changed."/>
+			<arg name="startTimestamp" type="u64">
+				Timestamp in milliseconds since 00:00:00 UTC on 1 January 1970.
+			</arg>
+			<arg name="stopTimestamp" type="u64">
+				Timestamp in milliseconds since 00:00:00 UTC on 1 January 1970. 0 mean that video is still recording.
 			</arg>
 		</cmd>
 	</class>
