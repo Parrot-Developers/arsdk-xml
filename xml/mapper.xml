@@ -477,5 +477,17 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
+		<evt name="active_product" id="16">
+			<comment
+				title="Active product for the mapper"
+				desc="This event notifies the application about the currently active
+				product, thus allowing the application to diplay and edit the
+				current mapping without having to guess from other sources."
+				support="090f:1.0.4"
+				triggered="when the active product changes"/>
+			<arg name="product" type="u16">
+				Product (see libARDiscovery for list)
+			</arg>
+		</evt>
 	</msgs>
 </feature>
