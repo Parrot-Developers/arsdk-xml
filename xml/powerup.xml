@@ -179,6 +179,24 @@
 				<enum name="ANGLE_OF_ATTACK">
 					Angle of attack of a plane needed horizontal flight.
 				</enum>
+				<enum name="ALT_HOLD">
+					Altitude hold during autopilot. 0 for false, other value for true.
+				</enum>
+				<enum name="ALT_HOLD_THROTTLE">
+					Altitude hold throttle. Expressed in percentage divided by 100 (from 0 to 1).
+				</enum>
+				<enum name="DR_RSSI_EDGE">
+					Rssi value that indicates that the airplane is close to the pilot.
+				</enum>
+				<enum name="RECOVERY_DURATION_LIMIT">
+					Limit time for return home duration. In seconds.
+				</enum>
+				<enum name="WIND_SPEED">
+					Wind speed in m/s. Should be sent before flight.
+				</enum>
+				<enum name="PLANE_SPEED">
+					Target plane speed in m/s. Should be sent before flight.
+				</enum>
 			</arg>
 			<arg name="value" type="float">
 				value of the given setting
@@ -224,6 +242,24 @@
 				</enum>
 				<enum name="ANGLE_OF_ATTACK">
 					Angle of attack of a plane needed horizontal flight.
+				</enum>
+				<enum name="ALT_HOLD">
+					Altitude hold during autopilot. 0 for false, other value for true.
+				</enum>
+				<enum name="ALT_HOLD_THROTTLE">
+					Altitude hold throttle. Expressed in percentage divided by 100 (from 0 to 1).
+				</enum>
+				<enum name="DR_RSSI_EDGE">
+					Rssi value that indicates that the airplane is close to the pilot.
+				</enum>
+				<enum name="RECOVERY_DURATION_LIMIT">
+					Limit time for return home duration. In seconds.
+				</enum>
+				<enum name="WIND_SPEED">
+					Wind speed in m/s.
+				</enum>
+				<enum name="PLANE_SPEED">
+					Target plane speed in m/s.
 				</enum>
 			</arg>
 			<arg name="current" type="float">
