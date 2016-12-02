@@ -752,14 +752,14 @@
 			<comment
 				title="Drone's speed changed"
 				desc="Drone's speed changed.\n
-				Expressed in the drone's referential."
+				Expressed in the NED referential (North-East-Down)."
 				support="0901;090c;090e"
 				triggered="regularly."/>
 			<arg name="speedX" type="float">
-				Speed on the x axis (when drone moves forward, speed is > 0) (in m/s)
+				Speed relative to the North (when drone moves to the north, speed is > 0) (in m/s)
 			</arg>
 			<arg name="speedY" type="float">
-				Speed on the y axis (when drone moves to right, speed is > 0) (in m/s)
+				Speed relative to the East (when drone moves to the east, speed is > 0) (in m/s)
 			</arg>
 			<arg name="speedZ" type="float">
 				Speed on the z axis (when drone moves down, speed is > 0) (in m/s)
