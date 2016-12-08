@@ -39,7 +39,7 @@ def main():
 	(options, args) = parseArgs()
 	setupLog(options)
 	generator_filepath = args[0]
-	extra = args[1] if len(args) > 1 else None
+	extra = ' '.join(args[1:]) if len(args) > 1 else None
 
 	# Setup full path of output directories
 	options.outdir = os.path.abspath(options.outdir)
@@ -68,6 +68,9 @@ def main():
 		if not f.endswith(".xml") or f == "generic.xml":
 			continue
 		arsdkparser.parse_xml(ctx, os.path.join(path, f))
+
+	# Finalize features after parsing
+	arsdkparser.finalize_ftrs(ctx)
 
 	# Call generator
 	if options.listFiles:
