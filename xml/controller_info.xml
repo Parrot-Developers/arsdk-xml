@@ -34,12 +34,11 @@
 	<enums>
 	</enums>
 	<msgs>
-		<cmd name="gps" id="1">
+		<cmd name="gps" id="1" buffer="NON_ACK">
 			<comment
 				title="Controller gps info"
 				desc="Controller gps info.\n
-				This command should be sent on a non acknowledged buffer if it is sent periodically,\n
-				and on an acknowledged buffer otherwise."
+				This command is not acknowledged by the drone."
 				result="The position of the controller is known by the drone.\n
 				It can be used for RTH or FollowMe."/>
 			<arg name="latitude" type="double">
@@ -70,10 +69,11 @@
 				Timestamp of the gps info
 			</arg>
 		</cmd>
-		<cmd name="barometer" id="2">
+		<cmd name="barometer" id="2" buffer="NON_ACK">
 			<comment
 				title="Controller barometer info"
-				result="The altitude of the controller is known by the drone."/>
+				result="The altitude of the controller is known by the drone.\n
+				This command is not acknowledged by the drone."/>
 			<arg name="pressure" type="float">
 				Atmospheric pressure in Pa
 			</arg>
