@@ -2601,6 +2601,19 @@
 				Delay in second
 			</arg>
 		</cmd>
+		<cmd name="GeofenceCenterChanged" id="6">
+			<comment
+				title="Geofence center"
+				desc="Geofence center location. This location represents the center of the geofence zone.
+				This is updated at a maximum frequency of 1 Hz."
+				triggered="when [HomeChanged](#1-24-0) and when [GpsLocationChanged](#1-4-9) before takeoff."/>
+			<arg name="latitude" type="double">
+				GPS latitude in decimal degrees
+			</arg>
+			<arg name="longitude" type="double">
+				GPS longitude in decimal degrees
+			</arg>
+		</cmd>
 	</class>
 	<class name="CameraState" id="25">
 		Camera state
