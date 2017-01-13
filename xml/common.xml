@@ -718,7 +718,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="MissonItemExecuted" id="2" content="NOTIFICATION">
+		<cmd name="MissionItemExecuted" id="2" content="NOTIFICATION">
 			<comment
 				title="Mission item executed"
 				desc="Mission item has been executed."
