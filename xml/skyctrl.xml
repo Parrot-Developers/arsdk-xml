@@ -1231,4 +1231,30 @@
 				paired in factory will **NOT** lose this pairing."/>
 		</cmd>
 	</class>
+	<class name="CommonEventState" id="26">
+		Common skycontroller events
+		<cmd name="Shutdown" id="0" content="NOTIFICATION">
+			<comment
+				title="Skycontroller will disconnect because of shutdown"
+				desc="Skycontroller will disconnect.\n
+				This event is triggered when the user presses on the power button of the product.\n\n
+				**This event is a notification, you can't retrieve it in the cache of the device controller.**"
+				triggered="when the SkyController shutdowns for one of the given reasons"/>
+			<arg name="reason" type="enum">
+				Reason of the shutdown of the product
+				<enum name="poweroff_button">
+					The power off button has been pressed
+				</enum>
+				<enum name="update">
+					The product is going to be updated
+				</enum>
+				<enum name="low_battery">
+					The product battery is too low.
+				</enum>
+				<enum name="factory_reset">
+					The product is going to be factory reset
+				</enum>
+			</arg>
+		</cmd>
+	</class>
 </project>
