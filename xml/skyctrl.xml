@@ -546,6 +546,30 @@
 				The channel
 			</arg>
 		</cmd>
+		<cmd name="WifiSecurity" id="3">
+			<comment
+				title="Set access point security"
+				desc="Set the SkyController access point security. The key will be
+				checked, and can be refused by the product. In this case, the
+				security will not be changed. Use the [WifiSecurityChanged](#4-10-3)
+				event to get the applied security settings."
+				support="0913"
+				result="The network security will change (which will likely
+					disconnect the controller), then a
+					[WifiSecurityChanged](#4-10-3) event will be sent"/>
+			<arg name="security_type" type="enum">
+				The type of security for the network
+				<enum name="open">
+					Wifi is not protected (default)
+				</enum>
+				<enum name="wpa2">
+					Wifi is protected by wpa2
+				</enum>
+			</arg>
+			<arg name="key" type="string">
+				The security key (ignored if security_type is open)
+			</arg>
+		</cmd>
 	</class>
 	<class name="AccessPointSettingsState" id="10">
 		AccessPoint settings state from product
@@ -600,6 +624,27 @@
 			</arg>
 			<arg name="channel" type="u8">
 				The channel
+			</arg>
+		</cmd>
+		<cmd name="WifiSecurityChanged" id="3">
+			<comment
+				title="The access point security was changed"
+				desc="Changing the security will often (if not always) trigger a
+				disconnection of the controller, so this event will only
+				be recieved during the initial connexion phase."
+				support="0913"
+				result="by a [WifiSecurity](#4-9-3) command"/>
+			<arg name="security_type" type="enum">
+				The type of security for the network
+				<enum name="open">
+					Wifi is not protected (default)
+				</enum>
+				<enum name="wpa2">
+					Wifi is protected by wpa2
+				</enum>
+			</arg>
+			<arg name="key" type="string">
+				The security key (ignored if security_type is open)
 			</arg>
 		</cmd>
 	</class>
