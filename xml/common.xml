@@ -899,20 +899,33 @@
 				title="FlightPlan components state list"
 				desc="FlightPlan components state list."
 				support="0901:2.0.29;090c;090e"
-				triggered="when the state of required components changes."/>
+				triggered="when the state of required components changes. \n
+				GPS component is triggered when the availability of the GPS of the drone changes. \n
+				Calibration component is triggered when the calibration state of the drone sensors changes \n
+				Mavlink_File component is triggered when the command [StartFlightPlan](#0-11-0) is received. \n
+				Takeoff component is triggered when the drone needs to take-off to continue the FlightPlan. \n
+				WaypointsBeyondGeofence component is triggered when the command [StartFlightPlan](#0-11-0) is received."/>
 			<arg name="component" type="enum">
 				Drone FlightPlan component id (unique)
 				<enum name="GPS">
-					GPS for Drone FlightPlan
+					Drone GPS component.
+					State is 0 when the drone needs a GPS fix.
 				</enum>
 				<enum name="Calibration">
-					Calibration for Drone FlightPlan
+					Drone Calibration component.
+					State is 0 when the sensors of the drone needs to be calibrated.
 				</enum>
 				<enum name="Mavlink_File">
-					Mavlink file for Drone FlightPlan
+					Mavlink file component.
+					State is 0 when the mavlink file is missing or contains error.
 				</enum>
 				<enum name="TakeOff">
-					Take off
+					Drone Take off component.
+					State is 0 when the drone cannot take-off.
+				</enum>
+				<enum name="WaypointsBeyondGeofence">
+					Component for waypoints beyond the geofence.
+					State is 0 when one or more waypoints are beyond the geofence.
 				</enum>
 			</arg>
 			<arg name="State" type="u8">
