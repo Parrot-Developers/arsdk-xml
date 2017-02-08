@@ -696,7 +696,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="MavlinkPlayErrorStateChanged" id="1">
+		<cmd name="MavlinkPlayErrorStateChanged" id="1" deprecated="true">
 			<comment
 				title="FlightPlan error"
 				desc="FlightPlan error."
