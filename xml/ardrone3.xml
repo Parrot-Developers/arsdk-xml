@@ -969,7 +969,8 @@
 				desc="Relative move ended.\n
 				Informs about the move that the drone managed to do and why it stopped."
 				support="0901:3.3.0;090c:3.3.0"
-				triggered="when the landing state changes."/>
+				triggered="when the drone reaches its target or when it is interrupted by another
+				[moveBy command](#1-0-7) or when an error occurs."/>
 			<arg name="dX" type="float">
 				Distance traveled along the front axis [m]
 			</arg>
