@@ -730,6 +730,35 @@
 			</arg>
 		</cmd>
 	</class>
+	<class name="FlightPlanSettings" id="32">
+		<cmd name="ReturnHomeOnDisconnect" id="0">
+			<comment
+				title="Set ReturnHome behavior during FlightPlan"
+				desc="Set ReturnHome behavior during FlightPlan\n
+				When set, drone will return home, after return home delay, if a disconnection occurs during execution of FlightPlan"
+				support="0901:4.1.0;090c:4.1.0;090e:1.4.0"
+				result="The return home mode is enabled or disabled.\n
+				Then, event [ReturnHomeOnDisconnectionChanged](#0-33-0) is triggered."/>
+			<arg name="value" type="u8">
+				1 to enable, 0 to disable
+			</arg>
+		</cmd>
+	</class>
+	<class name="FlightPlanSettingsState" id="33">
+		<cmd name="ReturnHomeOnDisconnectChanged" id="0">
+			<comment
+				title="ReturnHome behavior during FlightPlan"
+				desc="Define behavior of drone when disconnection occurs during a flight plan"
+				support="0901:4.1.0;090c:4.1.0;090e:1.4.0"
+				triggered="by [setReturnHomeOnDisconnectMode](#0-32-0)."/>
+			<arg name="state" type="u8">
+				1 if enabled, 0 if disabled
+			</arg>
+			<arg name="isReadOnly" type="u8">
+				1 if readOnly, 0 if writable
+			</arg>
+		</cmd>
+	</class>
 	<class name="Calibration" id="13">
 		Calibration commands
 		<cmd name="MagnetoCalibration" id="0">
