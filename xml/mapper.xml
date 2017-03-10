@@ -118,6 +118,10 @@
 			<value name="center_camera">
 				Reset camera to its default position
 			</value>
+			<value name="cycle_hud">
+				Cycle between different hud configurations on HDMI
+				(Skycontroller 1 only)
+			</value>
 		</enum>
 		<enum name="axis_action">
 			The action (mapped on an axis)
