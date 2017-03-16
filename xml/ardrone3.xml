@@ -224,6 +224,56 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="moveTo" id="10">
+			<comment
+				title="Move to a location"
+				desc="Move the drone to a specified location.\n
+				If a new command moveTo is sent, the drone will immediatly cancel the previous one.\n
+				If a [CancelMoveTo](#1-0-11) command is sent, the moveTo is stopped.\n
+				During the moveTo, all pitch, roll and gaz values of the piloting command
+				will be ignored by the drone.\n
+				However, the yaw value can be used."
+				support="none"
+				result="Event [MovingTo](#1-4-12) is triggered with state running.
+				Then, the drone will move to the given location.\n
+				Then, event [MoveToChanged](#1-4-12) is triggered with state succeed."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to reach
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to reach
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above sea level (in m) to reach
+			</arg>
+			<arg name="orientation_mode" type="enum">
+				Orientation mode of the move to
+				<enum name="NONE">
+					The drone won't change its orientation
+				</enum>
+				<enum name="TO_TARGET">
+					The drone will make a rotation to look in direction of the given location
+				</enum>
+				<enum name="HEADING_START">
+					The drone will orientate itself to the given heading before moving to the location
+				</enum>
+				<enum name="HEADING_DURING">
+					The drone will orientate itself to the given heading while moving to the location
+				</enum>
+			</arg>
+			<arg name="heading" type="float">
+				Heading (relative to the North in degrees).
+				This value is only used if the orientation mode is HEADING_START or HEADING_DURING
+			</arg>
+		</cmd>
+		<cmd name="CancelMoveTo" id="11">
+			<comment
+				title="Cancel the moveTo"
+				desc="Cancel the current moveTo.\n
+				If there is no current moveTo, this command has no effect."
+				support="none"
+				result="Event [MoveToChanged](#1-4-12) is triggered with state canceled."/>
+		</cmd>
 	</class>
 	<class name="Animations" id="5">
 		Animation commands
@@ -859,6 +909,57 @@
 				(speed is always > 0) (in m/s)
 			</arg>
 		</cmd>
+		<cmd name="moveToChanged" id="12">
+			<comment
+				title="Move to changed"
+				desc="The drone moves or moved to a given location."
+				support="none"
+				triggered="by [MoveTo](#1-0-10) or when the drone did reach the given position."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to reach
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to reach
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above sea level (in m) to reach
+			</arg>
+			<arg name="orientation_mode" type="enum">
+				Orientation mode of the move to
+				<enum name="NONE">
+					The drone won't change its orientation
+				</enum>
+				<enum name="TO_TARGET">
+					The drone will make a rotation to look in direction of the given location
+				</enum>
+				<enum name="HEADING_START">
+					The drone will orientate itself to the given heading before moving to the location
+				</enum>
+				<enum name="HEADING_DURING">
+					The drone will orientate itself to the given heading while moving to the location
+				</enum>
+			</arg>
+			<arg name="heading" type="float">
+				Heading (relative to the North in degrees).
+				This value is only used if the orientation mode is HEADING_START or HEADING_DURING
+			</arg>
+			<arg name="status" type="enum">
+				Status of the move to
+				<enum name="RUNNING">
+					The drone is actually flying to the given position
+				</enum>
+				<enum name="DONE">
+					The drone has reached the target
+				</enum>
+				<enum name="CANCELED">
+					The move to has been canceled, either by a new moveTo command or
+					by a CancelMoveTo command.
+				</enum>
+				<enum name="ERROR">
+					The move to has not been finished or started because of an error.
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting
@@ -868,7 +969,8 @@
 				desc="Relative move ended.\n
 				Informs about the move that the drone managed to do and why it stopped."
 				support="0901:3.3.0;090c:3.3.0"
-				triggered="when the landing state changes."/>
+				triggered="when the drone reaches its target or when it is interrupted by another
+				[moveBy command](#1-0-7) or when an error occurs."/>
 			<arg name="dX" type="float">
 				Distance traveled along the front axis [m]
 			</arg>
@@ -2498,6 +2600,19 @@
 				triggered="by [SetReturnHomeDelay](#1-23-4)."/>
 			<arg name="delay" type="u16">
 				Delay in second
+			</arg>
+		</cmd>
+		<cmd name="GeofenceCenterChanged" id="6">
+			<comment
+				title="Geofence center"
+				desc="Geofence center location. This location represents the center of the geofence zone.
+				This is updated at a maximum frequency of 1 Hz."
+				triggered="when [HomeChanged](#1-24-0) and when [GpsLocationChanged](#1-4-9) before takeoff."/>
+			<arg name="latitude" type="double">
+				GPS latitude in decimal degrees
+			</arg>
+			<arg name="longitude" type="double">
+				GPS longitude in decimal degrees
 			</arg>
 		</cmd>
 	</class>

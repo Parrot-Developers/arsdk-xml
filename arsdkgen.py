@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys, os, stat, logging, tempfile, filecmp, shutil
 import optparse
 import arsdkparser

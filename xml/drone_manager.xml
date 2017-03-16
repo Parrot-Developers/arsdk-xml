@@ -69,14 +69,14 @@
 				* known drones not currently visible.
 				* known drones currently visible.
 				* unknown drones currently visible."
-				support="090f"
+				support="090f;0913"
 				result="The drone manager will answer with a list of [drone\_list\_item](#137-2)"/>
 		</cmd>
 		<evt name="drone_list_item" id="2" type="MAP_ITEM:serial">
 			<comment
 				title="Drone list item"
 				desc="Item describing a drone."
-				support="090f"
+				support="090f;0913"
 				triggered="when requested [discover_drones](#137-1)."/>
 			<arg name="serial" type="string">
 				Serial number of the drone.
@@ -116,7 +116,7 @@
 			<comment
 				title="Connect to a drone"
 				desc="Request connection to a specific drone. Override the auto-selected drone."
-				support="090f"
+				support="090f;0913"
 				result="The drone manager will send an update of its [connection_state](#137-5), if relevant"/>
 			<arg name="serial" type="string">
 				Serial number of the drone.
@@ -131,7 +131,7 @@
 			<comment
 				title="Forget a drone"
 				desc="Forget the given drone. If the drone is the selected one, the auto-selection will run again."
-				support="090f"
+				support="090f;0913"
 				result="If the drone was the active one, a new one will be autoselected, and [connection_state](#137-5) update will be sent as needed.
 					Otherwise, no answer will be sent from the drone manager"/>
 			<arg name="serial" type="string">
@@ -142,7 +142,7 @@
 			<comment
 				title="State of the connection"
 				desc="State of the connection."
-				support="090f"
+				support="090f;0913"
 				triggered="when the state changes.\nIf the state is 'searching', all informations about the drone will refer to the last connected drone.\n
 				Otherwise, these informations will refer to the active drone."/>
 			<arg name="state" type="enum:connection_state">
@@ -162,7 +162,7 @@
 			<comment
 				title="Authentication failed"
 				desc="Authentication failed because of a wrong key (passphrase)."
-				support="090f"
+				support="090f;0913"
 				triggered="when trying to [connect](#137-3) to a protected drone with a wrong key (passphrase)"/>
 			<arg name="serial" type="string">
 				Serial number of the drone.
@@ -178,7 +178,7 @@
 			<comment
 				title="Connection refused"
 				desc="Connection refused by the drone because another peer is already connected to."
-				support="090f"
+				support="090f;0913"
 				triggered="Try to [connect](#137-3) to a drone where another peer is already connected to."/>
 			<arg name="serial" type="string">
 				Serial number of the drone.
@@ -194,7 +194,7 @@
 			<comment
 				title="Known drone item"
 				desc="Item describing a known drone (already connected)."
-				support="090f:1.0.3"
+				support="090f:1.0.3;0913"
 				triggered="when [AllSettings](#4-4-0) is requested
 				 or when a drone is forgotten
 				 or connected for the first time."/>

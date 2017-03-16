@@ -210,14 +210,6 @@
 				only used when calibration_type=min_max.
 			</arg>
 		</cmd>
-		<evt name="receiver_quality" id="7">
-			<comment
-			title="RC signal quality level"
-			desc="RC signal quality level"/>
-			<arg name="level" type="u8">
-				Current RC signal quality level between 0 to 5.
-			</arg>
-		</evt>
 		<cmd name="invert_channel" id="8">
 			<comment
 			title="Invert a RC channel values"
