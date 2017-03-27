@@ -1577,7 +1577,7 @@
 				A run id is uniquely identifying a run or a flight.\n
 				For each run is generated on the drone a file which can be used by Academy to sum up the run.\n
 				Also, each medias taken during a run has a filename containing the run id."
-				support="0901:3:0:1;090c;090e"
+				support="0901:3.0.1;090c;090e"
 				triggered="when the drone generates a new run id (generally right after a take off)."/>
 			<arg name="runId" type="string">
 				Id of the run
