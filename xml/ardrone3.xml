@@ -2439,7 +2439,7 @@
 				Home altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="ResetHome" id="1">
+		<cmd name="ResetHome" id="1" deprecated="true">
 			<comment
 				title="Reset home position"
 				desc="Reset home position."
@@ -2527,7 +2527,7 @@
 				Home altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="ResetHomeChanged" id="1">
+		<cmd name="ResetHomeChanged" id="1" deprecated="true">
 			<comment
 				title="Home location has been reset"
 				desc="Home location has been reset."
@@ -2553,7 +2553,7 @@
 				1 if gps on drone is fixed, 0 otherwise
 			</arg>
 		</cmd>
-		<cmd name="GPSUpdateStateChanged" id="3">
+		<cmd name="GPSUpdateStateChanged" id="3" deprecated="true">
 			<comment
 				title="Gps update state"
 				desc="Gps update state."
