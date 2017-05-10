@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import pprint
@@ -165,11 +165,15 @@ class ArFeature(object):
 
     def getMsgsById (self):
         #only for feature
-        return dict(self.cmdsById, **self.evtsById)
+        tmp = dict(self.cmdsById)
+        tmp.update(self.evtsById)
+        return tmp
 
     def getMsgsByName (self):
         #only for feature
-        return dict(self.cmdsByName, **self.evtsByName)
+        tmp = dict(self.cmdsByName)
+        tmp.update(self.evtsByName)
+        return tmp
 
     def __repr__(self):
         return ("{name='%s', featureId=%d, doc='%s', enums='%s', "
@@ -362,8 +366,10 @@ class ArEnumValue(object):
         self.doc = doc
         self.value = value
 
-    def __cmp__(self, other):
-        return cmp(self.value, other.value)
+    def __eq__(self, other):
+        return self.value == other.value
+    def __lt__(self, other):
+        return self.value < other.value
 
     def __repr__(self):
         return ("{name='%s', value=%d, doc='%s'}" % (

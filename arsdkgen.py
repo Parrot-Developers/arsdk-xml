@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import sys, os, stat, logging, tempfile, filecmp, shutil
 import optparse
 import arsdkparser
@@ -48,7 +48,7 @@ def main():
 		"list" if options.listFiles else "generate",
 		generator_filepath, options.outdir, extra)
 	if not options.listFiles and not os.path.exists(options.outdir):
-		os.makedirs(options.outdir, 0755)
+		os.makedirs(options.outdir, 0o755)
 
 	# Import package of ge generation
 	(generator_path, generator_filename) = os.path.split(generator_filepath)
