@@ -136,6 +136,67 @@
 		0 is an unknown value. 1 is a weak wifi signal, 5 is the best.
 			</arg>
 		</cmd>
+		<cmd name="WifiAuthChannelListChangedV2" id="5" type="LIST_ITEM">
+			<comment
+				title="Authorized channel list"
+				desc="Each element represent an authorized wifi channel for the
+				current country regulatory domain.\n Note that some channels
+				might be only authorized for indoor or outdoor use."
+				support="0913"
+				triggered="by a change of the list, or by a
+				[WifiAuthChannel](#4-1-4) command"/>
+			<arg name="band" type="enum">
+				The band of this channel : 2.4 GHz or 5 GHz
+				<enum name="2_4ghz">
+					2.4 GHz band
+				</enum>
+				<enum name="5ghz">
+					5 GHz band
+				</enum>
+			</arg>
+			<arg name="channel" type="u8">
+				The authorized channel
+			</arg>
+			<arg name="in_or_out" type="u8">
+				Bit 0 is 1 if channel is authorized outside (0 otherwise)
+				Bit 1 is 1 if channel is authorized inside (0 otherwise)
+			</arg>
+			<arg name="list_flags" type="u8">
+				List entry attribute Bitfield.
+				0x01: First: indicate it's the first element of the list.
+				0x02: Last: indicate it's the last element of the list.
+				0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+				0x08: Remove: This value should be removed from the existing list.
+			</arg>
+		</cmd>
+		<cmd name="WifiCountryChanged" id="6">
+			<comment
+				title="Wifi country changed"
+				desc="The wifi country of the SkyController will follow the wifi country of
+				the currently connected drone, except for country-locked SkyControllers."
+				support="0913"
+				triggered="by a country change from the drone"/>
+			<arg name="code" type="string">
+				Country code with ISO 3166 format, empty string means unknown country.
+			</arg>
+		</cmd>
+		<cmd name="WifiEnvironmentChanged" id="7">
+			<comment
+				title="Wifi environment changed"
+				desc="The wifi environment of the SkyController will follow the wifi
+				environment of the currently connected drone"
+				support="0913"
+				triggered="by an environment change from the drone"/>
+			<arg name="environment" type="enum">
+				Type of environment
+				<enum name="indoor">
+					indoor environment
+				</enum>
+				<enum name="outdoor">
+					outdoor environment
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="Wifi" id="1">
 		Wifi
