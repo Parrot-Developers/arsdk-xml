@@ -47,8 +47,8 @@ def main():
 	logging.info("arsdkgen: cmd=%s generator=%s, outdir=%s extra=%s",
 		"list" if options.listFiles else "generate",
 		generator_filepath, options.outdir, extra)
-	if not options.listFiles and not os.path.exists(options.outdir):
-		os.makedirs(options.outdir, 0o755)
+	if not options.listFiles:
+		os.makedirs(options.outdir, 0o755, exist_ok=True)
 
 	# Import package of ge generation
 	(generator_path, generator_filename) = os.path.split(generator_filepath)
