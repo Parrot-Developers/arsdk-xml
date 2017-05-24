@@ -2439,7 +2439,7 @@
 				Home altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="ResetHome" id="1">
+		<cmd name="ResetHome" id="1" deprecated="true">
 			<comment
 				title="Reset home position"
 				desc="Reset home position."
@@ -2527,7 +2527,7 @@
 				Home altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="ResetHomeChanged" id="1">
+		<cmd name="ResetHomeChanged" id="1" deprecated="true">
 			<comment
 				title="Home location has been reset"
 				desc="Home location has been reset."
@@ -2553,7 +2553,7 @@
 				1 if gps on drone is fixed, 0 otherwise
 			</arg>
 		</cmd>
-		<cmd name="GPSUpdateStateChanged" id="3">
+		<cmd name="GPSUpdateStateChanged" id="3" deprecated="true">
 			<comment
 				title="Gps update state"
 				desc="Gps update state."
@@ -2843,6 +2843,44 @@
 				desc="Pro features."/>
 			<arg name="features" type="u64">
 				Bitfield representing enabled features.
+			</arg>
+		</cmd>
+	</class>
+	<class name="AccessoryState" id="33" type="MAP_ITEM">
+		Information about the connected accessories
+		<cmd name="ConnectedAccessories" id="0">
+			<comment
+				title="List of connected accessories"
+				desc="List of all connected accessories.
+				This event presents the list of all connected accessories. To actually use the component, use the
+				component dedicated feature."
+				support="none"
+				triggered="at connection or when an accessory is connected."/>
+			<arg name="id" type="u8">
+				Id of the accessory for the session.
+			</arg>
+			<arg name="accessory_type" type="enum">
+				Accessory type
+				<enum name="sequoia">
+					Parrot Sequoia (multispectral camera for agriculture)
+				</enum>
+				<enum name="unknownaccessory_1">
+					UNKNOWNACCESSORY_1 camera (thermal+rgb camera)
+				</enum>
+			</arg>
+			<arg name="uid" type="string">
+				Unique Id of the accessory.
+				This id is unique by accessory_type.
+			</arg>
+			<arg name="swVersion" type="string">
+				Software Version of the accessory.
+			</arg>
+			<arg name="listFlags" type="u8">
+				List entry attribute Bitfield.
+				0x01: First: indicate it's the first element of the list.
+				0x02: Last: indicate it's the last element of the list.
+				0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+				0x08: Remove: This value should be removed from the existing list.
 			</arg>
 		</cmd>
 	</class>
