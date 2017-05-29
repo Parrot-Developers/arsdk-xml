@@ -71,7 +71,7 @@
 		<evt name="settings_info" type="LIST_ITEM" id="2">
 				Sent by the drone as answer to get_settings_info
 				Describe a debug setting and give the current value.
-			<arg name="listFlags" type="u8">
+			<arg name="list_flags" type="u8">
 					List entry attribute Bitfield.
 					0x01: First: indicate it's the first element of the list.
 					0x02: Last: indicate it's the last element of the list.
