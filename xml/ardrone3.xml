@@ -2846,15 +2846,15 @@
 			</arg>
 		</cmd>
 	</class>
-	<class name="AccessoryState" id="33" type="MAP_ITEM">
+	<class name="AccessoryState" id="33">
 		Information about the connected accessories
-		<cmd name="ConnectedAccessories" id="0">
+		<cmd name="ConnectedAccessories" id="0" type="MAP_ITEM">
 			<comment
 				title="List of connected accessories"
 				desc="List of all connected accessories.
 				This event presents the list of all connected accessories. To actually use the component, use the
 				component dedicated feature."
-				support="none"
+				support="090e:1.5.0"
 				triggered="at connection or when an accessory is connected."/>
 			<arg name="id" type="u8">
 				Id of the accessory for the session.
@@ -2875,7 +2875,7 @@
 			<arg name="swVersion" type="string">
 				Software Version of the accessory.
 			</arg>
-			<arg name="listFlags" type="u8">
+			<arg name="list_flags" type="u8">
 				List entry attribute Bitfield.
 				0x01: First: indicate it's the first element of the list.
 				0x02: Last: indicate it's the last element of the list.
