@@ -355,7 +355,7 @@
 			<comment
 				title="Reset all settings"
 				desc="This command is not implemented."
-				support="none"
+				support="090f:1.0.5;0913"
 				result="All settings are reset, then a [ResetChanged](#4-5-1)
 				event is fired."/>
 		</cmd>
