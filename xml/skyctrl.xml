@@ -420,6 +420,16 @@
 				Product hardware version
 			</arg>
 		</cmd>
+		<cmd name="CPUID" id="5">
+			<comment
+				title="Product main CPU id"
+				desc="The serial number (or any other UID) for the main CPU."
+				support="090f:1.0.5;0913"
+				triggered="during the [AllSettings](#4-4-0) phase."/>
+			<arg name="id" type="string">
+				Product main cpu id
+			</arg>
+		</cmd>
 	</class>
 	<class name="Common" id="6">
 		Common commands
