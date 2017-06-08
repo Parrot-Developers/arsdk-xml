@@ -782,7 +782,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="PositionChanged" id="4">
+		<cmd name="PositionChanged" id="4" buffer="NON_ACK">
 			<comment
 				title="Drone's position changed"
 				desc="Drone's position changed."
@@ -851,7 +851,7 @@
 				Altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="GpsLocationChanged" id="9">
+		<cmd name="GpsLocationChanged" id="9" buffer="NON_ACK">
 			<comment
 				title="Drone's location changed"
 				desc="Drone's location changed.\n
