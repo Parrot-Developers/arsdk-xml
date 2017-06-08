@@ -274,6 +274,38 @@
 				support="none"
 				result="Event [MoveToChanged](#1-4-12) is triggered with state canceled."/>
 		</cmd>
+		<cmd name="StartPilotedPOI" id="12">
+			<comment
+				title="Start a piloted POI"
+				desc="Start a piloted Point Of Interest.\n
+				During a piloted POI, the drone will always look at the given POI but can be piloted normally.
+				However, yaw value is ignored. Camera tilt and pan command is also ignored.\n
+				Ignored if [PilotedPOI](#1-4-13) state is UNAVAILABLE."
+				support="none"
+				result="If the drone is hovering, event [PilotedPOI](#1-4-13) is triggered with state RUNNING.
+				If the drone is not hovering, event [PilotedPOI](#1-4-13) is triggered with state PENDING,
+				waiting to hover. When the drone hovers, the state will change to RUNNING.
+				If the drone does not hover for a given time, piloted POI is canceled by the drone and state
+				will change to AVAILABLE.
+				Then, the drone will look at the given location."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to look at
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to look at
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above sea level (in m) to look at
+			</arg>
+		</cmd>
+		<cmd name="StopPilotedPOI" id="13">
+			<comment
+				title="Stop the piloted POI"
+				desc="Stop the piloted Point Of Interest.\n
+				If [PilotedPOI](#1-4-13) state is RUNNING or PENDING, stop it."
+				support="none"
+				result="Event [PilotedPOI](#1-4-13) is triggered with state AVAILABLE."/>
+		</cmd>
 	</class>
 	<class name="Animations" id="5">
 		Animation commands
@@ -957,6 +989,38 @@
 				</enum>
 				<enum name="ERROR">
 					The move to has not been finished or started because of an error.
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="PilotedPOI" id="13">
+			<comment
+				title="Piloted POI state"
+				desc="Piloted POI state."
+				support="none"
+				triggered="by [StartPilotedPOI](#1-0-12) or [StopPilotedPOI](#1-0-13)
+				or when piloted POI becomes unavailable."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to look at
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to look at
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above sea level (in m) to look at
+			</arg>
+			<arg name="status" type="enum">
+				Status of the move to
+				<enum name="UNAVAILABLE">
+					The piloted POI is not available
+				</enum>
+				<enum name="AVAILABLE">
+					The piloted POI is available
+				</enum>
+				<enum name="PENDING">
+					Piloted POI has been requested. Waiting to be in state that allow the piloted POI to start
+				</enum>
+				<enum name="RUNNING">
+					Piloted POI is running
 				</enum>
 			</arg>
 		</cmd>
