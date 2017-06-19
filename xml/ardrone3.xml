@@ -190,7 +190,9 @@
 			<comment
 				title="Prepare the drone to take off"
 				desc="Prepare the drone to take off.\n
-				This is the command that initiates the take off process on the fixed wings.\n
+				On copters: initiates the thrown takeoff. Note that the drone will do the thrown take off
+				even if it is steady.\n
+				On fixed wings: initiates the take off process on the fixed wings.\n\n
 				Setting the state to 0 will cancel the preparation. You can cancel it before that the drone takes off."
 				support="090e"
 				result="The drone will arm its motors if not already armed.\n
@@ -729,7 +731,7 @@
 					User take off state. Waiting for user action to take off.
 				</enum>
 				<enum name="motor_ramping">
-					Motor ramping state (for fixed wings).
+					Motor ramping state.
 				</enum>
 				<enum name="emergency_landing">
 					Emergency landing state.
@@ -989,6 +991,25 @@
 				</enum>
 				<enum name="ERROR">
 					The move to has not been finished or started because of an error.
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="MotionState" id="13">
+			<comment
+				title="Motion state"
+				desc="Motion state.\n
+				If [MotionDetection](#1-6-16) is disabled, motion is steady."
+				support="none"
+				triggered="when the [FlyingState](#1-4-1) is landed and the [MotionDetection](#1-6-16) is enabled
+				and the motion state changes.\n
+				This event is triggered at a filtered rate."/>
+			<arg name="state" type="enum">
+				Motion state
+				<enum name="steady">
+					Drone is steady
+				</enum>
+				<enum name="moving">
+					Drone is moving
 				</enum>
 			</arg>
 		</cmd>
@@ -1378,6 +1399,22 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="SetMotionDetectionMode" id="16">
+			<comment
+				title="Enable/disable the motion detection"
+				desc="Enable/disable the motion detection.\n
+				If the motion detection is enabled, the drone will send its [MotionState](#1-4-13)
+				when its [FlyingState](#1-4-1) is landed.
+				If the motion detection is disabled, [MotionState](#1-4-13) is steady."
+				support="none"
+				result="The motion detection is enabled or disabled.\n
+				Then, event [MotionDetection](#1-6-16) is triggered.
+				After that, if enabled and [FlyingState](#1-4-1) is landed,
+				the [MotionState](#1-4-13) is triggered upon changes."/>
+			<arg name="enable" type="u8">
+				1 to enable the motion detection, 0 to disable it.
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingSettingsState" id="6">
 		Piloting Settings state from product
@@ -1597,6 +1634,16 @@
 					Positive pitch values will make the drone raise its nose.
 					Negative pitch values will make the drone lower its nose.
 				</enum>
+			</arg>
+		</cmd>
+		<cmd name="MotionDetection" id="16">
+			<comment
+				title="State of the motion detection"
+				desc="State of the motion detection."
+				support="none"
+				triggered="by [SetMotionDetectionMode](#1-2-16)"/>
+			<arg name="enabled" type="u8">
+				1 if motion detection is enabled, 0 otherwise.
 			</arg>
 		</cmd>
 	</class>
