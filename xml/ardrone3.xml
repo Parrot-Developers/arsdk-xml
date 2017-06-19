@@ -2994,5 +2994,25 @@
 				0x08: Remove: This value should be removed from the existing list.
 			</arg>
 		</cmd>
+		<cmd name="Battery" id="1" type="MAP_ITEM">
+			<comment
+				title="Connected accessories battery"
+				desc="Connected accessories battery."
+				support="none"
+				triggered="TODO"/>
+			<arg name="id" type="u8">
+				Id of the accessory for the session.
+			</arg>
+			<arg name="batteryLevel" type="u8">
+				Battery level in percentage.
+			</arg>
+			<arg name="list_flags" type="u8">
+				List entry attribute Bitfield.
+				0x01: First: indicate it's the first element of the list.
+				0x02: Last: indicate it's the last element of the list.
+				0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+				0x08: Remove: This value should be removed from the existing list.
+			</arg>
+		</cmd>
 	</class>
 </project>
