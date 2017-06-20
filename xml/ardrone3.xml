@@ -282,10 +282,10 @@
 				desc="Start a piloted Point Of Interest.\n
 				During a piloted POI, the drone will always look at the given POI but can be piloted normally.
 				However, yaw value is ignored. Camera tilt and pan command is also ignored.\n
-				Ignored if [PilotedPOI](#1-4-13) state is UNAVAILABLE."
+				Ignored if [PilotedPOI](#1-4-14) state is UNAVAILABLE."
 				support="none"
-				result="If the drone is hovering, event [PilotedPOI](#1-4-13) is triggered with state RUNNING.
-				If the drone is not hovering, event [PilotedPOI](#1-4-13) is triggered with state PENDING,
+				result="If the drone is hovering, event [PilotedPOI](#1-4-14) is triggered with state RUNNING.
+				If the drone is not hovering, event [PilotedPOI](#1-4-14) is triggered with state PENDING,
 				waiting to hover. When the drone hovers, the state will change to RUNNING.
 				If the drone does not hover for a given time, piloted POI is canceled by the drone and state
 				will change to AVAILABLE.
@@ -304,9 +304,9 @@
 			<comment
 				title="Stop the piloted POI"
 				desc="Stop the piloted Point Of Interest.\n
-				If [PilotedPOI](#1-4-13) state is RUNNING or PENDING, stop it."
+				If [PilotedPOI](#1-4-14) state is RUNNING or PENDING, stop it."
 				support="none"
-				result="Event [PilotedPOI](#1-4-13) is triggered with state AVAILABLE."/>
+				result="Event [PilotedPOI](#1-4-14) is triggered with state AVAILABLE."/>
 		</cmd>
 	</class>
 	<class name="Animations" id="5">
@@ -1013,7 +1013,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="PilotedPOI" id="13">
+		<cmd name="PilotedPOI" id="14">
 			<comment
 				title="Piloted POI state"
 				desc="Piloted POI state."
