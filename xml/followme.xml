@@ -198,9 +198,8 @@
 		<cmd name="stop" id="2">
 			<comment
 				title="Stop current followMe"
-				desc="Begin or stop geographic type followMe (follow the leader keeping the same vector). \n
-				Sending this command will stop other running followMe."
-				result="Event [state](#134-3) is triggered."/>
+				desc="Stop current followMe."
+				result="Event [state](#134-3) is triggered with mode equals to none."/>
 		</cmd>
 		<evt name="state" id="3">
 			<comment

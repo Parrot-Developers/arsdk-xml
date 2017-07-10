@@ -890,7 +890,7 @@
 				title="Drone's location changed"
 				desc="Drone's location changed.\n
 				This event is meant to replace [PositionChanged](#1-4-4)."
-				support="none"
+				support="0901:4.0.0;090c:4.0.0"
 				triggered="regularly."/>
 			<arg name="latitude" type="double">
 				Latitude location in decimal degrees (500.0 if not available)
