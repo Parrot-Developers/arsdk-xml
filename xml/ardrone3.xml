@@ -1045,6 +1045,32 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="ReturnHomeBatteryCapacity" id="15">
+			<comment
+				title="Return home battery capacity"
+				desc="Battery capacity status to return home."
+				support="none"
+				triggered="when the status of the battery capacity to do a return home changes.
+				This means that it is triggered either when the battery level changes, when the distance
+				to the home changes or when the position of the home changes."/>
+			<arg name="status" type="enum">
+				Status of battery to return home
+				<enum name="OK">
+					The battery is full enough to do a return home
+				</enum>
+				<enum name="WARNING">
+					The battery is about to be too discharged to do a return home
+				</enum>
+				<enum name="CRITICAL">
+					The battery level is too low to return to the home position
+				</enum>
+				<enum name="UNKNOWN">
+					Battery capacity to do a return home is unknown.
+					This can be either because the home is unknown or the position of the drone is unknown,
+					or the drone has not enough information to determine how long it takes to fly home.
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting
