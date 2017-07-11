@@ -3041,4 +3041,44 @@
 			</arg>
 		</cmd>
 	</class>
+	<class name="Sound" id="35">
+		Sounds related commands
+		<cmd name="StartAlertSound" id="0">
+			<comment
+				title="Start alert sound"
+				desc="Start the alert sound.
+				The alert sound can only be started when the drone is not flying."
+				support="none"
+				result="The drone makes a sound
+				and send back [AlertSoundState](#1-36-0) with state playing."/>
+		</cmd>
+		<cmd name="StopAlertSound" id="1">
+			<comment
+				title="Stop alert sound"
+				desc="Stop the alert sound."
+				support="none"
+				result="The drone stops its alert sound
+				and send back [AlertSoundState](#1-36-0) with state stopped."/>
+		</cmd>
+	</class>
+	<class name="SoundState" id="36">
+		Sounds related events
+		<cmd name="AlertSound" id="0">
+			<comment
+				title="Alert sound state"
+				desc="Alert sound state."
+				support="none"
+				triggered="by [StartAlertSound](#1-35-0) or [StopAlertSound](#1-35-1)
+				or when the drone starts or stops to play an alert sound by itself."/>
+			<arg name="state" type="enum">
+				State of the alert sound
+				<enum name="stopped">
+					Alert sound is not playing
+				</enum>
+				<enum name="playing">
+					Alert sound is playing
+				</enum>
+			</arg>
+		</cmd>
+	</class>
 </project>
