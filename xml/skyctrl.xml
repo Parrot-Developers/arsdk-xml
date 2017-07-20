@@ -1317,7 +1317,7 @@
 	<class name="ButtonEvents" id="24">
 		Events sent on SkyController button presses.
 		These events are sent under certain conditions only.
-		<cmd name="Settings" id="0">
+		<cmd name="Settings" id="0" content="NOTIFICATION">
 			<comment
 			title="Settings button pressed"
 			desc="This event notifies the application that the settings
