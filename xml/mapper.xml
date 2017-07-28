@@ -253,7 +253,7 @@
 				State of the button when the grab starts (bitfield)
 			</arg>
 		</evt>
-		<evt name="grab_button_event" id="3">
+		<evt name="grab_button_event" id="3" content="NOTIFICATION">
 			<comment
 				title="Event on a grabbed button"
 				desc="The state of a grabbed button changes"
@@ -264,7 +264,7 @@
 			</arg>
 			<arg name="event" type="enum:button_event"/>
 		</evt>
-		<evt name="grab_axis_event" id="4">
+		<evt name="grab_axis_event" id="4" content="NOTIFICATION">
 			<comment
 			title="Event on a grabbed axis"
 			desc="The state of a grabbed axis changes"
