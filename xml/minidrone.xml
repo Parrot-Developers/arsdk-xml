@@ -122,8 +122,6 @@
 			loop height control is no longer performed in order for the drone to keep a
 			certain height and vertical speed. Instead, the vertical command coming from
 			the user will directly generate an open loop acceleration command.
-
-			This only makes sense when minicam is plugged.
 			<arg name="horizontal_stab" type="u8">
 				0: no horizontal stabilization
 				1: horizontal stabilization
