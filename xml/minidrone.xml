@@ -102,34 +102,9 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="PilotingMode" id="8">
-			The flight envelope of Mambo FPV has been divided in three piloting modes.
-
-			The first one corresponds to the well-known flying mode currently used for
-			Mambo, which is based in an horizontal stabilisation (performed via the
-			vertical camera and the acceleration information) and a vertical acceleration
-			(by means of the ultrasound, the barometer and the vertical accelerometer) in
-			order for the drone to stay in fixed point position when no piloting commands
-			are sent by the user.
-
-			The second piloting mode consists of deactivating the horizontal stabilisation.
-			Thus, in this flying mode, when no piloting command is received, the drone will
-			try to stay at 0° tilt angle instead of responding to a 0 m/s horizontal speed
-			reference. This behaviour will result in a slight horizontal drift.
-
-			The third piloting mode also adds the vertical stabilisation deactivation and,
-			therefore, a slight vertical drift. When flying in the third mode, a closed
-			loop height control is no longer performed in order for the drone to keep a
-			certain height and vertical speed. Instead, the vertical command coming from
-			the user will directly generate an open loop acceleration command.
-			<arg name="horizontal_stab" type="u8">
-				0: no horizontal stabilization
-				1: horizontal stabilization
-			</arg>
-			<arg name="vertical_stab" type="u8">
-				0: no vertical stabilization
-				1: vertical stabilization
-			</arg>
+		<cmd name="TogglePilotingMode" id="8">
+			Command to toggle between "easy" piloting mode and "preferred" piloting mode.
+			This command only works while the drone is flying.
 		</cmd>
 	</class>
 	<class name="PilotingState" id="3">
@@ -226,13 +201,29 @@
 		</cmd>
 		<cmd name="PilotingModeChanged" id="6">
 			Event informing about the piloting mode.
-			<arg name="horizontal_stab" type="u8">
-				0: no horizontal stabilization
-				1: horizontal stabilization
-			</arg>
-			<arg name="vertical_stab" type="u8">
-				0: no vertical stabilization
-				1: vertical stabilization
+			<arg name="mode" type="enum">
+				<enum name="easy">
+					The flight envelope of Mambo FPV has been divided in three piloting modes.
+					The first one corresponds to the well-known flying mode currently used for
+					Mambo, which is based in an horizontal stabilisation (performed via the
+					vertical camera and the acceleration information) and a vertical acceleration
+					(by means of the ultrasound, the barometer and the vertical accelerometer) in
+					order for the drone to stay in fixed point position when no piloting commands
+					are sent by the user.
+				</enum>
+				<enum name="medium">
+					The second piloting mode consists of deactivating the horizontal stabilisation.
+					Thus, in this flying mode, when no piloting command is received, the drone will
+					try to stay at 0° tilt angle instead of responding to a 0 m/s horizontal speed
+					reference. This behaviour will result in a slight horizontal drift.
+				</enum>
+				<enum name="difficult">
+					The third piloting mode also adds the vertical stabilisation deactivation and,
+					therefore, a slight vertical drift. When flying in the third mode, a closed
+					loop height control is no longer performed in order for the drone to keep a
+					certain height and vertical speed. Instead, the vertical command coming from
+					the user will directly generate an open loop acceleration command.
+				</enum>
 			</arg>
 		</cmd>
 	</class>
@@ -395,6 +386,34 @@
 				Max throttle, between 0 and 1.
 			</arg>
 		</cmd>
+		<cmd name="PreferredPilotingMode" id="4">
+			The flight envelope of Mambo FPV has been divided in three piloting modes.
+			<arg name="mode" type="enum">
+				Piloting modes.
+				<enum name="easy">
+					The flight envelope of Mambo FPV has been divided in three piloting modes.
+					The first one corresponds to the well-known flying mode currently used for
+					Mambo, which is based in an horizontal stabilisation (performed via the
+					vertical camera and the acceleration information) and a vertical acceleration
+					(by means of the ultrasound, the barometer and the vertical accelerometer) in
+					order for the drone to stay in fixed point position when no piloting commands
+					are sent by the user.
+				</enum>
+				<enum name="medium">
+					The second piloting mode consists of deactivating the horizontal stabilisation.
+					Thus, in this flying mode, when no piloting command is received, the drone will
+					try to stay at 0° tilt angle instead of responding to a 0 m/s horizontal speed
+					reference. This behaviour will result in a slight horizontal drift.
+				</enum>
+				<enum name="difficult">
+					The third piloting mode also adds the vertical stabilisation deactivation and,
+					therefore, a slight vertical drift. When flying in the third mode, a closed
+					loop height control is no longer performed in order for the drone to keep a
+					certain height and vertical speed. Instead, the vertical command coming from
+					the user will directly generate an open loop acceleration command.
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingSettingsState" id="9">
 		Piloting Settings state from product
@@ -437,6 +456,33 @@
 			Event informing about the max throttle.
 			<arg name="max" type="float">
 				Max throttle, between 0 and 1.
+			</arg>
+		</cmd>
+		<cmd name="PreferredPilotingModeChanged" id="4">
+			Event informing about the preferred piloting mode.
+			<arg name="mode" type="enum">
+				<enum name="easy">
+					The flight envelope of Mambo FPV has been divided in three piloting modes.
+					The first one corresponds to the well-known flying mode currently used for
+					Mambo, which is based in an horizontal stabilisation (performed via the
+					vertical camera and the acceleration information) and a vertical acceleration
+					(by means of the ultrasound, the barometer and the vertical accelerometer) in
+					order for the drone to stay in fixed point position when no piloting commands
+					are sent by the user.
+				</enum>
+				<enum name="medium">
+					The second piloting mode consists of deactivating the horizontal stabilisation.
+					Thus, in this flying mode, when no piloting command is received, the drone will
+					try to stay at 0° tilt angle instead of responding to a 0 m/s horizontal speed
+					reference. This behaviour will result in a slight horizontal drift.
+				</enum>
+				<enum name="difficult">
+					The third piloting mode also adds the vertical stabilisation deactivation and,
+					therefore, a slight vertical drift. When flying in the third mode, a closed
+					loop height control is no longer performed in order for the drone to keep a
+					certain height and vertical speed. Instead, the vertical command coming from
+					the user will directly generate an open loop acceleration command.
+				</enum>
 			</arg>
 		</cmd>
 	</class>
