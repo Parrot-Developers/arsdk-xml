@@ -109,6 +109,9 @@
 			<value name="light_toggle">
 				toggle between light animations (OFF-continuous-blink-sinus-OFF)
 			</value>
+			<value name="piloting_mode_toggle">
+				toggle between easy and preferred piloting mode
+			</value>
 			<!-- Todo : add more actions -->
 		</enum>
 		<enum name="axis_action">
