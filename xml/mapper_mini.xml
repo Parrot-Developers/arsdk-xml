@@ -112,6 +112,9 @@
 			<value name="piloting_mode_toggle">
 				toggle between easy and preferred piloting mode
 			</value>
+			<value name="video_record_toggle">
+				start or stop video
+			</value>
 			<!-- Todo : add more actions -->
 		</enum>
 		<enum name="axis_action">
