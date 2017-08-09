@@ -891,9 +891,6 @@
 			<arg name="hardware" type="string">
 				Accessory hardware version.
 			</arg>
-			<arg name="serial" type="string">
-				Accessory serial number.
-			</arg>
 		</cmd>
 		<cmd name="PictureChanged" id="4">
 			Event informing that the picture has been taken.
