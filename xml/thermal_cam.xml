@@ -116,5 +116,24 @@
 			<arg name="available_ranges" type="bitfield:u8:range"/>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
+		<evt name="calibration_infos" id="6" type="MAP_ITEM:cam_id">
+			<comment
+				title="Thermal cam calibration informations"
+				desc="Visible camera position relative to the drone. The thermal camera is considered at an ideal position."
+				support="none"
+				triggered="at connection or when the thermal cam is connected."/>
+			<arg name="cam_id" type="u8">
+				Thermal camera id, as given in the [connected accessories](#1-33-0) event.
+			</arg>
+			<arg name="roll" type="float">
+				Euler angle roll in degree difference between visible cam and thermal cam.
+			</arg>
+			<arg name="pitch" type="float">
+				Euler angle pitch in degree difference between visible cam and thermal cam.
+			</arg>
+			<arg name="yaw" type="float">
+				Euler angle yaw in degree difference between visible cam and thermal cam.
+			</arg>
+		</evt>
 	</msgs>
 </feature>
