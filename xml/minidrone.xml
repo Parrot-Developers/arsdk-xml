@@ -1091,4 +1091,15 @@
 			Format mass storage.
 		</cmd>
 	</class>
+	<class name="RemoteControllerState" id="25">
+		State changes related to the remote controller.
+		<cmd name="ConnectionChanged" id="0">
+			State of the connection to the remote controller changed.
+			<arg name="state" type="u8">
+				New connection state.
+				0=disconnected
+				1=connected
+			</arg>
+		</cmd>
+	</class>
 </project>
