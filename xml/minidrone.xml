@@ -965,6 +965,9 @@
 				<enum name="lowBattery">
 					Battery is too low to start/keep recording.
 				</enum>
+				<enum name="no_sd">
+					SD card doesn't exist.
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="MassStorageFormatChanged" id="6" content="NOTIFICATION">
