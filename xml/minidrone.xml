@@ -864,6 +864,23 @@
 				Acquisition timestamp (ms).
 			</arg>
 		</cmd>
+		<cmd name="DroneEulerAngles" id="3" buffer="NON_ACK">
+			Event informing about the estimated Euler angles.
+			They represent the rotation from the NED frame (determined at drone startup) to the estimated drone body frame.
+			Angles are in degrees.
+			<arg name="phi" type="float">
+				Roll Euler angle.
+			</arg>
+			<arg name="theta" type="float">
+				Pitch Euler angle.
+			</arg>
+			<arg name="psi" type="float">
+				Yaw Euler angle
+			</arg>
+			<arg name="ts" type="u16">
+				Acquisition timestamp (ms).
+			</arg>
+		</cmd>
 	</class>
 	<class name="MinicamState" id="19">
 		Minicam related events.
