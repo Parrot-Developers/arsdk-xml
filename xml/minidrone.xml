@@ -855,6 +855,15 @@
 				Acquisition timestamp (ms).
 			</arg>
 		</cmd>
+		<cmd name="DroneAltitude" id="2" buffer="NON_ACK">
+			Event informing about the estimated altitude above takeoff level.
+			<arg name="altitude" type="float">
+				Altitude in meters.
+			</arg>
+			<arg name="ts" type="u16">
+				Acquisition timestamp (ms).
+			</arg>
+		</cmd>
 	</class>
 	<class name="MinicamState" id="19">
 		Minicam related events.
