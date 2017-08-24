@@ -837,6 +837,24 @@
 				Time elapsed since last data send (ms).
 			</arg>
 		</cmd>
+		<cmd name="DroneSpeed" id="1" buffer="NON_ACK">
+			Event informing about the estimated drone speed in horizontal frame.
+			It is similar to NED frame but with drone heading.
+			Down speed is positive when the drone is going down.
+			Speed is in m/s.
+			<arg name="speed_x" type="float">
+				Speed on the x axis (when drone moves forward, speed is > 0).
+			</arg>
+			<arg name="speed_y" type="float">
+				Speed on the y axis (when drone moves right, speed is > 0).
+			</arg>
+			<arg name="speed_z" type="float">
+				Speed on the z axis (when drone moves down, speed is > 0).
+			</arg>
+			<arg name="ts" type="u16">
+				Acquisition timestamp (ms).
+			</arg>
+		</cmd>
 	</class>
 	<class name="MinicamState" id="19">
 		Minicam related events.
