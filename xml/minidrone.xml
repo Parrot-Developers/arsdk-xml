@@ -881,6 +881,26 @@
 				Acquisition timestamp (ms).
 			</arg>
 		</cmd>
+		<cmd name="DroneQuaternion" id="4" buffer="NON_ACK">
+			Event informing about the estimated quaternion.
+			They represent the rotation from the NED frame (determined at drone startup) to the estimated drone body frame.
+			Its elements are between -1 and 1.
+			<arg name="q_w" type="float">
+				Element w.
+			</arg>
+			<arg name="q_x" type="float">
+				Element x.
+			</arg>
+			<arg name="q_y" type="float">
+				Element y.
+			</arg>
+			<arg name="q_z" type="float">
+				Element z.
+			</arg>
+			<arg name="ts" type="u16">
+				Acquisition timestamp (ms).
+			</arg>
+		</cmd>
 	</class>
 	<class name="MinicamState" id="19">
 		Minicam related events.
