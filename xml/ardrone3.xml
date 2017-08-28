@@ -230,7 +230,7 @@
 			<comment
 				title="Move to a location"
 				desc="Move the drone to a specified location.\n
-				If a new command moveTo is sent, the drone will immediatly cancel the previous one.\n
+				If a new command moveTo is sent, the drone will immediatly run it (no cancel will be issued).\n
 				If a [CancelMoveTo](#1-0-11) command is sent, the moveTo is stopped.\n
 				During the moveTo, all pitch, roll and gaz values of the piloting command
 				will be ignored by the drone.\n
@@ -986,8 +986,8 @@
 					The drone has reached the target
 				</enum>
 				<enum name="CANCELED">
-					The move to has been canceled, either by a new moveTo command or
-					by a CancelMoveTo command.
+					The move to has been canceled, either by a CancelMoveTo command
+					or when a disconnection appears.
 				</enum>
 				<enum name="ERROR">
 					The move to has not been finished or started because of an error.
