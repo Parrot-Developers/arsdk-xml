@@ -226,11 +226,13 @@
 			<arg name="mode" type="enum:mode"/>
 			<arg name="missing_requirements" type="bitfield:u16:input">
 				List of missing requirements to enter this mode on start.
+				Bit is 0 if the input is not ok, 1 if the input is ok.
 				If at least one input is missing, drone won't able to follow the target.
 				It won't use any fallback either
 			</arg>
 			<arg name="improvements" type="bitfield:u16:input">
 				List of inputs that can improve the mode.
+				Bit is 0 if the input is not ok, 1 if the input is ok.
 				If at least one input is missing, a downgraded mode will be used. See behavior
 			</arg>
 		</evt>
