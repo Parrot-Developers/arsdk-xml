@@ -1259,6 +1259,25 @@
 				0 = Disable quality updates
 			</arg>
 		</cmd>
+		<cmd name="StartCalibration" id="1">
+			<comment
+				title="Start magneto calibration"
+				desc="Asks the SkyController to start a magneto calibration.\n
+				If the calibration is already started, this command has no effect."
+				support="0915"
+				result="The SkyController will send a
+				[MagnetoCalibrationStateV2](#4-23-2) event."/>
+		</cmd>
+		<cmd name="AbortCalibration" id="2">
+			<comment
+				title="Abort a running magneto calibration"
+				desc="Asks the SkyController to abort an in-progress magneto
+				calibration.\n If no calibration is in progress, this command has
+				no effect."
+				support="0915"
+				result="The SkyController will send a
+				[MagnetoCalibrationStateV2](#4-23-2) event."/>
+		</cmd>
 	</class>
 	<class name="CalibrationState" id="23">
 		State of the SkyController calibration
@@ -1311,6 +1330,39 @@
 				Flag (is the feature enabled).
 				1 = The skycontroller sends updated when quality is updated
 				0 = The skycontroller only sent updated when state is updated
+			</arg>
+		</cmd>
+		<cmd name="MagnetoCalibrationStateV2" id="2">
+			<comment
+				title="Magneto calibration state"
+				desc="The current state of magnetometer calibration.\n This event is
+				used by products which does require a step-by-step calibration.\n
+				When calibrating, the product will go, in order, through X, Y and Z
+				axis calibration, then into calibrated state. If at any point it
+				goes back to not-calibrated, it means that the calibration process
+				failed and should be manually restarted with the
+				[StartCalibration](#4-22-1) command."
+				support="0915"
+				triggered="when the magnetometer calibration state has changed, or
+				by a [StartCalibration](#4-22-1) or [AbortCalibration](#4-22-2)
+				command"/>
+			<arg name="state" type="enum">
+				The calibration state
+				<enum name="NotCalibrated">
+					A calibration is needed
+				</enum>
+				<enum name="CalibratingX">
+					A calibration is in progress on the X axis
+				</enum>
+				<enum name="CalibratingY">
+					A calibration is in progress on the Y axis
+				</enum>
+				<enum name="CalibratingZ">
+					A calibration is in progress on the Z axis
+				</enum>
+				<enum name="Calibrated">
+					The sensor is calibrated
+				</enum>
 			</arg>
 		</cmd>
 	</class>
