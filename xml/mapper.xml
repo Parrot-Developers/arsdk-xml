@@ -360,7 +360,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="application_axis_event" id="9">
+		<evt name="application_axis_event" id="9" content="NOTIFICATION">
 			<comment
 				title="Application specific event"
 				desc="This event signals the controller application when an
@@ -374,7 +374,7 @@
 				The current value of the axis.
 			</arg>
 		</evt>
-		<evt name="application_button_event" id="10">
+		<evt name="application_button_event" id="10" content="NOTIFICATION">
 			<comment
 				title="Application specific event"
 				desc="This event signals the controller application when an
