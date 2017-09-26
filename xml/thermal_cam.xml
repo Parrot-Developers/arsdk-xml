@@ -43,9 +43,6 @@
 			<value name="pending">
 				Activation is pending
 			</value>
-			<value name="unavailable">
-				Camera is unavailable
-			</value>
 		</enum>
 		<enum name="range">
 			Thermal range
