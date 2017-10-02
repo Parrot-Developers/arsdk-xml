@@ -131,6 +131,7 @@
 			<arg name="yaw" type="float">
 				Euler angle yaw in degree difference between visible cam and thermal cam.
 			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
 	</msgs>
 </feature>
