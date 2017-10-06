@@ -61,11 +61,12 @@ arsdkgen_out_dir := $(if $(call is-path-absolute,$2),$2,$$(arsdkgen_module_build
 arsdkgen_done_file := $$(arsdkgen_module_build_dir)/$(LOCAL_MODULE)-arsdkgen.done
 $(if $(wildcard $(arsdkgen-macro-path)/arsdkgen.py), \
 	arsdkgen_gen_files := $$(shell $(arsdkgen-macro-path)/$$(arsdkgen_python) \
-		-f -o $$(arsdkgen_out_dir) $1 -- $(subst $(colon),$(space),$3))
+		-f -o $$(arsdkgen_out_dir) $1 -- $(subst $(colon),$(space),$3) || echo FAILED)
 	, \
 	arsdkgen_gen_files := $$(shell $(HOST_OUT_STAGING)/usr/lib/arsdkgen/$$(arsdkgen_python) \
-		-f -o $$(arsdkgen_out_dir) $1 -- $(subst $(colon),$(space),$3))
+		-f -o $$(arsdkgen_out_dir) $1 -- $(subst $(colon),$(space),$3) || echo FAILED)
 )
+$$(if $$(call streq,$$(arsdkgen_gen_files),FAILED),$$(error Failed to list files))
 
 # Create a dependency between generated files and .done file with an empty
 # command to make sure regeneration is correctly triggered to files
