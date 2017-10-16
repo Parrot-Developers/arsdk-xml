@@ -864,23 +864,6 @@
 				Acquisition timestamp (ms).
 			</arg>
 		</cmd>
-		<cmd name="DroneEulerAngles" id="3" buffer="NON_ACK">
-			Event informing about the estimated Euler angles.
-			They represent the rotation from the NED frame (determined at drone startup) to the estimated drone body frame.
-			Angles are in degrees.
-			<arg name="phi" type="float">
-				Roll Euler angle.
-			</arg>
-			<arg name="theta" type="float">
-				Pitch Euler angle.
-			</arg>
-			<arg name="psi" type="float">
-				Yaw Euler angle
-			</arg>
-			<arg name="ts" type="u16">
-				Acquisition timestamp (ms).
-			</arg>
-		</cmd>
 		<cmd name="DroneQuaternion" id="4" buffer="NON_ACK">
 			Event informing about the estimated quaternion.
 			They represent the rotation from the NED frame (determined at drone startup) to the estimated drone body frame.
@@ -1105,34 +1088,6 @@
 				</enum>
 				<enum name="hd">
 					HD streaming (1280 x 720).
-				</enum>
-			</arg>
-		</cmd>
-	</class>
-	<class name="MediaStreaming" id="22">
-		Control media streaming behavior.
-		<cmd name="VideoEnable" id="0">
-			Enable/disable video streaming.
-			<arg name="enable" type="u8">
-				0: disabled
-				1: enabled
-			</arg>
-		</cmd>
-	</class>
-	<class name="MediaStreamingState" id="23">
-		Media streaming status.
-		<cmd name="VideoEnableChanged" id="0">
-			Return video streaming status.
-			<arg name="enabled" type="enum">
-				Current video streaming status.
-				<enum name="enabled">
-					Video streaming is enabled.
-				</enum>
-				<enum name="disabled">
-					Video streaming is disabled.
-				</enum>
-				<enum name="error">
-					Video streaming failed to start.
 				</enum>
 			</arg>
 		</cmd>
