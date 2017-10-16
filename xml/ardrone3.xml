@@ -194,7 +194,7 @@
 				even if it is steady.\n
 				On fixed wings: initiates the take off process on the fixed wings.\n\n
 				Setting the state to 0 will cancel the preparation. You can cancel it before that the drone takes off."
-				support="090e"
+				support="090e;090c:4.3.0"
 				result="The drone will arm its motors if not already armed.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at motor ramping.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at userTakeOff.\n
@@ -235,7 +235,7 @@
 				During the moveTo, all pitch, roll and gaz values of the piloting command
 				will be ignored by the drone.\n
 				However, the yaw value can be used."
-				support="none"
+				support="090c:4.3.0"
 				result="Event [MovingTo](#1-4-12) is triggered with state running.
 				Then, the drone will move to the given location.\n
 				Then, event [MoveToChanged](#1-4-12) is triggered with state succeed."/>
@@ -273,7 +273,7 @@
 				title="Cancel the moveTo"
 				desc="Cancel the current moveTo.\n
 				If there is no current moveTo, this command has no effect."
-				support="none"
+				support="090c:4.3.0"
 				result="Event [MoveToChanged](#1-4-12) is triggered with state canceled."/>
 		</cmd>
 		<cmd name="StartPilotedPOI" id="12">
@@ -283,7 +283,7 @@
 				During a piloted POI, the drone will always look at the given POI but can be piloted normally.
 				However, yaw value is ignored. Camera tilt and pan command is also ignored.\n
 				Ignored if [PilotedPOI](#1-4-14) state is UNAVAILABLE."
-				support="none"
+				support="090c:4.3.0"
 				result="If the drone is hovering, event [PilotedPOI](#1-4-14) is triggered with state RUNNING.
 				If the drone is not hovering, event [PilotedPOI](#1-4-14) is triggered with state PENDING,
 				waiting to hover. When the drone hovers, the state will change to RUNNING.
@@ -305,7 +305,7 @@
 				title="Stop the piloted POI"
 				desc="Stop the piloted Point Of Interest.\n
 				If [PilotedPOI](#1-4-14) state is RUNNING or PENDING, stop it."
-				support="none"
+				support="090c:4.3.0"
 				result="Event [PilotedPOI](#1-4-14) is triggered with state AVAILABLE."/>
 		</cmd>
 	</class>
@@ -936,7 +936,7 @@
 				title="Drone's air speed changed"
 				desc="Drone's air speed changed\n
 				Expressed in the drone's referential."
-				support="none"
+				support="090e:1.2.0"
 				triggered="regularly."/>
 			<arg name="airSpeed" type="float">
 				Speed relative to air on x axis
@@ -947,7 +947,7 @@
 			<comment
 				title="Move to changed"
 				desc="The drone moves or moved to a given location."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [MoveTo](#1-0-10) or when the drone did reach the given position."/>
 			<arg name="latitude" type="double">
 				Latitude of the location (in degrees) to reach
@@ -1000,7 +1000,7 @@
 				desc="Motion state.\n
 				If [MotionDetection](#1-6-16) is disabled, motion is steady.\n
 				This information is only valid when the drone is not flying."
-				support="none"
+				support="090c:4.3.0"
 				triggered="when the [FlyingState](#1-4-1) is landed and the [MotionDetection](#1-6-16) is enabled
 				and the motion state changes.\n
 				This event is triggered at a filtered rate."/>
@@ -1018,7 +1018,7 @@
 			<comment
 				title="Piloted POI state"
 				desc="Piloted POI state."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartPilotedPOI](#1-0-12) or [StopPilotedPOI](#1-0-13)
 				or when piloted POI becomes unavailable."/>
 			<arg name="latitude" type="double">
@@ -1053,7 +1053,7 @@
 			<comment
 				title="Return home battery capacity"
 				desc="Battery capacity status to return home."
-				support="none"
+				support="090c:4.3.0"
 				triggered="when the status of the battery capacity to do a return home changes.
 				This means that it is triggered either when the battery level changes, when the distance
 				to the home changes or when the position of the home changes."/>
@@ -1384,12 +1384,12 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="CirclingRadius" id="13">
+		<cmd name="CirclingRadius" id="13" deprecated="true">
 			<comment
 				title="Set circling radius"
 				desc="Set circling radius.\n
 				Only available for fixed wings."
-				support="090e"
+				support="none"
 				result="The circling radius is set.\n
 				Then, event [CirclingRadius](#1-6-13) is triggered."/>
 			<arg name="value" type="u16">
@@ -1436,7 +1436,7 @@
 				If the motion detection is enabled, the drone will send its [MotionState](#1-4-13)
 				when its [FlyingState](#1-4-1) is landed.
 				If the motion detection is disabled, [MotionState](#1-4-13) is steady."
-				support="none"
+				support="090c:4.3.0"
 				result="The motion detection is enabled or disabled.\n
 				Then, event [MotionDetection](#1-6-16) is triggered.
 				After that, if enabled and [FlyingState](#1-4-1) is landed,
@@ -1612,12 +1612,12 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="CirclingRadiusChanged" id="13">
+		<cmd name="CirclingRadiusChanged" id="13" deprecated="true">
 			<comment
 				title="Circling radius"
 				desc="Circling radius.\n
 				Only sent by fixed wings."
-				support="090e"
+				support="none"
 				triggered="by [SetCirclingRadius](#1-2-13)."/>
 			<arg name="current" type="u16">
 				The current circling radius in meter
@@ -1670,7 +1670,7 @@
 			<comment
 				title="State of the motion detection"
 				desc="State of the motion detection."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [SetMotionDetectionMode](#1-2-16)"/>
 			<arg name="enabled" type="u8">
 				1 if motion detection is enabled, 0 otherwise.
@@ -2512,7 +2512,12 @@
 			</arg>
 		</cmd>
 		<cmd name="VideoStreamMode" id="1">
-			Video stream mode
+			<comment
+				title="Set the stream mode"
+				desc="Set the stream mode."
+				support="0901;090c;090e"
+				result="The stream mode is set.\n
+				Then, event [VideoStreamMode](#1-22-1) is triggered."/>
 			<arg name="mode" type="enum">
 				stream mode
 				<enum name="low_latency">
@@ -2584,7 +2589,7 @@
 			<comment
 				title="Reset home position"
 				desc="Reset home position."
-				support="0901;090c;090e"
+				support="0901;090c"
 				result="The home position is reset.\n
 				Then, event [HomeLocationReset](#1-24-1) is triggered."/>
 		</cmd>
@@ -2672,7 +2677,7 @@
 			<comment
 				title="Home location has been reset"
 				desc="Home location has been reset."
-				support="0901;090c;090e"
+				support="0901;090c"
 				triggered="by [ResetHomeLocation](#1-23-1)."/>
 			<arg name="latitude" type="double">
 				Home latitude in decimal degrees
@@ -2834,7 +2839,7 @@
 				title="Set the electric frequency"
 				desc="Set the electric frequency of the surrounding lights.\n
 				This is used to avoid the video flickering in auto mode. You can get the current antiflickering mode with the event [AntiflickeringModeChanged](#1-30-1)."
-				support="0901;090c;090e"
+				support="0901;090c"
 				result="The electric frequency is set.\n
 				Then, event [ElectricFrequency](#1-30-0) is triggered."/>
 			<arg name="frequency" type="enum">
@@ -2854,7 +2859,7 @@
 				If auto, the drone will detect when flickers appears on the video and trigger the antiflickering.\n
 				In this case, this electric frequency it will use will be the one specified in the event [ElectricFrequency](#1-29-0).\n
 				Forcing the antiflickering (FixedFiftyHertz or FixedFiftyHertz) can reduce luminosity of the video."
-				support="0901;090c;090e"
+				support="0901;090c"
 				result="The antiflickering mode is set.\n
 				Then, event [AntiflickeringMode](#1-30-1) is triggered."/>
 			<arg name="mode" type="enum">
@@ -2878,7 +2883,7 @@
 				title="Electric frequency"
 				desc="Electric frequency.\n
 				This piece of information is used for the antiflickering when the [AntiflickeringMode](#1-30-1) is set to *auto*."
-				support="0901;090c;090e"
+				support="0901;090c"
 				triggered="by [SetElectricFrequency](#1-29-0)."/>
 			<arg name="frequency" type="enum">
 				Type of the electric frequency
@@ -2894,7 +2899,7 @@
 			<comment
 				title="Antiflickering mode"
 				desc="Antiflickering mode."
-				support="0901;090c;090e"
+				support="0901;090c"
 				triggered="by [SetAntiflickeringMode](#1-29-1)."/>
 			<arg name="mode" type="enum">
 				Mode of the anti flickering functionnality
@@ -3028,8 +3033,7 @@
 			<comment
 				title="Connected accessories battery"
 				desc="Connected accessories battery."
-				support="none"
-				triggered="TODO"/>
+				support="none"/>
 			<arg name="id" type="u8">
 				Id of the accessory for the session.
 			</arg>

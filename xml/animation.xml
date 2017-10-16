@@ -216,7 +216,7 @@
 			<comment
 				title="Availability of the animations"
 				comment="Availability of the animations."
-				support="none"
+				support="090c:4.3.0"
 				triggered="when the list of available animations changes."/>
 			<arg name="values" type="bitfield:u32:type">
 				Bitfield of available animation types
@@ -226,7 +226,7 @@
 			<comment
 				title="State of the animation"
 				comment="State of the animation."
-				support="none"
+				support="090c:4.3.0"
 				triggered="when the state of the animation changes."/>
 			<arg name="type" type="enum:type">
 				Type of the animation. None if no animation is currently running or canceling.
@@ -239,7 +239,7 @@
 			<comment
 				title="Cancel current animation"
 				desc="Cancel current animation."
-				support="none"
+				support="090c:4.3.0"
 				result="The state of the current animation (for example [FlipState](#144-5)) changes to canceling.
 				Then, as soon as possible, the current animation is stopped
 				and [State](#144-2) is triggered with type equals to none."/>
@@ -250,7 +250,7 @@
 				desc="Start a flip animation.\n
 				Starting this animation when another animation is started (or canceling),
 				will cancel the current one to start this one."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [FlipState](#144-5) is triggered with state equals to running
 				and [State](#144-2) is triggered with type equals to flip."/>
@@ -262,7 +262,7 @@
 			<comment
 				title="Flip state"
 				comment="Flip animation state."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartFlip](#144-4) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -278,7 +278,7 @@
 				Starting this animation when another animation is started (or canceling),
 				will cancel the current one to start this one.\n
 				This animation will make the drone horizontaly rotates on itself."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [HorizontalPanoramaState](#144-7) is triggered with state equals
 				to running and [State](#144-2) is triggered with type equals to HorizontalPanorama."/>
@@ -301,7 +301,7 @@
 				title="Horizontal panorama state"
 				comment="Horizontal panorama animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartHorizontalPanorama](#144-6) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -322,7 +322,7 @@
 				Starting this animation when another animation is started (or canceling),
 				will cancel the current one to start this one.\n
 				This animation will make the drone flies away on a given distance with a computed angle."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [DronieState](#144-9) is triggered with state equals to running
 				and [State](#144-2) is triggered with type equals to Dronie."/>
@@ -349,7 +349,7 @@
 				title="Dronie state"
 				comment="Dronie animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartDronie](#144-8) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -375,7 +375,7 @@
 				will cancel the current one to start this one.\n
 				This animation will make the drone starts looking down, then moves forward
 				while slowly looking at the horizon."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [HorizontalRevealState](#144-11) is triggered with state equals
 				to running and [State](#144-2) is triggered with type equals to HorizontalReveal."/>
@@ -402,7 +402,7 @@
 				title="Horizontal reveal state"
 				comment="Horizontal reveal animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartHorizontalReveal](#144-10) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -429,7 +429,7 @@
 				This animation will make the drone starts looking down,
 				then moves up while slowly looking at the horizon.
 				When it reaches its target altitude, it rotates on itself to do a panorama."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [VerticalRevealState](#144-13) is triggered with state equals
 				to running and [State](#144-2) is triggered with type equals to VerticalReveal."/>
@@ -464,7 +464,7 @@
 				title="Vertical reveal state"
 				comment="Vertical reveal animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartVerticalReveal](#144-12) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -497,7 +497,7 @@
 				Starting this animation when another animation is started (or canceling),
 				will cancel the current one to start this one.\n
 				This animation will make the drone circles around its target."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [SpiralState](#144-15) is triggered with state equals to running
 				and [State](#144-2) is triggered with type equals to Spiral."/>
@@ -537,7 +537,7 @@
 				title="Spiral state"
 				comment="Spiral animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartSpiral](#144-14) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -571,7 +571,7 @@
 				will cancel the current one to start this one.\n
 				This animation will make the drone makes a parabola on top of its target and
 				ends on the other side of it."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [ParabolaState](#144-17) is triggered with state equals
 				to running and [State](#144-2) is triggered with type equals to Parabola."/>
@@ -598,7 +598,7 @@
 				title="Parabola state"
 				comment="Parabola animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartParabola](#144-16) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -624,7 +624,7 @@
 				will cancel the current one to start this one.\n
 				This animation will make the drone flies horizontally
 				in direction of the target then flies up."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [CandleState](#144-19) is triggered with state equals
 				to running and [State](#144-2) is triggered with type equals to Candle."/>
@@ -651,7 +651,7 @@
 				title="Candle state"
 				comment="Candle animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartCandle](#144-18) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation
@@ -676,7 +676,7 @@
 				Starting this animation when another animation is started (or canceling),
 				will cancel the current one to start this one.\n
 				This animation will make the drone slides horizontally."
-				support="none"
+				support="090c:4.3.0"
 				result="If an animation was running, this animation is canceling, then canceled.
 				Then, this animation is started, [DollySlideState](#144-21) is triggered with state equals
 				to running and [State](#144-2) is triggered with type equals to DollySlide."/>
@@ -707,7 +707,7 @@
 				title="Dolly slide state"
 				comment="Dolly slide animation state.\n
 				When the animation is started, all piloting commands are ignored."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [StartDollySlide](#144-20) and when the state changes."/>
 			<arg name="state" type="enum:state">
 				State of the animation

@@ -368,7 +368,7 @@
 				title="Set banked turn mode"
 				desc="Set banked turn mode.\n
 				When banked turn mode is enabled, the drone will use yaw values from the piloting command to infer with roll and pitch on the drone when its horizontal speed is not null."
-				support="none"
+				support="090b:3.0.6"
 				result="The banked turn mode is enabled or disabled.\n
 				Then, event [BankedTurnMode](#2-9-2) is triggered."/>
 			<arg name="value" type="u8">
@@ -446,7 +446,7 @@
 				title="Banked Turn mode"
 				desc="Banked Turn mode.\n
 				If banked turn mode is enabled, the drone will use yaw values from the piloting command to infer with roll and pitch on the drone when its horizontal speed is not null."
-				support="none"
+				support="090b:3.0.6"
 				triggered="by [SetBankedTurnMode](#2-8-2)."/>
 			<arg name="state" type="u8">
 				1 if enabled, 0 if disabled
