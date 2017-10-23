@@ -39,6 +39,7 @@
 				title="Controller gps info"
 				desc="Controller gps info.\n
 				This command is not acknowledged by the drone."
+				support="090c:4.0.0"
 				result="The position of the controller is known by the drone.\n
 				It can be used for RTH or FollowMe."/>
 			<arg name="latitude" type="double">
@@ -72,6 +73,7 @@
 		<cmd name="barometer" id="2" buffer="NON_ACK">
 			<comment
 				title="Controller barometer info"
+				support="090c:4.0.0"
 				result="The altitude of the controller is known by the drone.\n
 				This command is not acknowledged by the drone."/>
 			<arg name="pressure" type="float">

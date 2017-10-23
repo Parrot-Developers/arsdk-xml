@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
-import sys, os, stat, logging, tempfile, filecmp, shutil
+import sys
+import locale
+_forced_locale = 'en_US.UTF-8'
+try:
+        locale.setlocale(locale.LC_ALL, _forced_locale)
+except locale.Error:
+        print('Unable to set locale to {}.'.format(_forced_locale),
+              'Continuing with default locale (this might cause issues)',
+              file=sys.stderr)
+
+
+import os, stat, logging, tempfile, filecmp, shutil
 import optparse
 import arsdkparser
 #===============================================================================
@@ -47,8 +58,8 @@ def main():
 	logging.info("arsdkgen: cmd=%s generator=%s, outdir=%s extra=%s",
 		"list" if options.listFiles else "generate",
 		generator_filepath, options.outdir, extra)
-	if not options.listFiles and not os.path.exists(options.outdir):
-		os.makedirs(options.outdir, 0o755)
+	if not options.listFiles:
+		os.makedirs(options.outdir, 0o755, exist_ok=True)
 
 	# Import package of ge generation
 	(generator_path, generator_filename) = os.path.split(generator_filepath)

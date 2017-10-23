@@ -190,9 +190,11 @@
 			<comment
 				title="Prepare the drone to take off"
 				desc="Prepare the drone to take off.\n
-				This is the command that initiates the take off process on the fixed wings.\n
+				On copters: initiates the thrown takeoff. Note that the drone will do the thrown take off
+				even if it is steady.\n
+				On fixed wings: initiates the take off process on the fixed wings.\n\n
 				Setting the state to 0 will cancel the preparation. You can cancel it before that the drone takes off."
-				support="090e"
+				support="090e;090c:4.3.0"
 				result="The drone will arm its motors if not already armed.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at motor ramping.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at userTakeOff.\n
@@ -228,12 +230,12 @@
 			<comment
 				title="Move to a location"
 				desc="Move the drone to a specified location.\n
-				If a new command moveTo is sent, the drone will immediatly cancel the previous one.\n
+				If a new command moveTo is sent, the drone will immediatly run it (no cancel will be issued).\n
 				If a [CancelMoveTo](#1-0-11) command is sent, the moveTo is stopped.\n
 				During the moveTo, all pitch, roll and gaz values of the piloting command
 				will be ignored by the drone.\n
 				However, the yaw value can be used."
-				support="none"
+				support="090c:4.3.0"
 				result="Event [MovingTo](#1-4-12) is triggered with state running.
 				Then, the drone will move to the given location.\n
 				Then, event [MoveToChanged](#1-4-12) is triggered with state succeed."/>
@@ -271,8 +273,40 @@
 				title="Cancel the moveTo"
 				desc="Cancel the current moveTo.\n
 				If there is no current moveTo, this command has no effect."
-				support="none"
+				support="090c:4.3.0"
 				result="Event [MoveToChanged](#1-4-12) is triggered with state canceled."/>
+		</cmd>
+		<cmd name="StartPilotedPOI" id="12">
+			<comment
+				title="Start a piloted POI"
+				desc="Start a piloted Point Of Interest.\n
+				During a piloted POI, the drone will always look at the given POI but can be piloted normally.
+				However, yaw value is ignored. Camera tilt and pan command is also ignored.\n
+				Ignored if [PilotedPOI](#1-4-14) state is UNAVAILABLE."
+				support="090c:4.3.0"
+				result="If the drone is hovering, event [PilotedPOI](#1-4-14) is triggered with state RUNNING.
+				If the drone is not hovering, event [PilotedPOI](#1-4-14) is triggered with state PENDING,
+				waiting to hover. When the drone hovers, the state will change to RUNNING.
+				If the drone does not hover for a given time, piloted POI is canceled by the drone and state
+				will change to AVAILABLE.
+				Then, the drone will look at the given location."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to look at
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to look at
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above sea level (in m) to look at
+			</arg>
+		</cmd>
+		<cmd name="StopPilotedPOI" id="13">
+			<comment
+				title="Stop the piloted POI"
+				desc="Stop the piloted Point Of Interest.\n
+				If [PilotedPOI](#1-4-14) state is RUNNING or PENDING, stop it."
+				support="090c:4.3.0"
+				result="Event [PilotedPOI](#1-4-14) is triggered with state AVAILABLE."/>
 		</cmd>
 	</class>
 	<class name="Animations" id="5">
@@ -697,7 +731,7 @@
 					User take off state. Waiting for user action to take off.
 				</enum>
 				<enum name="motor_ramping">
-					Motor ramping state (for fixed wings).
+					Motor ramping state.
 				</enum>
 				<enum name="emergency_landing">
 					Emergency landing state.
@@ -782,7 +816,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="PositionChanged" id="4">
+		<cmd name="PositionChanged" id="4" buffer="NON_ACK">
 			<comment
 				title="Drone's position changed"
 				desc="Drone's position changed."
@@ -851,12 +885,12 @@
 				Altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="GpsLocationChanged" id="9">
+		<cmd name="GpsLocationChanged" id="9" buffer="NON_ACK">
 			<comment
 				title="Drone's location changed"
 				desc="Drone's location changed.\n
 				This event is meant to replace [PositionChanged](#1-4-4)."
-				support="none"
+				support="0901:4.0.0;090c:4.0.0"
 				triggered="regularly."/>
 			<arg name="latitude" type="double">
 				Latitude location in decimal degrees (500.0 if not available)
@@ -902,7 +936,7 @@
 				title="Drone's air speed changed"
 				desc="Drone's air speed changed\n
 				Expressed in the drone's referential."
-				support="none"
+				support="090e:1.2.0"
 				triggered="regularly."/>
 			<arg name="airSpeed" type="float">
 				Speed relative to air on x axis
@@ -913,7 +947,7 @@
 			<comment
 				title="Move to changed"
 				desc="The drone moves or moved to a given location."
-				support="none"
+				support="090c:4.3.0"
 				triggered="by [MoveTo](#1-0-10) or when the drone did reach the given position."/>
 			<arg name="latitude" type="double">
 				Latitude of the location (in degrees) to reach
@@ -952,11 +986,92 @@
 					The drone has reached the target
 				</enum>
 				<enum name="CANCELED">
-					The move to has been canceled, either by a new moveTo command or
-					by a CancelMoveTo command.
+					The move to has been canceled, either by a CancelMoveTo command
+					or when a disconnection appears.
 				</enum>
 				<enum name="ERROR">
 					The move to has not been finished or started because of an error.
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="MotionState" id="13">
+			<comment
+				title="Motion state"
+				desc="Motion state.\n
+				If [MotionDetection](#1-6-16) is disabled, motion is steady.\n
+				This information is only valid when the drone is not flying."
+				support="090c:4.3.0"
+				triggered="when the [FlyingState](#1-4-1) is landed and the [MotionDetection](#1-6-16) is enabled
+				and the motion state changes.\n
+				This event is triggered at a filtered rate."/>
+			<arg name="state" type="enum">
+				Motion state
+				<enum name="steady">
+					Drone is steady
+				</enum>
+				<enum name="moving">
+					Drone is moving
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="PilotedPOI" id="14">
+			<comment
+				title="Piloted POI state"
+				desc="Piloted POI state."
+				support="090c:4.3.0"
+				triggered="by [StartPilotedPOI](#1-0-12) or [StopPilotedPOI](#1-0-13)
+				or when piloted POI becomes unavailable."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to look at.
+				This information is only valid when the state is pending or running.
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to look at.
+				This information is only valid when the state is pending or running.
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above sea level (in m) to look at.
+				This information is only valid when the state is pending or running.
+			</arg>
+			<arg name="status" type="enum">
+				Status of the move to
+				<enum name="UNAVAILABLE">
+					The piloted POI is not available
+				</enum>
+				<enum name="AVAILABLE">
+					The piloted POI is available
+				</enum>
+				<enum name="PENDING">
+					Piloted POI has been requested. Waiting to be in state that allow the piloted POI to start
+				</enum>
+				<enum name="RUNNING">
+					Piloted POI is running
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="ReturnHomeBatteryCapacity" id="15">
+			<comment
+				title="Return home battery capacity"
+				desc="Battery capacity status to return home."
+				support="090c:4.3.0"
+				triggered="when the status of the battery capacity to do a return home changes.
+				This means that it is triggered either when the battery level changes, when the distance
+				to the home changes or when the position of the home changes."/>
+			<arg name="status" type="enum">
+				Status of battery to return home
+				<enum name="OK">
+					The battery is full enough to do a return home
+				</enum>
+				<enum name="WARNING">
+					The battery is about to be too discharged to do a return home
+				</enum>
+				<enum name="CRITICAL">
+					The battery level is too low to return to the home position
+				</enum>
+				<enum name="UNKNOWN">
+					Battery capacity to do a return home is unknown.
+					This can be either because the home is unknown or the position of the drone is unknown,
+					or the drone has not enough information to determine how long it takes to fly home.
 				</enum>
 			</arg>
 		</cmd>
@@ -1269,12 +1384,12 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="CirclingRadius" id="13">
+		<cmd name="CirclingRadius" id="13" deprecated="true">
 			<comment
 				title="Set circling radius"
 				desc="Set circling radius.\n
 				Only available for fixed wings."
-				support="090e"
+				support="none"
 				result="The circling radius is set.\n
 				Then, event [CirclingRadius](#1-6-13) is triggered."/>
 			<arg name="value" type="u16">
@@ -1312,6 +1427,22 @@
 					Positive pitch values will make the drone raise its nose.
 					Negative pitch values will make the drone lower its nose.
 				</enum>
+			</arg>
+		</cmd>
+		<cmd name="SetMotionDetectionMode" id="16">
+			<comment
+				title="Enable/disable the motion detection"
+				desc="Enable/disable the motion detection.\n
+				If the motion detection is enabled, the drone will send its [MotionState](#1-4-13)
+				when its [FlyingState](#1-4-1) is landed.
+				If the motion detection is disabled, [MotionState](#1-4-13) is steady."
+				support="090c:4.3.0"
+				result="The motion detection is enabled or disabled.\n
+				Then, event [MotionDetection](#1-6-16) is triggered.
+				After that, if enabled and [FlyingState](#1-4-1) is landed,
+				the [MotionState](#1-4-13) is triggered upon changes."/>
+			<arg name="enable" type="u8">
+				1 to enable the motion detection, 0 to disable it.
 			</arg>
 		</cmd>
 	</class>
@@ -1481,12 +1612,12 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="CirclingRadiusChanged" id="13">
+		<cmd name="CirclingRadiusChanged" id="13" deprecated="true">
 			<comment
 				title="Circling radius"
 				desc="Circling radius.\n
 				Only sent by fixed wings."
-				support="090e"
+				support="none"
 				triggered="by [SetCirclingRadius](#1-2-13)."/>
 			<arg name="current" type="u16">
 				The current circling radius in meter
@@ -1533,6 +1664,16 @@
 					Positive pitch values will make the drone raise its nose.
 					Negative pitch values will make the drone lower its nose.
 				</enum>
+			</arg>
+		</cmd>
+		<cmd name="MotionDetection" id="16">
+			<comment
+				title="State of the motion detection"
+				desc="State of the motion detection."
+				support="090c:4.3.0"
+				triggered="by [SetMotionDetectionMode](#1-2-16)"/>
+			<arg name="enabled" type="u8">
+				1 if motion detection is enabled, 0 otherwise.
 			</arg>
 		</cmd>
 	</class>
@@ -2371,7 +2512,12 @@
 			</arg>
 		</cmd>
 		<cmd name="VideoStreamMode" id="1">
-			Video stream mode
+			<comment
+				title="Set the stream mode"
+				desc="Set the stream mode."
+				support="0901;090c;090e"
+				result="The stream mode is set.\n
+				Then, event [VideoStreamMode](#1-22-1) is triggered."/>
 			<arg name="mode" type="enum">
 				stream mode
 				<enum name="low_latency">
@@ -2443,7 +2589,7 @@
 			<comment
 				title="Reset home position"
 				desc="Reset home position."
-				support="0901;090c;090e"
+				support="0901;090c"
 				result="The home position is reset.\n
 				Then, event [HomeLocationReset](#1-24-1) is triggered."/>
 		</cmd>
@@ -2531,7 +2677,7 @@
 			<comment
 				title="Home location has been reset"
 				desc="Home location has been reset."
-				support="0901;090c;090e"
+				support="0901;090c"
 				triggered="by [ResetHomeLocation](#1-23-1)."/>
 			<arg name="latitude" type="double">
 				Home latitude in decimal degrees
@@ -2693,7 +2839,7 @@
 				title="Set the electric frequency"
 				desc="Set the electric frequency of the surrounding lights.\n
 				This is used to avoid the video flickering in auto mode. You can get the current antiflickering mode with the event [AntiflickeringModeChanged](#1-30-1)."
-				support="0901;090c;090e"
+				support="0901;090c"
 				result="The electric frequency is set.\n
 				Then, event [ElectricFrequency](#1-30-0) is triggered."/>
 			<arg name="frequency" type="enum">
@@ -2713,7 +2859,7 @@
 				If auto, the drone will detect when flickers appears on the video and trigger the antiflickering.\n
 				In this case, this electric frequency it will use will be the one specified in the event [ElectricFrequency](#1-29-0).\n
 				Forcing the antiflickering (FixedFiftyHertz or FixedFiftyHertz) can reduce luminosity of the video."
-				support="0901;090c;090e"
+				support="0901;090c"
 				result="The antiflickering mode is set.\n
 				Then, event [AntiflickeringMode](#1-30-1) is triggered."/>
 			<arg name="mode" type="enum">
@@ -2737,7 +2883,7 @@
 				title="Electric frequency"
 				desc="Electric frequency.\n
 				This piece of information is used for the antiflickering when the [AntiflickeringMode](#1-30-1) is set to *auto*."
-				support="0901;090c;090e"
+				support="0901;090c"
 				triggered="by [SetElectricFrequency](#1-29-0)."/>
 			<arg name="frequency" type="enum">
 				Type of the electric frequency
@@ -2753,7 +2899,7 @@
 			<comment
 				title="Antiflickering mode"
 				desc="Antiflickering mode."
-				support="0901;090c;090e"
+				support="0901;090c"
 				triggered="by [SetAntiflickeringMode](#1-29-1)."/>
 			<arg name="mode" type="enum">
 				Mode of the anti flickering functionnality
@@ -2864,8 +3010,8 @@
 				<enum name="sequoia">
 					Parrot Sequoia (multispectral camera for agriculture)
 				</enum>
-				<enum name="unknownaccessory_1">
-					UNKNOWNACCESSORY_1 camera (thermal+rgb camera)
+				<enum name="flir">
+					FLIR camera (thermal+rgb camera)
 				</enum>
 			</arg>
 			<arg name="uid" type="string">
@@ -2881,6 +3027,65 @@
 				0x02: Last: indicate it's the last element of the list.
 				0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
 				0x08: Remove: This value should be removed from the existing list.
+			</arg>
+		</cmd>
+		<cmd name="Battery" id="1" type="MAP_ITEM">
+			<comment
+				title="Connected accessories battery"
+				desc="Connected accessories battery."
+				support="none"/>
+			<arg name="id" type="u8">
+				Id of the accessory for the session.
+			</arg>
+			<arg name="batteryLevel" type="u8">
+				Battery level in percentage.
+			</arg>
+			<arg name="list_flags" type="u8">
+				List entry attribute Bitfield.
+				0x01: First: indicate it's the first element of the list.
+				0x02: Last: indicate it's the last element of the list.
+				0x04: Empty: indicate the list is empty (implies First/Last). All other arguments should be ignored.
+				0x08: Remove: This value should be removed from the existing list.
+			</arg>
+		</cmd>
+	</class>
+	<class name="Sound" id="35">
+		Sounds related commands
+		<cmd name="StartAlertSound" id="0">
+			<comment
+				title="Start alert sound"
+				desc="Start the alert sound.
+				The alert sound can only be started when the drone is not flying."
+				support="none"
+				result="The drone makes a sound
+				and send back [AlertSoundState](#1-36-0) with state playing."/>
+		</cmd>
+		<cmd name="StopAlertSound" id="1">
+			<comment
+				title="Stop alert sound"
+				desc="Stop the alert sound."
+				support="none"
+				result="The drone stops its alert sound
+				and send back [AlertSoundState](#1-36-0) with state stopped."/>
+		</cmd>
+	</class>
+	<class name="SoundState" id="36">
+		Sounds related events
+		<cmd name="AlertSound" id="0">
+			<comment
+				title="Alert sound state"
+				desc="Alert sound state."
+				support="none"
+				triggered="by [StartAlertSound](#1-35-0) or [StopAlertSound](#1-35-1)
+				or when the drone starts or stops to play an alert sound by itself."/>
+			<arg name="state" type="enum">
+				State of the alert sound
+				<enum name="stopped">
+					Alert sound is not playing
+				</enum>
+				<enum name="playing">
+					Alert sound is playing
+				</enum>
 			</arg>
 		</cmd>
 	</class>

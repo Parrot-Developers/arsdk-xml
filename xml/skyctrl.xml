@@ -316,7 +316,7 @@
 			<comment
 				title="Connection status"
 				desc="Status of the connection to a drone."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				triggered="when the connection state to a drone has changed."/>
 			<arg name="status" type="enum">
 				Connection status
@@ -347,17 +347,16 @@
 			<comment
 				title="Ask for all controller's settings"
 				desc="Request the controller to send all its settings."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				result="The controller will trigger all settings events and
 				will finally trigger [AllSettingsChanged](#4-5-0)."/>
 		</cmd>
 		<cmd name="Reset" id="1">
 			<comment
 				title="Reset all settings"
-				desc="This command is not implemented."
-				support="none"
-				result="All settings are reset, then a [ResetChanged](#4-5-1)
-				event is fired."/>
+				desc="Reset all settings (i.e. everything except drone pairing)."
+				support="090f:1.0.5;0913;0915"
+				result="All settings are reset."/>
 		</cmd>
 	</class>
 	<class name="SettingsState" id="5">
@@ -366,7 +365,7 @@
 			<comment
 				title="AllSettings changed"
 				desc="All settings have been sent by the controller."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				triggered="when all settings that have been requested by
 				 [AllSettings](#4-4-0) are sent."/>
 		</cmd>
@@ -381,7 +380,7 @@
 			<comment
 				title="Product serial"
 				desc="The product serial of the controller."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				triggered="during the [AllSettings](#4-4-0) phase."/>
 			<arg name="serialNumber" type="string">
 				Serial number (hexadecimal value)
@@ -411,13 +410,23 @@
 			<comment
 				title="Product versions"
 				desc="Software and hardware versions of the controller."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="during the [AllSettings](#4-4-0) phase."/>
 			<arg name="software" type="string">
 				Product software version
 			</arg>
 			<arg name="hardware" type="string">
 				Product hardware version
+			</arg>
+		</cmd>
+		<cmd name="CPUID" id="5">
+			<comment
+				title="Product main CPU id"
+				desc="The serial number (or any other UID) for the main CPU."
+				support="090f:1.0.5;0913;0915"
+				triggered="during the [AllSettings](#4-4-0) phase."/>
+			<arg name="id" type="string">
+				Product main cpu id
 			</arg>
 		</cmd>
 	</class>
@@ -427,7 +436,7 @@
 			<comment
 				title="Ask for all controller's states."
 				desc="Request the controller to send all its states."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				result="The controller will trigger all states events and
 				will finally trigger [AllStatesChanged](#4-7-0)."/>
 		</cmd>
@@ -439,7 +448,7 @@
 			<comment
 				title="AllStates changed"
 				desc="All states have been sent by the controller."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				triggered="when all states that have been requested
 				 by [AllStates](#4-6-0) are sent."/>
 		</cmd>
@@ -450,7 +459,7 @@
 			<comment
 				title="Battery state changed"
 				desc="The battery percentage has changed."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				triggered="when the battery level changes."/>
 			<arg name="percent" type="u8">
 				Controller battery: from 0 (empty) to 100 (full charge).
@@ -497,7 +506,7 @@
 			<comment
 				title="Battery state"
 				desc="The state of the controller battery"
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="when the controller battery state has changed."/>
 			<arg name="state" type="enum">
 				Current battery state
@@ -523,7 +532,7 @@
 				title="Attitude"
 				desc="SkyController Attitude in north-east-down (NED) coordinate system.\n
 				Attitude is provided as a quaternion."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="when the SkyController attitude changes."/>
 			<arg name="q0" type="float">
 				SkyController Attitude q0 (quaternion scalar part)
@@ -1194,7 +1203,7 @@
 				drone, and won't send any commands itself.\n The piloting
 				source is automatically reset to SkyController when the
 				controller is disconnected."
-				support="0903;090f"
+				support="0903;090f;0913;0915"
 				result="The SkyController will sent a [pilotingSource](#4-21-0)
 				event."/>
 			<arg name="source" type="enum">
@@ -1216,7 +1225,7 @@
 				title="Piloting source"
 				desc="Define who is piloting the drone.\n The piloting source is
 				reset to SkyController when the controller disconnects."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0915"
 				triggered="by a [setPilotingSource](#4-20-0) command"/>
 			<arg name="source" type="enum">
 				The source
@@ -1248,6 +1257,25 @@
 				1 = Enable quality updates
 				0 = Disable quality updates
 			</arg>
+		</cmd>
+		<cmd name="StartCalibration" id="1">
+			<comment
+				title="Start magneto calibration"
+				desc="Asks the SkyController to start a magneto calibration.\n
+				If the calibration is already started, this command has no effect."
+				support="0915"
+				result="The SkyController will send a
+				[MagnetoCalibrationStateV2](#4-23-2) event."/>
+		</cmd>
+		<cmd name="AbortCalibration" id="2">
+			<comment
+				title="Abort a running magneto calibration"
+				desc="Asks the SkyController to abort an in-progress magneto
+				calibration.\n If no calibration is in progress, this command has
+				no effect."
+				support="0915"
+				result="The SkyController will send a
+				[MagnetoCalibrationStateV2](#4-23-2) event."/>
 		</cmd>
 	</class>
 	<class name="CalibrationState" id="23">
@@ -1303,11 +1331,44 @@
 				0 = The skycontroller only sent updated when state is updated
 			</arg>
 		</cmd>
+		<cmd name="MagnetoCalibrationStateV2" id="2">
+			<comment
+				title="Magneto calibration state"
+				desc="The current state of magnetometer calibration.\n This event is
+				used by products which does require a step-by-step calibration.\n
+				When calibrating, the product will go, in order, through X, Y and Z
+				axis calibration, then into calibrated state. If at any point it
+				goes back to not-calibrated, it means that the calibration process
+				failed and should be manually restarted with the
+				[StartCalibration](#4-22-1) command."
+				support="0915"
+				triggered="when the magnetometer calibration state has changed, or
+				by a [StartCalibration](#4-22-1) or [AbortCalibration](#4-22-2)
+				command"/>
+			<arg name="state" type="enum">
+				The calibration state
+				<enum name="NotCalibrated">
+					A calibration is needed
+				</enum>
+				<enum name="CalibratingX">
+					A calibration is in progress on the X axis
+				</enum>
+				<enum name="CalibratingY">
+					A calibration is in progress on the Y axis
+				</enum>
+				<enum name="CalibratingZ">
+					A calibration is in progress on the Z axis
+				</enum>
+				<enum name="Calibrated">
+					The sensor is calibrated
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="ButtonEvents" id="24">
 		Events sent on SkyController button presses.
 		These events are sent under certain conditions only.
-		<cmd name="Settings" id="0">
+		<cmd name="Settings" id="0" content="NOTIFICATION">
 			<comment
 			title="Settings button pressed"
 			desc="This event notifies the application that the settings
@@ -1329,7 +1390,7 @@
 				SkyController. *The factory reset procedure implies an
 				automatic reboot*, which will be done immediately after
 				recieving this command."
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The SkyController will reboot, all settings will be
 				reset to their default values.\nSkyController 2 that were
 				paired in factory will **NOT** lose this pairing.\nSkyController
@@ -1344,7 +1405,7 @@
 				desc="Skycontroller will disconnect.\n
 				This event is triggered when the user presses on the power button of the product.\n\n
 				**This event is a notification, you can't retrieve it in the cache of the device controller.**"
-				support="090f:1.0.5;0913"
+				support="090f:1.0.5;0913;0915"
 				triggered="when the SkyController shutdowns for one of the given reasons"/>
 			<arg name="reason" type="enum">
 				Reason of the shutdown of the product

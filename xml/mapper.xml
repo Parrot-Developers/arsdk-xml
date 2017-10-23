@@ -226,7 +226,7 @@
 				title="Grab (or ungrab) controls"
 				desc="Grabbed buttons are sent to the app and are not
 				handled by the mapper"
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The mapper will send a [grab_state](#138-2) command"/>
 			<arg name="buttons" type="u32">
 				Buttons to grab/ungrab (bitfield)
@@ -240,7 +240,7 @@
 				title="Grabbed controls"
 				desc="Grabbed buttons are sent to the app and are not
 				handled by the mapper"
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="by a [grab](#138-1) command"/>
 			<arg name="buttons" type="u32">
 				Grabbed buttons (bitfield)
@@ -253,22 +253,22 @@
 				State of the button when the grab starts (bitfield)
 			</arg>
 		</evt>
-		<evt name="grab_button_event" id="3">
+		<evt name="grab_button_event" id="3" content="NOTIFICATION">
 			<comment
 				title="Event on a grabbed button"
 				desc="The state of a grabbed button changes"
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="when a grabbed button is pressed/released"/>
 			<arg name="button" type="u32">
 				Button id
 			</arg>
 			<arg name="event" type="enum:button_event"/>
 		</evt>
-		<evt name="grab_axis_event" id="4">
+		<evt name="grab_axis_event" id="4" content="NOTIFICATION">
 			<comment
 			title="Event on a grabbed axis"
 			desc="The state of a grabbed axis changes"
-			support="090f;0913"
+			support="090f;0913;0915"
 			triggered="when the value of a grabbed axis changes"/>
 			<arg name="axis" type="u32">
 				Axis id
@@ -283,7 +283,7 @@
 				desc="An action can only be mapped to one button set.\n
 				Each action can be mapped to different buttons for
 				different products."
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The mapper will send [button_mapping_item](#138-7) and
 				[axis_mapping_item](#138-8) according to the request."/>
 			<arg name="product" type="u16">
@@ -301,7 +301,7 @@
 				desc="An action can only be mapped to one axis/button set.\n
 				Each action can be mapped to different axes/buttons for
 				different products."
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The mapper will send [button_mapping_item](#138-7) and
 				[axis_mapping_item](#138-8) according to the request."/>
 			<arg name="product" type="u16">
@@ -322,7 +322,7 @@
 				title="Item of the button_actions mapping list"
 				desc="The resulting map describes all active button mappings of the
 				mapper.\n Each action can only be mapped once per product."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="by a [map_button_action](#138-5) or a
 				 [map_axis_action](#138-6) command"/>
 			<arg name="uid" type="u32">
@@ -342,7 +342,7 @@
 				title="Item of the axis_actions mapping list"
 				desc="The resulting map describes all active axis mappings of the
 				mapper.\n Each action can only be mapped once per product."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="by a [map_button_action](#138-5) or a
 				 [map_axis_action](#138-6) command"/>
 			<arg name="uid" type="u32">
@@ -360,28 +360,28 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="application_axis_event" id="9">
+		<evt name="application_axis_event" id="9" content="NOTIFICATION">
 			<comment
 				title="Application specific event"
 				desc="This event signals the controller application when an
 				application specific axis_event is triggered.\n Application
 				specific actions are typically used for UI interaction which
 				does not involves the drone."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="when any axis action set to application_action is triggered."/>
 			<arg name="action" type="enum:axis_action"/>
 			<arg name="value" type="i8">
 				The current value of the axis.
 			</arg>
 		</evt>
-		<evt name="application_button_event" id="10">
+		<evt name="application_button_event" id="10" content="NOTIFICATION">
 			<comment
 				title="Application specific event"
 				desc="This event signals the controller application when an
 				application specific button_event is triggered.\n Application
 				specific actions are typically used for UI interaction which
 				does not involves the drone."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="when any button action set to application_action is triggered."/>
 			<arg name="action" type="enum:button_action"/>
 		</evt>
@@ -391,7 +391,7 @@
 				desc="Resets the mappings, axis exponential parameters, and axis
 				inversion for the given product.\n
 				If the product is given as 0 (zero), the all products are reset."
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The mapper will send [button_mapping_item](#138-7),
 				[axis_mapping_item](#138-8), [expo_map_item](#138-13)
 				and [inverted_map_item](#138-15) according to the request."/>
@@ -407,7 +407,7 @@
 				axes belonging to the same physical joystick can be locked to
 				the same value. In this case, setting the value for one axis
 				will automatically change both values."
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The mapper will send [expo_map_item](#138-13)"/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list).
@@ -426,7 +426,7 @@
 				axes belonging to the same physical joystick can be locked to
 				the same value. In this case, setting the value for one axis
 				will automatically change both values."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="by a [set_expo](#138-12) command"/>
 			<arg name="uid" type="u32">
 				Unique ID (for MAP_ITEM type)
@@ -445,7 +445,7 @@
 				title="Set/unset inverted state for a physical axis"
 				desc="Axis inversion has no effect on grabbed axes, nor on virtual
 				buttons that might be generated from axes."
-				support="090f;0913"
+				support="090f;0913;0915"
 				result="The mapper will send [inverted_map_item](#138-15)"/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list).
@@ -464,7 +464,7 @@
 				title="Item of the inverted map"
 				desc="Axis inversion has no effect on grabbed axes, nor on virtual
 				buttons that might be generated from axes."
-				support="090f;0913"
+				support="090f;0913;0915"
 				triggered="by a [set_inverted](#138-14) command"/>
 			<arg name="uid" type="u32">
 				Unique ID (for MAP_ITEM type)
@@ -487,7 +487,7 @@
 				desc="This event notifies the application about the currently active
 				product, thus allowing the application to diplay and edit the
 				current mapping without having to guess from other sources."
-				support="090f:1.0.5;0913"
+				support="090f:1.0.5;0913;0915"
 				triggered="when the active product changes"/>
 			<arg name="product" type="u16">
 				Product (see libARDiscovery for list)

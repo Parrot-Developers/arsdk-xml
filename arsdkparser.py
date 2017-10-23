@@ -238,10 +238,11 @@ class ArFeature(object):
 #===============================================================================
 #===============================================================================
 class ArClass(object):
-    def __init__(self, name, classId, doc):
+    def __init__(self, name, classId, doc, prj):
         self.name = name
         self.classId = classId
         self.doc = doc
+        self.prj = prj
         self.cmds = []
         self.cmdsById = {}
         self.cmdsByName = {}
@@ -285,6 +286,12 @@ class ArMsg(object):
                 ArCmdContent.TO_STRING[self.content],
                 pprint.pformat(self.args),
                 self.isDeprecated))
+
+    def full_name(self):
+        if self.cls:
+            return '{}.{}.{}'.format(self.cls.prj.name, self.cls.name, self.name)
+        else:
+            return '{}.{}'.format(self.ftr.name, self.name)
 
 #===============================================================================
 #===============================================================================
@@ -332,12 +339,12 @@ class ArArg(object):
         self.enumsByName = {}
 
     def __repr__(self):
-        if isinstance(self.argType, str):
+        if isinstance(self.argType, int):
             argTypeRep = ArArgType.TO_STRING[self.argType]
         else:
             argTypeRep = pprint.pformat(self.argType)
 
-        return ("{name='%s', argType='%s', doc='%s', enums=%s}" % (
+        return ("{{name='{}', argType='{}', doc='{}', enums='{}'}}".format(
                 self.name,
                 argTypeRep,
                 repr(self.doc),
@@ -411,6 +418,14 @@ class ArBitfield(object):
                 pprint.pformat(self.enum),
                 pprint.pformat(self.btfType)))
 
+    def __eq__(self, other):
+        if not isinstance(other, ArBitfield):
+            return False
+        return self.btfType == other.btfType and self.enum == other.enum
+
+    def __hash__(self):
+        return hash((self.enum, self.btfType))
+
 #===============================================================================
 #===============================================================================
 def _get_node_content(node):
@@ -441,7 +456,7 @@ def _parse_project_node(filePath, projectNode, projectObj):
                     filePath, classId))
 
         # Create class object
-        classObj = ArClass(className, classId, classDoc)
+        classObj = ArClass(className, classId, classDoc, projectObj)
         projectObj.classes.append(classObj)
         projectObj.classesById[classId] = classObj
         projectObj.classesByName[className] = classObj
@@ -501,6 +516,59 @@ def _parse_feature_node_multisets(ctx, filePath, featureNode, featureObj):
 def _parse_multiset_node(filePath, multisetNode, multisetObj):
     for memberNode in multisetNode.getElementsByTagName("member"):
         multisetObj.links.append(memberNode.getAttribute("link"))
+
+#===============================================================================
+#===============================================================================
+def _check_list_flags(ctx, msgObj):
+    if msgObj.listType == ArCmdListType.NONE:
+        return
+    if msgObj.isDeprecated:
+        return
+
+    exceptions = [
+        'follow_me.mode_info',
+        'rc.channel_action_item',
+        'ardrone3.NetworkState.WifiScanListChanged',
+        'ardrone3.NetworkState.WifiAuthChannelListChanged',
+        'ardrone3.GPSState.HomeTypeAvailabilityChanged',
+        'common.CommonState.MassStorageStateListChanged',
+        'common.CommonState.MassStorageInfoStateListChanged',
+        'common.CommonState.SensorsStatesListChanged',
+        'common.CommonState.MassStorageContent',
+        'common.CommonState.MassStorageContentForCurrentRun',
+        'common.FlightPlanState.ComponentStateListChanged',
+        'common.AnimationsState.List',
+        'common.AccessoryState.SupportedAccessoriesListChanged',
+        'jpsumo.NetworkState.WifiScanListChanged',
+        'jpsumo.NetworkState.WifiAuthChannelListChanged',
+        'jpsumo.RoadPlanState.ScriptMetadataListChanged',
+        'powerup.NetworkState.WifiScanListChanged',
+        'powerup.NetworkState.WifiAuthChannelListChanged',
+        'skyctrl.WifiState.WifiList',
+        'skyctrl.WifiState.WifiAuthChannelListChanged',
+        'skyctrl.GamepadInfosState.gamepadControl',
+        'skyctrl.ButtonMappingsState.currentButtonMappings',
+        'skyctrl.ButtonMappingsState.availableButtonMappings',
+        'skyctrl.AxisMappingsState.currentAxisMappings',
+        'skyctrl.AxisMappingsState.availableAxisMappings',
+        'skyctrl.AxisFiltersState.currentAxisFilters',
+    ]
+    if msgObj.full_name() in exceptions:
+        return
+
+    if "list_flags" not in msgObj.argsByName:
+        raise ArParserError("Command %s is missing list_flags argument" % msgObj.full_name())
+    lfArg = msgObj.argsByName["list_flags"]
+    if ctx:
+        lfEnum = ctx.featuresByName[_FTR_GEN].enumsByName["list_flags"]
+        lfType = ArArgType.U8
+        lfBtf = ArBitfield(lfEnum, lfType)
+        if lfArg.argType != lfBtf:
+            raise ArParserError("Command %s has bad type for list_flags argument" % msgObj.full_name())
+    else:
+        if lfArg.argType != ArArgType.U8:
+            raise ArParserError("Command %s has bad type for list_flags argument" % msgObj.full_name())
+
 
 #===============================================================================
 #===============================================================================
@@ -588,6 +656,9 @@ def _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj):
             # Parse msg node
             _parse_msg_node(ctx, filePath, featureObj, msgNode, msgObj)
 
+            # Check that we have a list_flags arg with the proper type
+            _check_list_flags(ctx, msgObj)
+
             # Find map key
             if mapKey :
                 if mapKey not in msgObj.argsByName:
@@ -674,6 +745,9 @@ def _parse_class_node(filePath, classNode, classObj):
 
         # Parse cmd node
         _parse_prj_cmd_node(filePath, cmdNode, cmdObj)
+
+        # Check that we have a list_flags arg with the proper type
+        _check_list_flags(None, cmdObj)
 
 #===============================================================================
 #===============================================================================
