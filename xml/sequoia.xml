@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2017 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="147" name="sequoia_cam">
+	Sequoia camera accessory feature
+	<enums>
+		<enum name="radiometric_calib_status_value">
+			Radiometric calibration status
+			<value name="available">
+				Radiometric calibration is available
+			</value>
+			<value name="unavailable">
+				Radiometric calibration is not available
+			</value>
+			<value name="in_progress">
+				Radiometric calibration In progress
+			</value>
+		</enum>
+		<enum name="radiometric_calib_result_value">
+			Last radiometric calibration result
+			<value name="success">
+				Radiometric calibration is successfull
+			</value>
+			<value name="error">
+				Radiometric calibration failed
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<evt name="radiometric_calib_status" id="1" type="MAP_ITEM:cam_id">
+			<comment
+				title="Is radiometric calibration available ?"
+				desc="Is radiometric calibration available ?\n"/>
+			<arg name="cam_id" type="u8">
+				Camera id, as given in the [connected accessories](#1-33-0) event.
+			</arg>
+			<arg name="value" type="enum:radiometric_calib_status_value"/>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+		<evt name="radiometric_calib_result" id="2" type="MAP_ITEM:cam_id">
+			<comment
+				title="Last radiometric calibration result"
+				desc="Last radiometric calibration result.\n"/>
+			<arg name="cam_id" type="u8">
+				Camera id, as given in the [connected accessories](#1-33-0) event.
+			</arg>
+			<arg name="value" type="enum:radiometric_calib_result_value"/>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+		<cmd name="radiometric_calib_start" id="3">
+			<comment
+				title="Start Sequoia radiometric calibration"
+				desc="Launch capture on radiometric calibration mode.
+				      This PTP mode is 0x8004"
+				support="none"
+				result="None"/>
+			<arg name="id" type="u8">
+				Id of the accessory for the session.
+			</arg>
+		</cmd>
+	</msgs>
+</feature>
