@@ -637,6 +637,9 @@
 			<value name="res_1080p_sd">
 				1440x1080 pixels (SD).
 			</value>
+			<value name="res_720p_sd">
+				960x720 pixels (SD).
+			</value>
 		</enum>
 
 		<enum name="framerate">

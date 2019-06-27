@@ -111,7 +111,15 @@
 				Low range (from -10 to 140°C)
 			</value>
 		</enum>
-
+		<enum name="shutter_trigger">
+			Thermal shutter trigger mode
+			<value name="auto">
+				Automatic trigger
+			</value>
+			<value name="manual">
+				Manual trigger
+			</value>
+		</enum>
 	</enums>
 
 	<msgs>
@@ -401,5 +409,40 @@
 			</arg>
 		</evt>
 
+		<cmd name="set_shutter_mode" id="16">
+			<comment
+				title="Set the thermal cam shutter mode"
+				desc="Set the thermal camera shutter mode."
+				support="0919"
+				result="shutter mode of the camera is changed, and event [shutter_mode](#152-17) is
+				sent accordingly."/>
+			<expectations>
+				<delayed>
+					#152-17(current_trigger: this.shutter_trigger)
+				</delayed>
+			</expectations>
+			<arg name="trigger" type="enum:shutter_trigger">
+				Desired shutter trigger mode of the thermal sensor
+			</arg>
+		</cmd>
+
+		<evt name="shutter_mode" id="17">
+			<comment
+				title="Thermal cam shutter trigger mode"
+				desc="Thermal cam shutter trigger mode."
+				support="0919"
+				triggered="At connection or on changes by [set_shutter_mode](#152-16)"/>
+			<arg name="current_trigger" type="enum:shutter_trigger">
+				Current shutter trigger mode of the thermal sensor
+			</arg>
+		</evt>
+
+		<cmd name="trigg_shutter" id="18">
+			<comment
+				title="Trigg the thermal cam shutter"
+				desc="Trigg the thermal cam shutter."
+				support="0919"
+				result="Thermal camera triggs its shutter to perform a Flat Field Calibration."/>
+		</cmd>
 	</msgs>
 </feature>

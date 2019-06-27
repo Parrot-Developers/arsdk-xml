@@ -45,6 +45,9 @@
 			<value name="available">
 				The removable media is detected.
 			</value>
+			<value name="usb_mass_storage">
+				The removable media is used by mass-storage gadget.
+			</value>
 		</enum>
 		<enum name="fs_state">
 			<value name="unknown">
