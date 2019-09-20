@@ -1244,6 +1244,25 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="VibrationLevelChanged" id="20">
+			<comment
+				title="Vibration level"
+				desc="Vibration level."
+				support="0914:1.6.0;0919:1.6.0"
+				triggered="at connection and on changes."/>
+			<arg name="state" type="enum">
+				Drone vibration level
+				<enum name="ok">
+					The level of vibration can be handled properly by the drone.
+				</enum>
+				<enum name="warning">
+					The level of vibration begins to be too strong for the drone to fly correctly.
+				</enum>
+				<enum name="critical">
+					The level of vibration is too strong for the drone to fly correctly.
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting

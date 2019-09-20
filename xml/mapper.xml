@@ -527,5 +527,44 @@
 				Product (see libARDiscovery for list)
 			</arg>
 		</evt>
+		<cmd name="enter_volatile_mapping" id="17">
+			<comment
+				title="Enter in volatile mapping mode"
+				desc="All mappings in this mode will disappear when exit will be called
+				or when device is unplugged."
+				support="090f;0913;0915"
+				result="Event [volatile_mapping_state](#138-19)"/>
+			<expectations>
+				<immediate>
+					#138-19(active: 1)
+				</immediate>
+			</expectations>
+		</cmd>
+		<cmd name="exit_volatile_mapping" id="18">
+			<comment
+				title="Terminates volatile mapping mode"
+				desc="Destroy volatile mapping.\n
+				Any current action is canceled, for example PCMD will become null even
+				if PCMD axis are pushed, the user has to release the axis to recover
+				PCMD control."
+				support="090f;0913;0915"
+				result="Event [volatile_mapping_state](#138-19)"/>
+			<expectations>
+				<immediate>
+					#138-19(active: 0)
+				</immediate>
+			</expectations>
+		</cmd>
+		<evt name="volatile_mapping_state" id="19">
+			<comment
+				title="Volatile mapping state"
+				desc="Volatile mapping state"
+				support="090f;0913;0915"
+				triggered="During connection, by [enter_volatile_mapping](#138-17) and [exit_volatile_mapping](#138-18)"/>
+			<arg name="active" type="u8">
+				0 : Volatile mapping is not active.
+				1 : Volatile mapping is active.
+			</arg>
+		</evt>
 	</msgs>
 </feature>

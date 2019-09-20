@@ -1988,6 +1988,86 @@
 			</arg>
 		</evt>
 
+		<evt name="alignment_offsets" id="52">
+			<comment
+				title="Alignment Offsets"
+				comment="Camera alignment offsets."
+				support="0919:1.6.0"
+				triggered="at connection and by [set_alignment_offsets](#143-53)
+				or by [reset_alignment_offsets](#143-54)."/>
+			<arg name="cam_id" type="u8">
+				Id of the camera.
+			</arg>
+			<arg name="min_bound_yaw" type="float">
+				Lower bound of the alignment offset that can be set on the yaw axis, in degrees
+			</arg>
+			<arg name="max_bound_yaw" type="float">
+				Upper bound of the alignment offset that can be set on the yaw axis, in degrees
+			</arg>
+			<arg name="current_yaw" type="float">
+				Current alignment offset applied to the yaw axis, in degrees
+			</arg>
+			<arg name="min_bound_pitch" type="float">
+				Lower bound of the alignment offset that can be set on the pitch axis, in degrees
+			</arg>
+			<arg name="max_bound_pitch" type="float">
+				Upper bound of the alignment offset that can be set on the pitch axis, in degrees
+			</arg>
+			<arg name="current_pitch" type="float">
+				Current alignment offset applied to the pitch axis, in degrees
+			</arg>
+			<arg name="min_bound_roll" type="float">
+				Lower bound of the alignment offset that can be set on the roll axis, in degrees
+			</arg>
+			<arg name="max_bound_roll" type="float">
+				Upper bound of the alignment offset that can be set on the roll axis, in degrees
+			</arg>
+			<arg name="current_roll" type="float">
+				Current alignment offset applied to the roll axis, in degrees
+			</arg>
+		</evt>
+		<cmd name="set_alignment_offsets" id="53">
+			<comment
+				title="Set alignment offsets."
+				comment="Set camera alignment offsets that should be applied to each axis."
+				support="0919:1.6.0"
+				result="Camera alignment is changed, and event [alignment_offsets](#143-52) is sent accordingly."/>
+			<expectations>
+				<immediate>
+					#143-52(cam_id: this.cam_id)
+				</immediate>
+			</expectations>
+			<arg name="cam_id" type="u8">
+				Id of the camera.
+			</arg>
+			<arg name="yaw" type="float">
+				Alignment offset, in degrees, that should be applied to the yaw axis.
+				This value will be clamped between [alignment_offsets](#143-52) min_bound_yaw and max_bound_yaw
+			</arg>
+			<arg name="pitch" type="float">
+				Alignment offset, in degrees, that should be applied to the pitch axis.
+				This value will be clamped between [alignment_offsets](#143-52) min_bound_pitch and max_bound_pitch
+			</arg>
+			<arg name="roll" type="float">
+				Alignment offset, in degrees, that should be applied to the roll axis.
+				This value will be clamped between [alignment_offsets](#143-52) min_bound_roll and max_bound_roll
+			</arg>
+		</cmd>
+		<cmd name="reset_alignment_offsets" id="54">
+			<comment
+				title="Alignment reset factory."
+				comment="Reset factory of camera alignment."
+				support="0919:1.6.0"
+				result="Camera alignment is reset, and event [alignment_offsets](#143-52) is sent accordingly."/>
+			<expectations>
+				<immediate>
+					#143-52(cam_id: this.cam_id)
+				</immediate>
+			</expectations>
+			<arg name="cam_id" type="u8">
+				Id of the camera.
+			</arg>
+		</cmd>
 	</msgs>
 </feature>
 

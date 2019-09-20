@@ -418,7 +418,7 @@
 				sent accordingly."/>
 			<expectations>
 				<delayed>
-					#152-17(current_trigger: this.shutter_trigger)
+					#152-17(current_trigger: this.trigger)
 				</delayed>
 			</expectations>
 			<arg name="trigger" type="enum:shutter_trigger">
