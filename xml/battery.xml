@@ -84,6 +84,16 @@
 				Battery State-Of-Health (%)
 			</arg>
 		</evt>
+		<evt name="voltage" id="3" buffer="NON_ACK">
+			<comment
+				title="Battery voltage"
+				desc="Battery voltage."
+				support="0914:1.6.2;0919:1.6.2"
+				triggered="regularly."/>
+			<arg name="voltage" type="u16">
+				Battery voltage in mV
+			</arg>
+		</evt>
 	</msgs>
 
 </feature>

@@ -1263,6 +1263,16 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="AltitudeAboveGroundChanged" id="21" buffer="NON_ACK">
+			<comment
+				title="Drone's altitude above ground changed"
+				desc="Drone's altitude above ground changed."
+				support="0914:1.6.2;0919:1.6.2"
+				triggered="regularly."/>
+			<arg name="altitude" type="float">
+				Altitude in meters
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting
