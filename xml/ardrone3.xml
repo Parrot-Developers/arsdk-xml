@@ -281,7 +281,7 @@
 				Longitude of the location (in degrees) to reach
 			</arg>
 			<arg name="altitude" type="double">
-				Altitude above sea level (in m) to reach
+				Altitude above take off point (in m) to reach
 			</arg>
 			<arg name="orientation_mode" type="enum">
 				Orientation mode of the move to
@@ -316,7 +316,7 @@
 				</immediate>
 			</expectations>
 		</cmd>
-		<cmd name="StartPilotedPOI" id="12">
+		<cmd name="StartPilotedPOI" id="12" deprecated="true">
 			<comment
 				title="Start a piloted POI"
 				desc="Start a piloted Point Of Interest.\n
@@ -343,19 +343,63 @@
 				Longitude of the location (in degrees) to look at
 			</arg>
 			<arg name="altitude" type="double">
-				Altitude above sea level (in m) to look at
+				Altitude above take off point (in m) to look at
+			</arg>
+		</cmd>
+		<cmd name="StartPilotedPOIV2" id="15">
+			<comment
+				title="Start a piloted POI"
+				desc="Start a piloted Point Of Interest.\n
+				During a piloted POI, the drone always points towards the given POI but can be piloted normally.
+				However, yaw value is ignored. The gimbal behavior depends on the mode argument:\n
+				- in locked gimbal mode, the gimbal always looks at the POI, and gimbal control command is ignored by
+				the drone,\n
+				- in free gimbal mode, the gimbal initially looks at the POI, and is then freely controllable by the
+				gimbal command.\n
+				Ignored if [PilotedPOIV2](#1-4-22) state is UNAVAILABLE."
+				support="0914:1.6.3;0919:1.6.3"
+				result="If the drone is hovering, event [PilotedPOIV2](#1-4-22) is triggered with state RUNNING.
+				If the drone is not hovering, event [PilotedPOIV2](#1-4-22) is triggered with state PENDING,
+				waiting to hover. When the drone hovers, the state changes to RUNNING.
+				If the drone does not hover for a given time, piloted POI is canceled by the drone and state
+				changes to AVAILABLE.
+				Then, the drone looks at the given location."/>
+			<expectations>
+				<immediate>
+						#1-4-22(latitude: this.latitude, longitude: this.longitude, altitude: this.altitude, mode: this.mode, status: RUNNING)
+						|#1-4-22(latitude: this.latitude, longitude: this.longitude, altitude: this.altitude, mode: this.mode, status: PENDING)
+				</immediate>
+			</expectations>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to look at
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to look at
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above take off point (in m) to look at
+			</arg>
+			<arg name="mode" type="enum">
+				POI mode
+				<enum name="locked_gimbal">
+					Gimbal is locked on the POI
+				</enum>
+				<enum name="free_gimbal">
+					Gimbal is freely controllable
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="StopPilotedPOI" id="13">
 			<comment
 				title="Stop the piloted POI"
-				desc="Stop the piloted Point Of Interest.\n
-				If [PilotedPOI](#1-4-14) state is RUNNING or PENDING, stop it."
-				support="090c:4.3.0"
-				result="Event [PilotedPOI](#1-4-14) is triggered with state AVAILABLE."/>
+				desc="Stop the piloted Point Of Interest (with or without gimbal control).\n
+				If [PilotedPOI](#1-4-14) or [PilotedPOIV2](#1-4-22) state is RUNNING or PENDING, stop it."
+				support="090c:4.3.0;0914;0919"
+				result="Event [PilotedPOI](#1-4-14) or [PilotedPOIV2](#1-4-22) is triggered with state AVAILABLE."/>
 			<expectations>
 				<immediate>
 					#1-4-14(status: AVAILABLE)
+					|#1-4-22(status: AVAILABLE)
 				</immediate>
 			</expectations>
 		</cmd>
@@ -1022,7 +1066,7 @@
 				Longitude of the location (in degrees) to reach
 			</arg>
 			<arg name="altitude" type="double">
-				Altitude above sea level (in m) to reach
+				Altitude above take off point (in m) to reach
 			</arg>
 			<arg name="orientation_mode" type="enum">
 				Orientation mode of the move to
@@ -1080,7 +1124,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="PilotedPOI" id="14">
+		<cmd name="PilotedPOI" id="14" deprecated="true">
 			<comment
 				title="Piloted POI state"
 				desc="Piloted POI state."
@@ -1096,7 +1140,7 @@
 				This information is only valid when the state is pending or running.
 			</arg>
 			<arg name="altitude" type="double">
-				Altitude above sea level (in m) to look at.
+				Altitude above take off point (in m) to look at.
 				This information is only valid when the state is pending or running.
 			</arg>
 			<arg name="status" type="enum">
@@ -1109,6 +1153,51 @@
 				</enum>
 				<enum name="PENDING">
 					Piloted POI has been requested. Waiting to be in state that allow the piloted POI to start
+				</enum>
+				<enum name="RUNNING">
+					Piloted POI is running
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="PilotedPOIV2" id="22">
+			<comment
+				title="Piloted POI state"
+				desc="Piloted POI state."
+				support="0914:1.6.3;0919:1.6.3"
+				triggered="by [StartPilotedPOIV2](#1-0-15) or [StopPilotedPOI](#1-0-13)
+				or when piloted POI becomes available or unavailable."/>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to look at.
+				This information is only valid when the state is pending or running.
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to look at.
+				This information is only valid when the state is pending or running.
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above take off point (in m) to look at.
+				This information is only valid when the state is pending or running.
+			</arg>
+			<arg name="mode" type="enum">
+				POI mode.
+				This information is only valid when the state is pending or running.
+				<enum name="locked_gimbal">
+					Gimbal is locked on the POI
+				</enum>
+				<enum name="free_gimbal">
+					Gimbal is freely controllable
+				</enum>
+			</arg>
+			<arg name="status" type="enum">
+				Status of the Piloted POI
+				<enum name="UNAVAILABLE">
+					The piloted POI is not available
+				</enum>
+				<enum name="AVAILABLE">
+					The piloted POI is available
+				</enum>
+				<enum name="PENDING">
+					Piloted POI has been requested. Waiting to be in state that allows the piloted POI to start
 				</enum>
 				<enum name="RUNNING">
 					Piloted POI is running
