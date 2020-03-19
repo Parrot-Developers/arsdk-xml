@@ -192,7 +192,7 @@
 				title="Start followMe mode"
 				desc="Start a FollowMe with all its params set to the default params. \n
 				Sending this command will stop other running followMe."
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				result="Event [state](#134-3) is triggered.\n
 				Also triggers the event that informs about the current \n
 				configuration (if there is one) like event\n
@@ -209,7 +209,7 @@
 			<comment
 				title="Stop current followMe"
 				desc="Stop current followMe."
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				result="Event [state](#134-3) is triggered with mode equals to none."/>
 			<expectations>
 				<immediate>
@@ -220,7 +220,7 @@
 		<evt name="state" id="3">
 			<comment
 				title="State of the FollowMe"
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				triggered="by any changes on the followme, like [start](#134-1),\n
 				[stop](#134-2), [start helicoid anim](#134-9)..."/>
 			<arg name="mode" type="enum:mode">
@@ -241,7 +241,7 @@
 		<evt name="mode_info" id="4" type="MAP_ITEM:mode">
 			<comment
 				title="FollowMe mode info"
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				triggered="When the list of missing requirements or improvments changes"/>
 			<arg name="mode" type="enum:mode"/>
 			<arg name="missing_requirements" type="bitfield:u16:input">
@@ -397,7 +397,7 @@
 		<evt name="target_trajectory" id="10" buffer="NON_ACK">
 			<comment
 				title="Target estimated trajectory"
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				triggered="Regularly when a FollowMe is started."/>
 			<arg name="latitude" type="double">
 				Target latitude (in degrees)
@@ -657,7 +657,7 @@
 			<comment
 				title="Set the target framing"
 				desc="Set the desired target framing in the video."
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				result="Event [target framing position](#134-23) is triggered."/>
 			<expectations>
 				<immediate>
@@ -674,7 +674,7 @@
 		<evt name="target_framing_position_changed" id="23">
 			<comment
 				title="Desired target framing"
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				triggered="by [set target framing](#134-19)."/>
 			<arg name="horizontal" type="i8">
 				Horizontal position in the video (in %, from left to right)
@@ -687,12 +687,12 @@
 			<comment
 				title="Send vision detection results"
 				desc="Send vision detection results."
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				result="If drone is in FollowMe, is will look at the target according to\n
 				the chosen [framing position](#134-23)."/>
 			<expectations>
 				<immediate>
-					#134-23(horizontal: this.horizontal, vertical: this.vertical)
+					#134-25
 				</immediate>
 			</expectations>
 			<arg name="target_azimuth" type="float">
@@ -717,7 +717,7 @@
 		<evt name="target_image_detection_state" id="25">
 			<comment
 				title="State of the image detection"
-				support="090c:4.0.0"
+				support="090c:4.0.0;0914;0919"
 				triggered="By a possible wrong [target image detection](#134-24)."/>
 			<arg name="state" type="enum:image_detection_status"/>
 		</evt>
@@ -727,7 +727,7 @@
 				desc="Tells that the target to follow is the controller and drone can use controller gps
 				sent by [controller_info gps](#140-1) and barometer data sent by [controller_info barometer](#140-2)
 				as valid to locate the target."
-				support=""
+				support="0914;0919"
 				result="The drone sends [target_is_controller](#134-27) and may send [mode_info](#134-20) with updated
 				`missing_requirements`"/>
 			<expectations>
@@ -742,7 +742,7 @@
 		<evt name="target_is_controller" id="27">
 			<comment
 				title="Tells whether the drone is using the controller gps position and barometer to locate the target"
-				support=""
+				support="0914;0919"
 				triggered="During connection and by [set_target_is_controller](#134-26)"/>
 			<arg name="state" type="u8">
 				Boolean. 1 if the target is the controller, 0 otherwise

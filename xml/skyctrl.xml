@@ -372,7 +372,7 @@
 			<comment
 				title="Ask for all controller's settings"
 				desc="Request the controller to send all its settings."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				result="The controller will trigger all settings events and
 				will finally trigger [AllSettingsChanged](#4-5-0)."/>
 			<expectations>
@@ -385,7 +385,7 @@
 			<comment
 				title="Reset all settings"
 				desc="Reset all settings (i.e. everything except drone pairing)."
-				support="090f:1.0.5;0913;0915"
+				support="090f:1.0.5;0913;0915;0918"
 				result="All settings are reset."/>
 		</cmd>
 	</class>
@@ -395,7 +395,7 @@
 			<comment
 				title="AllSettings changed"
 				desc="All settings have been sent by the controller."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				triggered="when all settings that have been requested by
 				 [AllSettings](#4-4-0) are sent."/>
 		</cmd>
@@ -410,7 +410,7 @@
 			<comment
 				title="Product serial"
 				desc="The product serial of the controller."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				triggered="during the [AllSettings](#4-4-0) phase."/>
 			<arg name="serialNumber" type="string">
 				Serial number (hexadecimal value)
@@ -440,7 +440,7 @@
 			<comment
 				title="Product versions"
 				desc="Software and hardware versions of the controller."
-				support="090f;0913;0915"
+				support="090f;0913;0915;0918"
 				triggered="during the [AllSettings](#4-4-0) phase."/>
 			<arg name="software" type="string">
 				Product software version
@@ -453,7 +453,7 @@
 			<comment
 				title="Product main CPU id"
 				desc="The serial number (or any other UID) for the main CPU."
-				support="090f:1.0.5;0913;0915"
+				support="090f:1.0.5;0913;0915;0918"
 				triggered="during the [AllSettings](#4-4-0) phase."/>
 			<arg name="id" type="string">
 				Product main cpu id
@@ -466,7 +466,7 @@
 			<comment
 				title="Ask for all controller's states."
 				desc="Request the controller to send all its states."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				result="The controller will trigger all states events and
 				will finally trigger [AllStatesChanged](#4-7-0)."/>
 			<expectations>
@@ -484,7 +484,7 @@
 				So medias and other files will be dated from this datetime\n\n
 				**Please note that you should not send this command if you are using the\n
 				libARController API as this library is handling the connection process for you.**"
-				support="090f;0913;0915"
+				support="090f;0913;0915;0918"
 				result="The datetime of the product is set.\n
 				Then, it will trigger [CurrentDateTimeChanged](#4-7-1)."/>
 			<expectations>
@@ -504,7 +504,7 @@
 			<comment
 				title="AllStates changed"
 				desc="All states have been sent by the controller."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				triggered="when all states that have been requested
 				 by [AllStates](#4-6-0) are sent."/>
 		</cmd>
@@ -514,7 +514,7 @@
 				desc="Both date and time changed.\n
 				Corresponds to the latest datetime set on the drone.\n\n
 				**Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
-				support="090f;0913;0915"
+				support="090f;0913;0915;0918"
 				triggered="by [CurrentDateTime](#4-6-1)."/>
 			<arg name="datetime" type="string">
 				Datetime with the ISO-8601 complete short format: "%Y%m%dT%H%M%S%z"
@@ -527,7 +527,7 @@
 			<comment
 				title="Battery state changed"
 				desc="The battery percentage has changed."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				triggered="when the battery level changes."/>
 			<arg name="percent" type="u8">
 				Controller battery: from 0 (empty) to 100 (full charge).
@@ -574,7 +574,7 @@
 			<comment
 				title="Battery state"
 				desc="The state of the controller battery"
-				support="090f;0913;0915"
+				support="090f;0913;0915;0918"
 				triggered="when the controller battery state has changed."/>
 			<arg name="state" type="enum">
 				Current battery state
@@ -600,7 +600,7 @@
 				title="Attitude"
 				desc="SkyController Attitude in north-east-down (NED) coordinate system.\n
 				Attitude is provided as a quaternion."
-				support="090f;0913;0915"
+				support="090f;0913;0915;0918"
 				triggered="when the SkyController attitude changes."/>
 			<arg name="q0" type="float">
 				SkyController Attitude q0 (quaternion scalar part)
@@ -1379,7 +1379,7 @@
 				drone, and won't send any commands itself.\n The piloting
 				source is automatically reset to SkyController when the
 				controller is disconnected."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				result="The SkyController will sent a [pilotingSource](#4-21-0)
 				event."/>
 			<expectations>
@@ -1406,7 +1406,7 @@
 				title="Piloting source"
 				desc="Define who is piloting the drone.\n The piloting source is
 				reset to SkyController when the controller disconnects."
-				support="0903;090f;0913;0915"
+				support="0903;090f;0913;0915;0918"
 				triggered="by a [setPilotingSource](#4-20-0) command"/>
 			<arg name="source" type="enum">
 				The source
@@ -1430,7 +1430,7 @@
 				The [MagnetoCalibrationState](#4-23-0) event will always be
 				sent when the status parameters changes, regardless of this
 				setting."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0918"
 				result="The SkyController will send a
 				[MagnetoCalibrationQualityUpdatesState](#4-23-1) event."/>
 			<expectations>
@@ -1449,7 +1449,7 @@
 				title="Start magneto calibration"
 				desc="Asks the SkyController to start a magneto calibration.\n
 				If the calibration is already started, this command has no effect."
-				support="0915"
+				support="0915;0918"
 				result="The SkyController will send a
 				[MagnetoCalibrationStateV2](#4-23-2) event."/>
 			<expectations>
@@ -1464,7 +1464,7 @@
 				desc="Asks the SkyController to abort an in-progress magneto
 				calibration.\n If no calibration is in progress, this command has
 				no effect."
-				support="0915"
+				support="0915;0918"
 				result="The SkyController will send a
 				[MagnetoCalibrationStateV2](#4-23-2) event."/>
 			<expectations>
@@ -1476,7 +1476,7 @@
 	</class>
 	<class name="CalibrationState" id="23">
 		State of the SkyController calibration
-		<cmd name="MagnetoCalibrationState" id="0">
+		<cmd name="MagnetoCalibrationState" id="0" deprecated="true">
 			<comment
 				title="Magneto calibration state"
 				desc="The current state of the magnetometer calibration.\n If the
@@ -1485,7 +1485,7 @@
 				screens, but creates a lot of traffic on network.\ When the
 				calibration quality updates are disabled, this event is only sent
 				when the status parameter changes."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0918"
 				triggered="when the magnetometer calibration state has changed."/>
 			<arg name="status" type="enum">
 				The global status of the calibration
@@ -1518,7 +1518,7 @@
 				desc="State of the magnetometer calibration quality sender.\n This
 				determines the trigger of the
 				[MagnetoCalibrationState](#4-23-0) event."
-				support="0903;090f;0913"
+				support="0903;090f;0913;0918"
 				triggered="by an [enableMagnetoCalibrationQualityUpdates](#4-22-0)
 				 command."/>
 			<arg name="enabled" type="u8">
@@ -1537,7 +1537,7 @@
 				goes back to not-calibrated, it means that the calibration process
 				failed and should be manually restarted with the
 				[StartCalibration](#4-22-1) command."
-				support="0915"
+				support="0915;0918"
 				triggered="when the magnetometer calibration state has changed, or
 				by a [StartCalibration](#4-22-1) or [AbortCalibration](#4-22-2)
 				command"/>
@@ -1586,7 +1586,7 @@
 				SkyController. *The factory reset procedure implies an
 				automatic reboot*, which will be done immediately after
 				recieving this command."
-				support="090f;0913;0915"
+				support="090f;0913;0915;0918"
 				result="The SkyController will reboot, all settings will be
 				reset to their default values.\nSkyController 2 that were
 				paired in factory will **NOT** lose this pairing.\nSkyController
@@ -1601,7 +1601,7 @@
 				desc="Skycontroller will disconnect.\n
 				This event is triggered when the user presses on the power button of the product.\n\n
 				**This event is a notification, you can't retrieve it in the cache of the device controller.**"
-				support="090f:1.0.5;0913;0915"
+				support="090f:1.0.5;0913;0915;0918"
 				triggered="when the SkyController shutdowns for one of the given reasons"/>
 			<arg name="reason" type="enum">
 				Reason of the shutdown of the product

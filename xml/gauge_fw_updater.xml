@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot Drones SAS
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	  notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	  notice, this list of conditions and the following disclaimer in
+	  the documentation and/or other materials provided with the
+	  distribution.
+	* Neither the name of the Parrot Company nor the names
+	  of its contributors may be used to endorse or promote products
+	  derived from this software without specific prior written
+	  permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+
+<feature id="160" name="gauge_fw_updater">
+	All messages related to the Gauge Firmware Updater Service
+	<enums>
+		<enum name="diag">
+			Gauge Firmware Diagnostic
+			<value name="up_to_date">
+				Gauge Firmware is Up-to-Date.
+			</value>
+			<value name="cannot_update">
+				Gauge Firmware cannot be updated.
+			</value>
+			<value name="updatable">
+				Gauge Firmware can be updated.
+			</value>
+		</enum>
+
+		<enum name="state">
+			State of Gauge Firmware Service
+			<value name="ready_to_prepare">
+				Service is ready to prepare Update.
+			</value>
+			<value name="preparation_in_progress">
+				Service Preparation is in Progress.
+			</value>
+			<value name="ready_to_update">
+				Service is ready to Update.
+			</value>
+			<value name="update_in_progress">
+				Service Update is in Progress.
+			</value>
+		</enum>
+
+		<enum name="requirements">
+			Requirements of Gauge Firmware Service
+			<value name="usb">
+				USB power is provided.
+			</value>
+			<value name="rsoc">
+				RSOC is enough.
+			</value>
+			<value name="drone_state">
+				Drone is landed.
+			</value>
+		</enum>
+
+		<enum name="result">
+			Result of Gauge Firmware Service
+			<value name="success">
+				Result is Success.
+			</value>
+			<value name="in_progress">
+				In Progress.
+			</value>
+			<value name="bad_diag">
+				Bad Diagnostic.
+			</value>
+			<value name="not_prepared">
+				Not Prepared.
+			</value>
+			<value name="requirements_not_achieved">
+				Requirements not Achieved.
+			</value>
+			<value name="battery_error">
+				Problem with Battery.
+			</value>
+		</enum>
+	</enums>
+
+	<msgs>
+		<cmd name="prepare" id="1">
+			<comment
+				title="Prepare Update"
+				desc="Prepare Update"
+				support="0914:1.6.5;0919:1.6.5"
+				result="[status](#160-3) with 'preparation_in_progress' then 'ready_to_update' state,\n
+				and [progress](#160-4) with 'in_progress' then 'success' result and percent"
+			/>
+			<expectations>
+				<immediate>
+					#160-3(state: preparation_in_progress)
+					#160-4(result: in_progress)
+				</immediate>
+				<delayed>
+					#160-3(state: ready_to_update)
+					#160-4(result: success)
+				</delayed>
+			</expectations>
+		</cmd>
+
+		<cmd name="update" id="2">
+			<comment
+				title="Update"
+				desc="Update"
+				support="0914:1.6.5;0919:1.6.5"
+				result="[status](#160-3) with 'update_in_progress' state,\n
+				and [progress](#160-4) with 'in_progress' result"
+			/>
+			<expectations>
+				<immediate>
+					#160-3(state: update_in_progress)
+					#160-4(result: in_progress)
+				</immediate>
+			</expectations>
+		</cmd>
+
+		<evt name="status" id="3">
+			<comment
+				title="Status of the Gauge Firmware Updater"
+				support="0914:1.6.5;0919:1.6.5"
+				triggered="At connection; on changes by [prepare](#160-1) and [update](#160-2)"/>
+			<arg name="diag" type="enum:diag">
+				Diagnostic.
+			</arg>
+			<arg name="missing_requirements" type="bitfield:u32:requirements">
+				Missing Requirements.
+			</arg>
+			<arg name="state" type="enum:state">
+				State.
+			</arg>
+		</evt>
+
+		<evt name="progress" id="4">
+			<comment
+				title="Progress of the command Prepare or Update"
+				support="0914:1.6.5;0919:1.6.5"
+				triggered="On changes by [prepare](#160-1) and [update](#160-2)"/>
+			<arg name="result" type="enum:result">
+				Result.
+			</arg>
+			<arg name="percent" type="u8">
+				Percentage (%), only for [prepare](#160-1).
+			</arg>
+		</evt>
+	</msgs>
+
+</feature>

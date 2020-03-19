@@ -38,7 +38,7 @@
 				title="Take off"
 				desc="Ask the drone to take off.\n
 				On the fixed wings (such as Disco): not used except to cancel a land."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="On the quadcopters: the drone takes off if its [FlyingState](#1-4-1) was landed.\n
 				On the fixed wings, the landing process is aborted if the [FlyingState](#1-4-1) was landing.\n
 				Then, event [FlyingState](#1-4-1) is triggered."/>
@@ -55,7 +55,7 @@
 				desc="Move the drone.\n
 				The libARController is sending the command each 50ms.\n\n
 				**Please note that you should call setPilotingPCMD and not sendPilotingPCMD because the libARController is handling the periodicity and the buffer on which it is sent.**"
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The drone moves! Yaaaaay!\n
 				Event [SpeedChanged](#1-4-5), [AttitudeChanged](#1-4-6) and [PositionChanged](#1-4-4) (only if gps of the drone has fixed) are triggered."/>
 			<arg name="flag" type="u8">
@@ -123,7 +123,7 @@
 				title="Land"
 				desc="Land.\n
 				Please note that on copters, if you put some positive gaz (in the [PilotingCommand](#1-0-2)) during the landing, it will cancel it."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="On the copters, the drone lands if its [FlyingState](#1-4-1) was taking off, hovering or flying.\n
 				On the fixed wings, the drone lands if its [FlyingState](#1-4-1) was hovering or flying.\n
 				Then, event [FlyingState](#1-4-1) is triggered."/>
@@ -139,7 +139,7 @@
 				desc="Cut out the motors.\n
 				This cuts immediatly the motors. The drone will fall.\n
 				This command is sent on a dedicated high priority buffer which will infinitely retry to send it if the command is not delivered."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The drone immediatly cuts off its motors.\n
 				Then, event [FlyingState](#1-4-1) is triggered."/>
 			<expectations>
@@ -155,7 +155,7 @@
 				Ask the drone to fly to its [HomePosition](#1-24-0).\n
 				The availability of the return home can be get from [ReturnHomeState](#1-4-3).\n
 				Please note that the drone will wait to be hovering to start its return home. This means that it will wait to have a [flag](#1-0-2) set at 0."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The drone will fly back to its home position.\n
 				Then, event [ReturnHomeState](#1-4-3) is triggered.\n
 				You can get a state pending if the drone is not ready to start its return home process but will do it as soon as it is possible."/>
@@ -170,21 +170,13 @@
 				1 to start the navigate home, 0 to stop it
 			</arg>
 		</cmd>
-		<cmd name="AutoTakeOffMode" id="6" deprecated="true">
-			<comment
-				title="Auto take off mode"
-				desc="Auto take off mode."/>
-			<arg name="state" type="u8">
-				State of automatic take off mode (1 for autotake off enabled)
-			</arg>
-		</cmd>
 		<cmd name="moveBy" id="7">
 			<comment
 				title="Move the drone to a relative position"
 				desc="Move the drone to a relative position and rotate heading by a given angle.\n
 				Moves are relative to the current drone orientation, (drone's reference).\n
 				Also note that the given rotation will not modify the move (i.e. moves are always rectilinear)."
-				support="0901:3.3.0;090c:3.3.0"
+				support="0901:3.3.0;090c:3.3.0;0914;0919"
 				result="The drone will move of the given offsets.\n
 				Then, event [RelativeMoveEnded](#1-34-0) is triggered.\n
 				If you send a second relative move command, the drone will trigger a [RelativeMoveEnded](#1-34-0) with the offsets it managed to do before this new command and the value of error set to interrupted."/>
@@ -214,7 +206,7 @@
 				even if it is steady.\n
 				On fixed wings: initiates the take off process on the fixed wings.\n\n
 				Setting the state to 0 will cancel the preparation. You can cancel it before that the drone takes off."
-				support="090e;090c:4.3.0"
+				support="090e;090c:4.3.0;0914;0919"
 				result="The drone will arm its motors if not already armed.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at motor ramping.\n
 				Then, event [FlyingState](#1-4-1) is triggered with state set at userTakeOff.\n
@@ -265,7 +257,7 @@
 				During the moveTo, all pitch, roll and gaz values of the piloting command
 				will be ignored by the drone.\n
 				However, the yaw value can be used."
-				support="090c:4.3.0"
+				support="090c:4.3.0;0914;0919"
 				result="Event [MovingTo](#1-4-12) is triggered with state running.
 				Then, the drone will move to the given location.\n
 				Then, event [MoveToChanged](#1-4-12) is triggered with state succeed."/>
@@ -815,7 +807,7 @@
 			<comment
 				title="Flying state"
 				desc="Flying state."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when the flying state changes."/>
 			<arg name="state" type="enum">
 				Drone flying state
@@ -855,7 +847,7 @@
 			<comment
 				title="Alert state"
 				desc="Alert state."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when an alert happens on the drone."/>
 			<arg name="state" type="enum">
 				Drone alert state
@@ -877,6 +869,9 @@
 				<enum name="too_much_angle">
 					The angle of the drone is too high
 				</enum>
+				<enum name="almost_empty_battery">
+					Almost empty battery alert
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="NavigateHomeStateChanged" id="3">
@@ -884,7 +879,7 @@
 				title="Return home state"
 				desc="Return home state.\n
 				Availability is related to gps fix, magnetometer calibration."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [ReturnHome](#1-0-5) or when the state of the return home changes."/>
 			<arg name="state" type="enum">
 				State of navigate home
@@ -930,7 +925,7 @@
 			<comment
 				title="Drone's position changed"
 				desc="Drone's position changed."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="regularly."/>
 			<arg name="latitude" type="double">
 				Latitude position in decimal degrees (500.0 if not available)
@@ -947,7 +942,7 @@
 				title="Drone's speed changed"
 				desc="Drone's speed changed.\n
 				Expressed in the NED referential (North-East-Down)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="regularly."/>
 			<arg name="speedX" type="float">
 				Speed relative to the North (when drone moves to the north, speed is > 0) (in m/s)
@@ -963,7 +958,7 @@
 			<comment
 				title="Drone's attitude changed"
 				desc="Drone's attitude changed."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="regularly."/>
 			<arg name="roll" type="float">
 				roll value (in radian)
@@ -975,21 +970,13 @@
 				Yaw value (in radian)
 			</arg>
 		</cmd>
-		<cmd name="AutoTakeOffModeChanged" id="7" deprecated="true">
-			<comment
-				title="Auto takeoff mode"
-				desc="Auto takeoff mode"/>
-			<arg name="state" type="u8">
-				State of automatic take off mode (1 if enabled)
-			</arg>
-		</cmd>
 		<cmd name="AltitudeChanged" id="8" buffer="NON_ACK">
 			<comment
 				title="Drone's altitude changed"
 				desc="Drone's altitude changed.\n
 				The altitude reported is the altitude above the take off point.\n
 				To get the altitude above sea level, see [PositionChanged](#1-4-4)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="regularly."/>
 			<arg name="altitude" type="double">
 				Altitude in meters
@@ -1000,7 +987,7 @@
 				title="Drone's location changed"
 				desc="Drone's location changed.\n
 				This event is meant to replace [PositionChanged](#1-4-4)."
-				support="0901:4.0.0;090c:4.0.0"
+				support="0901:4.0.0;090c:4.0.0;0914;0919"
 				triggered="regularly."/>
 			<arg name="latitude" type="double">
 				Latitude location in decimal degrees (500.0 if not available)
@@ -1057,7 +1044,7 @@
 			<comment
 				title="Move to changed"
 				desc="The drone moves or moved to a given location."
-				support="090c:4.3.0"
+				support="090c:4.3.0;0914;0919"
 				triggered="by [MoveTo](#1-0-10) or when the drone did reach the given position."/>
 			<arg name="latitude" type="double">
 				Latitude of the location (in degrees) to reach
@@ -1110,7 +1097,7 @@
 				desc="Motion state.\n
 				If [MotionDetection](#1-6-16) is disabled, motion is steady.\n
 				This information is only valid when the drone is not flying."
-				support="090c:4.3.0"
+				support="090c:4.3.0;0914;0919"
 				triggered="when the [FlyingState](#1-4-1) is landed and the [MotionDetection](#1-6-16) is enabled
 				and the motion state changes.\n
 				This event is triggered at a filtered rate."/>
@@ -1284,7 +1271,7 @@
 			<comment
 				title="Hovering warning"
 				desc="Indicate that the drone may have difficulties to maintain a fix position when hovering."
-				support="0915"
+				support="0915;0914;0919"
 				triggered="at connection and on changes."/>
 			<arg name="no_gps_too_dark" type="u8">
 				1 if the drone doesn't have a GPS fix and there is not enough light.
@@ -1318,7 +1305,7 @@
 			<comment
 				title="Wind state"
 				desc="Wind state."
-				support="0914"
+				support="0914;0919"
 				triggered="at connection and on changes."/>
 			<arg name="state" type="enum">
 				Drone wind state
@@ -1370,7 +1357,7 @@
 				title="Relative move ended"
 				desc="Relative move ended.\n
 				Informs about the move that the drone managed to do and why it stopped."
-				support="0901:3.3.0;090c:3.3.0"
+				support="0901:3.3.0;090c:3.3.0;0914;0919"
 				triggered="when the drone reaches its target or when it is interrupted by another
 				[moveBy command](#1-0-7) or when an error occurs."/>
 			<arg name="dX" type="float">
@@ -1524,7 +1511,7 @@
 				The drone will not fly over this max altitude when it is in manual piloting.\n
 				Please note that if you set a max altitude which is below the current drone altitude, the drone will not go to given max altitude.\n
 				You can get the bounds in the event [MaxAltitude](#1-6-0)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The max altitude is set.\n
 				Then, event [MaxAltitude](#1-6-0) is triggered."/>
 			<expectations>
@@ -1542,7 +1529,7 @@
 				desc="Set max pitch/roll.\n
 				This represent the max inclination allowed by the drone.\n
 				You can get the bounds with the commands [MaxPitchRoll](#1-6-1)."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				result="The max pitch/roll is set.\n
 				Then, event [MaxPitchRoll](#1-6-1) is triggered."/>
 			<expectations>
@@ -1568,7 +1555,7 @@
 				desc="Set max distance.\n
 				You can get the bounds from the event [MaxDistance](#1-6-3).\n\n
 				If [Geofence](#1-6-4) is activated, the drone won't fly over the given max distance."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The max distance is set.\n
 				Then, event [MaxDistance](#1-6-3) is triggered."/>
 			<expectations>
@@ -1588,7 +1575,7 @@
 				You can get the max distance from the event [MaxDistance](#1-6-3). \n
 				For copters: the distance is computed from the controller position, if this position is not known, it will use the take off.\n
 				For fixed wings: the distance is computed from the take off position."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="Geofencing is enabled or disabled.\n
 				Then, event [Geofencing](#1-6-4) is triggered."/>
 			<expectations>
@@ -1600,97 +1587,12 @@
 				1 if the drone can't fly further than max distance, 0 if no limitation on the drone should be done
 			</arg>
 		</cmd>
-		<cmd name="setAutonomousFlightMaxHorizontalSpeed" id="5">
-			<comment
-				title="Set autonomous flight max horizontal speed"
-				desc="Set autonomous flight max horizontal speed.\n
-				This will only be used during autonomous flights such as moveBy."
-				support="0901:3.3.0;090c:3.3.0"
-				result="The max horizontal speed is set.\n
-				Then, event [AutonomousFlightMaxHorizontalSpeed](#1-6-5) is triggered."/>
-			<expectations>
-				<immediate>
-					#1-6-5(value: this.value)
-				</immediate>
-			</expectations>
-			<arg name="value" type="float">
-				maximum horizontal speed [m/s]
-			</arg>
-		</cmd>
-		<cmd name="setAutonomousFlightMaxVerticalSpeed" id="6">
-			<comment
-				title="Set autonomous flight max vertical speed"
-				desc="Set autonomous flight max vertical speed.\n
-				This will only be used during autonomous flights such as moveBy."
-				support="0901:3.3.0;090c:3.3.0"
-				result="The max vertical speed is set.\n
-				Then, event [AutonomousFlightMaxVerticalSpeed](#1-6-6) is triggered."/>
-			<expectations>
-				<immediate>
-					#1-6-6(value: this.value)
-				</immediate>
-			</expectations>
-			<arg name="value" type="float">
-				maximum vertical speed [m/s]
-			</arg>
-		</cmd>
-		<cmd name="setAutonomousFlightMaxHorizontalAcceleration" id="7">
-			<comment
-				title="Set autonomous flight max horizontal acceleration"
-				desc="Set autonomous flight max horizontal acceleration.\n
-				This will only be used during autonomous flights such as moveBy."
-				support="0901:3.3.0;090c:3.3.0"
-				result="The max horizontal acceleration is set.\n
-				Then, event [AutonomousFlightMaxHorizontalAcceleration](#1-6-7) is triggered."/>
-			<expectations>
-				<immediate>
-					#1-6-7(value: this.value)
-				</immediate>
-			</expectations>
-			<arg name="value" type="float">
-				maximum horizontal acceleration [m/s2]
-			</arg>
-		</cmd>
-		<cmd name="setAutonomousFlightMaxVerticalAcceleration" id="8">
-			<comment
-				title="Set autonomous flight max vertical acceleration"
-				desc="Set autonomous flight max vertical acceleration.\n
-				This will only be used during autonomous flights such as moveBy."
-				support="0901:3.3.0;090c:3.3.0"
-				result="The max vertical acceleration is set.\n
-				Then, event [AutonomousFlightMaxVerticalAcceleration](#1-6-8) is triggered."/>
-			<expectations>
-				<immediate>
-					#1-6-8(value: this.value)
-				</immediate>
-			</expectations>
-			<arg name="value" type="float">
-				maximum vertical acceleration [m/s2]
-			</arg>
-		</cmd>
-		<cmd name="setAutonomousFlightMaxRotationSpeed" id="9">
-			<comment
-				title="Set autonomous flight max rotation speed"
-				desc="Set autonomous flight max rotation speed.\n
-				This will only be used during autonomous flights such as moveBy."
-				support="0901:3.3.0;090c:3.3.0"
-				result="The max rotation speed is set.\n
-				Then, event [AutonomousFlightMaxRotationSpeed](#1-6-9) is triggered."/>
-			<expectations>
-				<immediate>
-					#1-6-9(value: this.value)
-				</immediate>
-			</expectations>
-			<arg name="value" type="float">
-				maximum yaw rotation speed [deg/s]
-			</arg>
-		</cmd>
 		<cmd name="BankedTurn" id="10">
 			<comment
 				title="Set banked turn mode"
 				desc="Set banked turn mode.\n
 				When banked turn mode is enabled, the drone will use yaw values from the piloting command to infer with roll and pitch on the drone when its horizontal speed is not null."
-				support="0901:3.2.0;090c:3.2.0"
+				support="0901:3.2.0;090c:3.2.0;0914;0919"
 				result="The banked turn mode is enabled or disabled.\n
 				Then, event [BankedTurnMode](#1-6-10) is triggered."/>
 			<expectations>
@@ -1831,7 +1733,7 @@
 				title="Max altitude"
 				desc="Max altitude.\n
 				The drone will not fly higher than this altitude (above take off point)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [SetMaxAltitude](#1-2-0)."/>
 			<arg name="current" type="float">
 				Current altitude max
@@ -1848,7 +1750,7 @@
 				title="Max pitch/roll"
 				desc="Max pitch/roll.\n
 				The drone will not fly higher than this altitude (above take off point)."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				triggered="by [SetMaxAltitude](#1-2-0)."/>
 			<arg name="current" type="float">
 				Current max tilt
@@ -1872,7 +1774,7 @@
 			<comment
 				title="Max distance"
 				desc="Max distance."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [SetMaxDistance](#1-2-3)."/>
 			<arg name="current" type="float">
 				Current max distance in meter
@@ -1889,60 +1791,10 @@
 				title="Geofencing"
 				desc="Geofencing.\n
 				If set, the drone won't fly over the [MaxDistance](#1-6-3)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [EnableGeofence](#1-2-4)."/>
 			<arg name="shouldNotFlyOver" type="u8">
 				1 if the drone won't fly further than max distance, 0 if no limitation on the drone will be done
-			</arg>
-		</cmd>
-		<cmd name="AutonomousFlightMaxHorizontalSpeed" id="5">
-			<comment
-				title="Autonomous flight max horizontal speed"
-				desc="Autonomous flight max horizontal speed."
-				support="0901:3.3.0;090c:3.3.0"
-				triggered="by [SetAutonomousFlightMaxHorizontalSpeed](#1-2-5)."/>
-			<arg name="value" type="float">
-				maximum horizontal speed [m/s]
-			</arg>
-		</cmd>
-		<cmd name="AutonomousFlightMaxVerticalSpeed" id="6">
-			<comment
-				title="Autonomous flight max vertical speed"
-				desc="Autonomous flight max vertical speed."
-				support="0901:3.3.0;090c:3.3.0"
-				triggered="by [SetAutonomousFlightMaxVerticalSpeed](#1-2-6)."/>
-			<arg name="value" type="float">
-				maximum vertical speed [m/s]
-			</arg>
-		</cmd>
-		<cmd name="AutonomousFlightMaxHorizontalAcceleration" id="7">
-			<comment
-				title="Autonomous flight max horizontal acceleration"
-				desc="Autonomous flight max horizontal acceleration."
-				support="0901:3.3.0;090c:3.3.0"
-				triggered="by [SetAutonomousFlightMaxHorizontalAcceleration](#1-2-7)."/>
-			<arg name="value" type="float">
-				maximum horizontal acceleration [m/s2]
-			</arg>
-		</cmd>
-		<cmd name="AutonomousFlightMaxVerticalAcceleration" id="8">
-			<comment
-				title="Autonomous flight max vertical acceleration"
-				desc="Autonomous flight max vertical acceleration."
-				support="0901:3.3.0;090c:3.3.0"
-				triggered="by [SetAutonomousFlightMaxVerticalAcceleration](#1-2-8)."/>
-			<arg name="value" type="float">
-				maximum vertical acceleration [m/s2]
-			</arg>
-		</cmd>
-		<cmd name="AutonomousFlightMaxRotationSpeed" id="9">
-			<comment
-				title="Autonomous flight max rotation speed"
-				desc="Autonomous flight max rotation speed."
-				support="0901:3.3.0;090c:3.3.0"
-				triggered="by [SetAutonomousFlightMaxRotationSpeed](#1-2-9)."/>
-			<arg name="value" type="float">
-				maximum yaw rotation speed [deg/s]
 			</arg>
 		</cmd>
 		<cmd name="BankedTurnChanged" id="10">
@@ -1950,7 +1802,7 @@
 				title="Banked Turn mode"
 				desc="Banked Turn mode.\n
 				If banked turn mode is enabled, the drone will use yaw values from the piloting command to infer with roll and pitch on the drone when its horizontal speed is not null."
-				support="0901:3.2.0;090c:3.2.0"
+				support="0901:3.2.0;090c:3.2.0;0914;0919"
 				triggered="by [SetBankedTurnMode](#1-2-10)."/>
 			<arg name="state" type="u8">
 				1 if enabled, 0 if disabled
@@ -2048,7 +1900,7 @@
 			<comment
 				title="State of the motion detection"
 				desc="State of the motion detection."
-				support="090c:4.3.0"
+				support="090c:4.3.0;0914;0919"
 				triggered="by [SetMotionDetectionMode](#1-2-16)"/>
 			<arg name="enabled" type="u8">
 				1 if motion detection is enabled, 0 otherwise.
@@ -2061,7 +1913,7 @@
 			<comment
 				title="Set max vertical speed"
 				desc="Set max vertical speed."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				result="The max vertical speed is set.\n
 				Then, event [MaxVerticalSpeed](#1-12-0) is triggered."/>
 			<expectations>
@@ -2077,7 +1929,7 @@
 			<comment
 				title="Set max rotation speed"
 				desc="Set max rotation speed."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				result="The max rotation speed is set.\n
 				Then, event [MaxRotationSpeed](#1-12-1) is triggered."/>
 			<expectations>
@@ -2122,7 +1974,7 @@
 			<comment
 				title="Set max pitch/roll rotation speed"
 				desc="Set max pitch/roll rotation speed."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				result="The max pitch/roll rotation speed is set.\n
 				Then, event [MaxPitchRollRotationSpeed](#1-12-4) is triggered."/>
 			<expectations>
@@ -2141,7 +1993,7 @@
 			<comment
 				title="Max vertical speed"
 				desc="Max vertical speed."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				triggered="by [SetMaxVerticalSpeed](#1-11-0)."/>
 			<arg name="current" type="float">
 				Current max vertical speed in m/s
@@ -2157,7 +2009,7 @@
 			<comment
 				title="Max rotation speed"
 				desc="Max rotation speed."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				triggered="by [SetMaxRotationSpeed](#1-11-1)."/>
 			<arg name="current" type="float">
 				Current max yaw rotation speed in degree/s
@@ -2191,7 +2043,7 @@
 			<comment
 				title="Max pitch/roll rotation speed"
 				desc="Max pitch/roll rotation speed."
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				triggered="by [SetMaxPitchRollRotationSpeed](#1-11-4)."/>
 			<arg name="current" type="float">
 				Current max pitch/roll rotation speed in degree/s
@@ -2378,7 +2230,7 @@
 			<comment
 				title="GPS version"
 				desc="GPS version."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="at connection."/>
 			<arg name="software" type="string">
 				Product GPS software version
@@ -2392,7 +2244,7 @@
 				title="Motor error"
 				desc="Motor error.\n
 				This event is sent back to *noError* as soon as the motor error disappear. To get the last motor error, see [LastMotorError](#1-16-5)"
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when a motor error occurs."/>
 			<arg name="motorIds" type="u8">
 				Bit field for concerned motor. If bit 0 = 1, motor 1 is affected by this error. Same with bit 1, 2 and 3.
@@ -2450,7 +2302,8 @@
 		<cmd name="MotorSoftwareVersionChanged" id="3" deprecated="true">
 			<comment
 				title="Motor version"
-				desc="Motor version."/>
+				desc="Motor version."
+				support="0914;0919"/>
 			<arg name="version" type="string">
 				name of the version : dot separated fields (major version - minor version - firmware type - nb motors handled). Firmware types : Release, Debug, Alpha, Test-bench
 			</arg>
@@ -2459,7 +2312,7 @@
 			<comment
 				title="Motor flight status"
 				desc="Motor flight status."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="at connection."/>
 			<arg name="nbFlights" type="u16">
 				total number of flights
@@ -2476,7 +2329,7 @@
 				title="Last motor error"
 				desc="Last motor error.\n
 				This is a reminder of the last error. To know if a motor error is currently happening, see [MotorError](#1-16-2)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="at connection and when an error occurs."/>
 			<arg name="motorError" type="enum">
 				Enumeration of the motor error
@@ -3102,7 +2955,7 @@
 				desc="Set the preferred home type.\n
 				Please note that this is only a preference. The actual type chosen is given by the event [HomeType](#1-31-2).\n
 				You can get the currently available types with the event [HomeTypeAvailability](#1-31-1)."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The user choice is known by the drone.\n
 				Then, event [PreferredHomeType](#1-24-4) is triggered."/>
 			<expectations>
@@ -3127,7 +2980,7 @@
 			<comment
 				title="Set the return home delay"
 				desc="Set the delay after which the drone will automatically try to return home after a disconnection."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The delay of the return home is set.\n
 				Then, event [ReturnHomeDelay](#1-24-5) is triggered."/>
 			<expectations>
@@ -3146,7 +2999,7 @@
 				If the drone is below this altitude when starting its return home, it will first reach the minimum
 				altitude. If it is higher than this minimum altitude, it will operate its return home at its actual
 				altitude."
-				support=""
+				support="0914;0919"
 				result="The minimum altitude for the return home is set.\n
 				Then, event [ReturnHomeMinAltitude](#1-24-7) is triggered."/>
 
@@ -3167,7 +3020,7 @@
 			<comment
 				title="Home location"
 				desc="Home location."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when [HomeType](#1-31-2) changes.
 				Or by [SetHomeLocation](#1-23-2) when [HomeType](#1-31-2) is Pilot.
 				Or regularly after [SetControllerGPS](#140-1) when [HomeType](#1-31-2) is FollowMeTarget.
@@ -3203,7 +3056,7 @@
 			<comment
 				title="Gps fix info"
 				desc="Gps fix info."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="on change."/>
 			<arg name="fixed" type="u8">
 				1 if gps on drone is fixed, 0 otherwise
@@ -3233,7 +3086,7 @@
 				title="Preferred home type"
 				desc="User preference for the home type.\n
 				See [HomeType](#1-31-2) to get the drone actual home type."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [SetPreferredHomeType](#1-23-3)."/>
 			<arg name="type" type="enum">
 				The type of the home position
@@ -3252,7 +3105,7 @@
 			<comment
 				title="Return home delay"
 				desc="Return home trigger delay. This delay represents the time after which the return home is automatically triggered after a disconnection."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [SetReturnHomeDelay](#1-23-4)."/>
 			<arg name="delay" type="u16">
 				Delay in second
@@ -3275,7 +3128,8 @@
 			<comment
 				title="Return home min altitude"
 				desc="Minumum altitude for return home changed."
-				triggered="by [SetReturnHomeMinAltitude](#1-23-5)."/>
+				triggered="by [SetReturnHomeMinAltitude](#1-23-5)."
+				support="0914;0919"/>
 			<arg name="value" type="float">
 				Current value in meters, relative to take off altitude.
 			</arg>
@@ -3456,7 +3310,7 @@
 			<comment
 				title="Number of GPS satellites"
 				desc="Number of GPS satellites."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="on change."/>
 			<arg name="numberOfSatellite" type="u8">
 				The number of satellite
@@ -3466,7 +3320,7 @@
 			<comment
 				title="Home type availability"
 				desc="Home type availability."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when the availability of, at least, one type changes.\n
 				This might be due to controller position availability, gps fix before take off or other reason."/>
 			<arg name="type" type="enum">
@@ -3494,7 +3348,7 @@
 				desc="Home type.\n
 				This choice is made by the drone, according to the [PreferredHomeType](#1-24-4) and the [HomeTypeAvailability](#1-31-1). The drone will choose the type matching with the user preference only if this type is available. If not, it will chose a type in this order:\n
 				FOLLOWEE ; TAKEOFF ; PILOT ; FIRST_FIX"
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when the return home type chosen by the drone changes.\n
 				This might be produced by a user preference triggered by [SetPreferedHomeType](#1-23-3) or by a change in the [HomeTypesAvailabilityChanged](#1-31-1)."/>
 			<arg name="type" type="enum">

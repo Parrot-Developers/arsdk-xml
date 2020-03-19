@@ -49,7 +49,7 @@
 				desc="Drone will disconnect.\n
 				This event is mainly triggered when the user presses on the power button of the product.\n\n
 				**This event is a notification, you can't retrieve it in the cache of the device controller.**"
-				support="0901;090c"
+				support="0901;090c;0914;0919"
 				triggered="mainly when the user presses the power button of the drone."/>
 			<arg name="cause" type="enum">
 				Cause of the disconnection of the product
@@ -258,7 +258,7 @@
 				</immediate>
 			</expectations>
 		</cmd>
-		<cmd name="CurrentDate" id="1">
+		<cmd name="CurrentDate" id="1" deprecated="true">
 			<comment
 				title="Set the date"
 				desc="Set the date.\n
@@ -278,7 +278,7 @@
 				Date with ISO-8601 format
 			</arg>
 		</cmd>
-		<cmd name="CurrentTime" id="2">
+		<cmd name="CurrentTime" id="2" deprecated="true">
 			<comment
 				title="Set the time"
 				desc="Set the time.\n
@@ -315,7 +315,7 @@
 				So medias and other files will be dated from this datetime\n\n
 				**Please note that you should not send this command if you are using the\n
 				libARController API as this library is handling the connection process for you.**"
-				support="0914"
+				support="0914;0919"
 				result="The datetime of the product is set.\n
 				Then, it will trigger [CurrentDateTimeChanged](#0-5-15)."/>
 			<expectations>
@@ -348,7 +348,7 @@
 				Battery percentage
 			</arg>
 		</cmd>
-		<cmd name="MassStorageStateListChanged" id="2" type="MAP_ITEM">
+		<cmd name="MassStorageStateListChanged" id="2" type="MAP_ITEM" deprecated="true">
 			<comment
 				title="Mass storage state list"
 				desc="Mass storage state list."
@@ -361,7 +361,7 @@
 				Mass storage name
 			</arg>
 		</cmd>
-		<cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM">
+		<cmd name="MassStorageInfoStateListChanged" id="3" type="MAP_ITEM" deprecated="true">
 			<comment
 				title="Mass storage info state list"
 				desc="Mass storage info state list."
@@ -386,7 +386,7 @@
 				Mass storage internal type state (1 if mass storage is internal, 0 otherwise)
 			</arg>
 		</cmd>
-		<cmd name="CurrentDateChanged" id="4">
+		<cmd name="CurrentDateChanged" id="4" deprecated="true">
 			<comment
 				title="Date changed"
 				desc="Date changed.\n
@@ -398,7 +398,7 @@
 				Date with ISO-8601 format
 			</arg>
 		</cmd>
-		<cmd name="CurrentTimeChanged" id="5">
+		<cmd name="CurrentTimeChanged" id="5" deprecated="true">
 			<comment
 				title="Time changed"
 				desc="Time changed.\n
@@ -438,7 +438,7 @@
 			<comment
 				title="Sensors state list"
 				desc="Sensors state list."
-				support="0901:2.0.3;0902;0905;0906;0907;0909;090a;090c;090e"
+				support="0901:2.0.3;0902;0905;0906;0907;0909;090a;090c;090e;0914;0919"
 				triggered="at connection and when a sensor state changes."/>
 			<arg name="sensorName" type="enum">
 				Sensor name
@@ -555,7 +555,7 @@
 				Number of crash logs
 			</arg>
 		</cmd>
-		<cmd name="MassStorageContent" id="12" type="MAP_ITEM">
+		<cmd name="MassStorageContent" id="12" type="MAP_ITEM" deprecated="true">
 			<comment
 				title="Mass storage content"
 				desc="Mass storage content."
@@ -580,7 +580,7 @@
 				Number of raw photos
 			</arg>
 		</cmd>
-		<cmd name="MassStorageContentForCurrentRun" id="13" type="MAP_ITEM">
+		<cmd name="MassStorageContentForCurrentRun" id="13" type="MAP_ITEM" deprecated="true">
 			<comment
 				title="Mass storage content for current run"
 				desc="Mass storage content for current run.\n
@@ -600,7 +600,7 @@
 				Number of raw photos
 			</arg>
 		</cmd>
-		<cmd name="VideoRecordingTimestamp" id="14">
+		<cmd name="VideoRecordingTimestamp" id="14" deprecated="true">
 			<comment
 				title="Video recording timestamp"
 				desc="Current or last video recording timestamp.\n
@@ -621,7 +621,7 @@
 				desc="Both date and time changed.\n
 				Corresponds to the latest datetime set on the drone.\n\n
 				**Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**"
-				support="0914"
+				support="0914;0919"
 				triggered="by [CurrentDateTime](#0-4-4)."/>
 			<arg name="datetime" type="string">
 				Datetime with the ISO-8601 complete short format: "%Y%m%dT%H%M%S%z"
@@ -631,7 +631,7 @@
 			<comment
 				title="Link signal quality"
 				desc="Link signal quality. Gives a overal indication of the radio link quality"
-				support="0914"
+				support="0914;0919"
 				triggered="when the link signal quality changes."/>
 			<arg name="value" type="u8">
 				Bits 0-3: indicate the Link signal quality. The quality varies from 1 to 5. 1 means that a disconnection is highly probable,
@@ -647,7 +647,7 @@
 				desc="Current Drone Boot id.\n
 				A Boot Id identifies a drone session and do not change between drone power on and power off.\n
 				Also, each medias contains the Boot Id."
-				support="0914"
+				support="0914;0919"
 				triggered="At connection."/>
 			<arg name="bootId" type="string">
 				Id of the boot
@@ -689,7 +689,7 @@
 	</class>
 	<class name="Controller" id="8">
 		Notify the device about the state of the controller application.
-		<cmd name="isPiloting" id="0">
+		<cmd name="isPiloting" id="0" deprecated="true">
 			<comment
 				title="Inform about hud entering"
 				desc="Inform about hud entering.\n
@@ -787,7 +787,7 @@
 				* Product is calibrated\n
 				* Product should be in outdoor mode\n
 				* Product has fixed its GPS\n"
-				support="0901:2.0.29;090c;090e"
+				support="0901:2.0.29;090c;090e;0914;0919"
 				result="If the FlightPlan has been started, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to *playing*.\n
 				Otherwise, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to stopped and event [MavlinkPlayErrorStateChanged](#0-12-1) is triggered with an explanation of the error."/>
 			<expectations>
@@ -813,7 +813,7 @@
 				title="Pause a FlightPlan"
 				desc="Pause a FlightPlan that was playing.\n
 				To unpause a FlightPlan, see [StartFlightPlan](#0-11-0)\n"
-				support="0901:2.0.29;090c;090e"
+				support="0901:2.0.29;090c;090e;0914;0919"
 				result="The currently playing FlightPlan will be paused. Then, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to the current state of the FlightPlan (should be *paused* if everything went well)."/>
 			<expectations>
 				<immediate>
@@ -825,7 +825,7 @@
 			<comment
 				title="Stop a FlightPlan"
 				desc="Stop a FlightPlan that was playing.\n"
-				support="0901:2.0.29;090c;090e"
+				support="0901:2.0.29;090c;090e;0914;0919"
 				result="The currently playing FlightPlan will be stopped. Then, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to the current state of the FlightPlan (should be *stopped* if everything went well)."/>
 			<expectations>
 				<immediate>
@@ -840,7 +840,7 @@
 			<comment
 				title="Playing state of a FlightPlan"
 				desc="Playing state of a FlightPlan."
-				support="0901:2.0.29;090c;090e"
+				support="0901:2.0.29;090c;090e;0914;0919"
 				triggered="by [StartFlightPlan](#0-11-0), [PauseFlightPlan](#0-11-1) or [StopFlightPlan](#0-11-2)."/>
 			<arg name="state" type="enum">
 				State of the mavlink
@@ -896,7 +896,7 @@
 			<comment
 				title="Mission item executed"
 				desc="Mission item has been executed."
-				support="090c:4.2.0;090e:1.4.0"
+				support="090c:4.2.0;090e:1.4.0;0914;0919"
 				triggered="when a mission item has been executed during a flight plan."/>
 			<arg name="idx" type="u32">
 				Index of the mission item. This is the place of the mission item in the list of the items of the mission.
@@ -944,7 +944,7 @@
 			<comment
 				title="Start/Abort magnetometer calibration"
 				desc="Start or abort magnetometer calibration process.\n"
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				result="The magnetometer calibration process is started or aborted. Then, event [MagnetoCalibrationStartedChanged](#0-14-3) is triggered.\n
 				If started, event [MagnetoCalibrationStateChanged](#0-14-3) is triggered with the current calibration state: a list of all axis and their calibration states.\n
 				It will also trigger [MagnetoCalibrationAxisToCalibrateChanged](#0-14-2), that will inform the controller about the current axis to calibrate."/>
@@ -980,7 +980,7 @@
 			<comment
 				title="Magneto calib process axis state"
 				desc="Magneto calib process axis state."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when the calibration process is started with [StartOrAbortMagnetoCalib](#0-13-0) and each time an axis calibration state changes."/>
 			<arg name="xAxisCalibration" type="u8">
 				State of the x axis (roll) calibration : 1 if calibration is done, 0 otherwise
@@ -999,7 +999,7 @@
 			<comment
 				title="Calibration required"
 				desc="Calibration required."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="when the calibration requirement changes."/>
 			<arg name="required" type="u8">
 				1 if calibration is required, 0 if current calibration is still valid
@@ -1009,7 +1009,7 @@
 			<comment
 				title="Axis to calibrate during calibration process"
 				desc="Axis to calibrate during calibration process."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="during the calibration process when the axis to calibrate changes."/>
 			<arg name="axis" type="enum">
 				The axis to calibrate
@@ -1031,7 +1031,7 @@
 			<comment
 				title="Calibration process state"
 				desc="Calibration process state."
-				support="0901;090c;090e"
+				support="0901;090c;090e;0914;0919"
 				triggered="by [StartOrAbortMagnetoCalib](#0-13-0) or when the process ends because it succeeded."/>
 			Status of the calibration process
 			<arg name="started" type="u8">
@@ -1111,7 +1111,7 @@
 				title="FlightPlan availability"
 				desc="FlightPlan availability.\n
 				Availability is linked to GPS fix, magnetometer calibration, sensor states..."
-				support="0901:2.0.29;090c;090e"
+				support="0901:2.0.29;090c;090e;0914;0919"
 				triggered="on change."/>
 			<arg name="AvailabilityState" type="u8">
 				Running a flightPlan file is available (1 running a flightPlan file is available, otherwise 0)
@@ -1121,7 +1121,7 @@
 			<comment
 				title="FlightPlan components state list"
 				desc="FlightPlan components state list."
-				support="0901:2.0.29;090c;090e"
+				support="0901:2.0.29;090c;090e;0914;0919"
 				triggered="when the state of required components changes. \n
 				GPS component is triggered when the availability of the GPS of the drone changes. \n
 				Calibration component is triggered when the calibration state of the drone sensors changes \n
@@ -1805,7 +1805,7 @@
 				A run id is uniquely identifying a run or a flight.\n
 				For each run is generated on the drone a file which can be used by Academy to sum up the run.\n
 				Also, each medias taken during a run has a filename containing the run id."
-				support="0901:3.0.1;090c;090e"
+				support="0901:3.0.1;090c;090e;0914;0919"
 				triggered="when the drone generates a new run id (generally right after a take off)."/>
 			<arg name="runId" type="string">
 				Id of the run
@@ -1823,7 +1823,8 @@
 				receiving this command."
 				result="The product will reboot, all settings will be
 				reset to their default values. All data on the product
-				will also be erased."/>
+				will also be erased."
+				support="0914;0919"/>
 		</cmd>
 	</class>
 	<class name="UpdateState" id="34">
@@ -1832,7 +1833,7 @@
 			<comment
 				title="Software update status"
 				desc="Status of the latest software update"
-				support="0914"
+				support="0914;0919"
 				triggered="at connection during the first boot after a firmware update."/>
 			<arg name="sourceVersion" type="string">
 				Version before the update.

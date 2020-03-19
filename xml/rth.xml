@@ -144,7 +144,7 @@
 				If gps fix is lost, type `none` is sent. When the drone will get back the gps fix,
 				the former home type will be automatically set.\n
 				After that the drone has started and got a gps fix, type is `takeoff`."
-				support=""
+				support="0914;0919"
 				triggered="when the home type changes and
 				when setting a new home type has been refused by the drone."/>
 			<arg name="type" type="enum:home_type">
@@ -348,7 +348,7 @@
 			<comment
 				title="Home reachability"
 				desc="Home reachability status."
-				support=""
+				support="0914;0919"
 				triggered="when home reachability status changes."/>
 			<arg name="status" type="enum:home_reachability">
 				State of the return to home
@@ -358,7 +358,7 @@
 			<comment
 				title="Return Home auto trigger."
 				desc="Return Home auto trigger information."
-				support=""
+				support="0914;0919"
 				triggered="when return home auto trigger information changes, then evey seconds while `reason` is
 				different from `none`."/>
 			<arg name="reason" type="enum:auto_trigger_reason">
@@ -375,7 +375,7 @@
 				desc="Cancel any current return home auto trigger.
 				This command has no effect if there is no auto trigger currently planned
 				(i.e. reason of [RTH auto trigger](#146-15) is `none`)."
-				support=""
+				support="0914;0919"
 				result="The drone will cancel its return home auto trigger.\n
 				Then, event [RTH auto trigger](#146-15) is triggered with reason set to `none`."/>
 		</cmd>

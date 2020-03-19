@@ -48,7 +48,8 @@
 		<evt name="state" id="1">
 			<comment
 				title="Media store state"
-				triggered="during the connection and on changes."/>
+				triggered="during the connection and on changes."
+				support="0914;0919"/>
 			<arg name="state" type="enum:state">
 				Media store state.
 			</arg>
@@ -57,7 +58,8 @@
 		<evt name="counters" id="2">
 			<comment
 				title="Information on the media store content. Valid when indexing state is `indexed`."
-				triggered="during the connection and on changes."/>
+				triggered="during the connection and on changes."
+				support="0914;0919"/>
 			<arg name="video_media_count" type="i32">
 				Number of video media in the media store, -1 if the store is not indexed.
 			</arg>
