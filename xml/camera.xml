@@ -674,6 +674,21 @@
 			<value name="fps_9">
 				For thermal only, capture triggered by thermal sensor.
 			</value>
+			<value name="fps_15">
+				15 fps.
+			</value>
+			<value name="fps_20">
+				20 fps.
+			</value>
+			<value name="fps_192">
+				191.81 fps.
+			</value>
+			<value name="fps_200">
+				200 fps.
+			</value>
+			<value name="fps_240">
+				239.76 fps.
+			</value>
 		</enum>
 
 		<enum name="photo_format">
@@ -862,6 +877,16 @@
 				Zoom is set by giving a velocity.
 			</value>
 		</enum>
+
+		<enum name="auto_exposure_metering_mode">
+			Auto Exposure metering mode.
+			<value name="standard">
+				Default Auto Exposure metering mode.
+			</value>
+			<value name="center_top">
+				Auto Exposure metering mode which favours the center top of the matrix.
+			</value>
+		</enum>
 	</enums>
 
 	<msgs>
@@ -924,6 +949,9 @@
 			</arg>
 			<arg name="gpslapse_interval_min" type="float">
 				Minimal GPS-lapse capture interval, in meters.
+			</arg>
+			<arg name="auto_exposure_metering_modes" type="bitfield:u16:auto_exposure_metering_mode">
+				Supported auto exposure metering modes
 			</arg>
 		</evt>
 
@@ -1024,6 +1052,9 @@
 				Requested maximum ISO sensitivity level, ignored is not Auto. This value define the maximum iso
 				sensitivity the autoexposure engine can use to adjust exposure.
 			</arg>
+			<arg name="metering_mode" type="enum:auto_exposure_metering_mode">
+				Auto Exposure metering mode, ignored if mode is Manual
+			</arg>
 		</cmd>
 
 		<cmd name="lock_exposure" id="6">
@@ -1106,6 +1137,9 @@
 			<arg name="max_iso_sensitivities_capabilities" type="bitfield:u64:iso_sensitivity">
 				Supported max iso sensitivity for current photo or recording configuration.
 				Empty if setting max iso sensitivity is not supported.
+			</arg>
+			<arg name="metering_mode" type="enum:auto_exposure_metering_mode">
+				Auto Exposure metering mode.
 			</arg>
 		</evt>
 

@@ -683,7 +683,7 @@
 				Vertical position in the video (in %, from bottom to top)
 			</arg>
 		</evt>
-		<cmd name="target_image_detection" id="24">
+		<cmd name="target_image_detection" id="24" buffer="NON_ACK">
 			<comment
 				title="Send vision detection results"
 				desc="Send vision detection results."

@@ -65,6 +65,9 @@
 			<value name="error">
 				The media file system is not available.
 			</value>
+			<value name="password_needed">
+				The media file system needs a password for decryption.
+			</value>
 		</enum>
 		<enum name="attribute">
 			<value name="low_perf">
@@ -82,6 +85,17 @@
 				The last formatting command succeeded
 			</value>
 		</enum>
+		<enum name="password_result">
+			<value name="wrong_password">
+				The transmitted password is wrong
+			</value>
+			<value name="success">
+				The transmitted password is correct
+			</value>
+			<value name="wrong_usage">
+				The usage specified with the password does not match with the current drone context (RECORD or MASS STORAGE)
+			</value>
+		</enum>
 		<enum name="feature">
 			<value name="format_when_ready_allowed">
 				Format is available when state is `ready` (and also, as usual when state is `format_needed`).
@@ -91,6 +105,9 @@
 			</value>
 			<value name="format_progress_evt_supported">
 				The format progress event is supported and will be sent during format operation.
+			</value>
+			<value name="encryption_supported">
+				SD card encryption is supported.
 			</value>
 		</enum>
 		<enum name="formatting_type">
@@ -110,6 +127,14 @@
 			</value>
 			<value name="creating_fs">
 				The drone is creating a file system on the media.
+			</value>
+		</enum>
+		<enum name="password_usage">
+			<value name="record">
+				Send password for record requirement
+			</value>
+			<value name="usb">
+				Send password for usb mass storage requirement
 			</value>
 		</enum>
 	</enums>
@@ -178,6 +203,15 @@
 				Current period of monitoring if monitoring is enabled, 0 if not enabled.
 			</arg>
 		</evt>
+		<evt name="sdcard_uuid" id="15">
+			<comment
+				title="Pull up SDCard UUID"
+				support="0914;0919"
+				triggered="After [format_with_encryption](#145-13) or when the file_system field of [state](#145-3) switches to password_needed"/>
+			<arg name="uuid" type="string">
+				SDCard UUID
+			</arg>
+		</evt>
 		<cmd name="format" id="4">
 			<comment
 				title="Start format operation"
@@ -219,6 +253,29 @@
 				Formatting type.
 			</arg>
 		</cmd>
+		<cmd name="format_with_encryption" id="13">
+			<comment
+				title="Start format operation with encryption"
+				desc="Start format operation for encryption of the removable media with the given password"
+				support="0914;0919"
+				result="Encryption is configured and the media formatting is complete" />
+			<expectations>
+				<delayed>
+					#145-3(file_system_state: ready)
+					#145-7(result: success)
+					#145-11
+				</delayed>
+			</expectations>
+			<arg name="label" type="string">
+				Label to set to the file system. If empty, label is set to the product name.
+			</arg>
+			<arg name="password" type="string">
+				Password used for SD card encryption
+			</arg>
+			<arg name="type" type="enum:formatting_type">
+				Formatting type.
+			</arg>
+		</cmd>
 		<cmd name="start_monitoring" id="5">
 			<comment
 				title="Start monitoring operation"
@@ -241,6 +298,24 @@
 				support="0914"
 				result="Monitor Events [monitor](#145-2) are stopped from being triggered." />
 		</cmd>
+		<cmd name="encryption_password" id="12">
+			<comment
+				title="Transmit password to unlock file system"
+				desc="Transmit password when needed for unlocking encrypted file system"
+				support="0914;0919"
+				result="Access to encrypted user storage is now possible" />
+			<expectations>
+				<immediate>
+					#145-14(result: success)
+				</immediate>
+			</expectations>
+			<arg name="password" type="string">
+				Password used for SD encryption
+			</arg>
+			<arg name="type" type="enum:password_usage">
+				Reason of password requirement
+			</arg>
+		</cmd>
 		<evt name="format_result" id="7">
 			<comment
 				title="Result of the formatting command"
@@ -250,6 +325,15 @@
 				see if [capabilities](#145-8) contains `format_result_evt_supported`."/>
 			<arg name="result" type="enum:formatting_result">
 				Result of the last formatting command
+			</arg>
+		</evt>
+		<evt name="decryption" id="14">
+			<comment
+				title="Result of the transmitted password"
+				support="0914;0919"
+				triggered="By an encryption password command [encryption_password](#145-12)"/>
+			<arg name="result" type="enum:password_result">
+				Result of the last transmitted password
 			</arg>
 		</evt>
 		<evt name="format_progress" id="11">

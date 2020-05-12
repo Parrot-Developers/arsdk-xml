@@ -48,36 +48,6 @@
 			</value>
 		</enum>
 	</enums>
-	<multisettings>
-		<multisetting name="DroneSettings">
-			Drone settings
-			<member link="ardrone3.PilotingSettings.MaxAltitude"></member>
-			<member link="ardrone3.PilotingSettings.MaxTilt"></member>
-			<member link="ardrone3.PilotingSettings.MaxDistance"></member>
-			<member link="ardrone3.PilotingSettings.NoFlyOverMaxDistance"></member>
-			<member link="ardrone3.SpeedSettings.MaxVerticalSpeed"></member>
-			<member link="ardrone3.SpeedSettings.MaxRotationSpeed"></member>
-			<member link="ardrone3.SpeedSettings.MaxPitchRollRotationSpeed"></member>
-			<member link="ardrone3.GPSSettings.ReturnHomeDelay"></member>
-			<member link="ardrone3.GPSSettings.HomeType"></member>
-			<member link="ardrone3.PictureSettings.VideoStabilizationMode"></member>
-			<member link="ardrone3.PilotingSettings.BankedTurn"></member>
-		</multisetting>
-		<multisetting name="DroneSettingsChanged">
-			Drone settings changed
-			<member link="ardrone3.PilotingSettingsState.MaxAltitudeChanged"></member>
-			<member link="ardrone3.PilotingSettingsState.MaxTiltChanged"></member>
-			<member link="ardrone3.PilotingSettingsState.MaxDistanceChanged"></member>
-			<member link="ardrone3.PilotingSettingsState.NoFlyOverMaxDistanceChanged"></member>
-			<member link="ardrone3.SpeedSettingsState.MaxVerticalSpeedChanged"></member>
-			<member link="ardrone3.SpeedSettingsState.MaxRotationSpeedChanged"></member>
-			<member link="ardrone3.SpeedSettingsState.MaxPitchRollRotationSpeedChanged"></member>
-			<member link="ardrone3.GPSSettingsState.ReturnHomeDelayChanged"></member>
-			<member link="ardrone3.GPSSettingsState.HomeTypeChanged"></member>
-			<member link="ardrone3.PictureSettingsState.VideoStabilizationModeChanged"></member>
-			<member link="ardrone3.PilotingSettingsState.BankedTurnChanged"></member>
-		</multisetting>
-	</multisettings>
 	<msgs>
 		<cmd name="default" id="1">
 			<comment
@@ -86,24 +56,5 @@
 				support="none"
 				result="default"/>
 		</cmd>
-		 <cmd name="SetDroneSettings" id="2">
-			<arg name="settings" type="multisetting:DroneSettings">
-				<comment
-					title="SetDroneSettings"
-					desc="Set several drone settings in only one command."
-					support="none"
-					result="Drone settings are set.\n
-					Then, event [DroneSettingsChanged](#133-3) is triggered."/>
-			</arg>
-		</cmd>
-		<evt name="DroneSettingsChanged" id="3">
-			<arg name="settings" type="multisetting:DroneSettingsChanged">
-				<comment
-					title="Drone Settings"
-					desc="Informs that several drones settings changed."
-					support="none"
-					triggered="by [SetDroneSettings](#133-2)."/>
-			</arg>
-		</evt>
 	</msgs>
 </feature>

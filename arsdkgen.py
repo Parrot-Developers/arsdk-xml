@@ -80,9 +80,6 @@ def main():
 			continue
 		arsdkparser.parse_xml(ctx, os.path.join(path, f))
 
-	# Finalize features after parsing
-	arsdkparser.finalize_ftrs(ctx)
-
 	# Call generator
 	if options.listFiles:
 		generator.list_files(ctx, options.outdir, extra)

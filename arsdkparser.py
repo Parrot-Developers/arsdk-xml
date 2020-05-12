@@ -83,16 +83,15 @@ class ArArgType(object):
     STRING = 10
     ENUM = 11
     BITFIELD = 12
-    MULTISETTING = 13
 
     TO_STRING = {I8: "i8", U8: "u8", I16: "i16", U16: "u16",
             I32: "i32", U32: "u32", I64: "i64", U64: "u64",
             FLOAT: "float", DOUBLE: "double", STRING: "string",
-            ENUM: "enum", BITFIELD: "bitfield", MULTISETTING: "multisetting"}
+            ENUM: "enum", BITFIELD: "bitfield"}
     FROM_STRING = {"i8": I8, "u8": U8, "i16": I16, "u16": U16,
             "i32": I32, "u32": U32, "i64": I64, "u64": U64,
             "float": FLOAT, "double": DOUBLE, "string": STRING,
-            "enum": ENUM, "bitfield": BITFIELD, "multisetting": MULTISETTING}
+            "enum": ENUM, "bitfield": BITFIELD}
 
 #===============================================================================
 #===============================================================================
@@ -148,8 +147,6 @@ class ArFeature(object):
         self.doc = doc
         self.enums = []
         self.enumsByName = {}
-        self.multisets = []
-        self.multisetsByName = {}
         self.cmds = []
         self.cmdsById = {} #only for real feature, empty for project
         self.cmdsByName = {} #only for real feature, empty for project
@@ -177,12 +174,11 @@ class ArFeature(object):
 
     def __repr__(self):
         return ("{name='%s', featureId=%d, doc='%s', enums='%s', "
-                "multisets='%s', cmds='%s', evts='%s'}" % (
+                "cmds='%s', evts='%s'}" % (
                 self.name,
                 self.featureId,
                 repr(self.doc),
                 pprint.pformat(self.enums),
-                pprint.pformat(self.multisets),
                 pprint.pformat(self.cmds),
                 pprint.pformat(self.evts)))
 
@@ -353,21 +349,6 @@ class ArArg(object):
 
 #===============================================================================
 #===============================================================================
-class ArMultiSetting(object):
-    def __init__(self, name, doc):
-        self.name = name
-        self.doc = doc
-        self.links = []
-        self.msgs = []
-
-    def __repr__(self):
-        return ("{name='%s', doc='%s', msgs=%s}" % (
-                self.name,
-                repr(self.doc),
-                pprint.pformat(self.msgs)))
-
-#===============================================================================
-#===============================================================================
 class ArEnumValue(object):
     def __init__(self, name, value, doc):
         self.name = name
@@ -521,36 +502,7 @@ def _parse_feature_node(ctx, filePath, featureNode, featureObj):
             # Parse enum node
             _parse_enum_node(filePath, enumNode, enumObj)
 
-    _parse_feature_node_multisets(ctx, filePath, featureNode, featureObj)
-
     _parse_feature_node_msgs(ctx, filePath, featureNode, featureObj)
-
-#===============================================================================
-#===============================================================================
-def _parse_feature_node_multisets(ctx, filePath, featureNode, featureObj):
-    for multisetsNode in featureNode.getElementsByTagName("multisettings"):
-        for multisetNode in multisetsNode.getElementsByTagName("multisetting"):
-            multisetName = multisetNode.getAttribute("name")
-            multisetDoc = _get_node_content(multisetNode).strip()
-
-            # Check multiset name
-            if multisetName in featureObj.multisetsByName:
-                raise ArParserError("%s: Duplicate multiset name '%s'" % (
-                        filePath, multisetName))
-
-            # Create multiset object
-            multisetObj = ArMultiSetting(multisetName, multisetDoc)
-            featureObj.multisets.append(multisetObj)
-            featureObj.multisetsByName[multisetName] = multisetObj
-
-            # Parse multiset node
-            _parse_multiset_node(filePath, multisetNode, multisetObj)
-
-#===============================================================================
-#===============================================================================
-def _parse_multiset_node(filePath, multisetNode, multisetObj):
-    for memberNode in multisetNode.getElementsByTagName("member"):
-        multisetObj.links.append(memberNode.getAttribute("link"))
 
 #===============================================================================
 #===============================================================================
@@ -989,18 +941,6 @@ def _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj):
 
             argType = ArBitfield(btfEnum, btfType)
             btfEnum.usedLikeBitfield = True
-        elif ArArgType.FROM_STRING[attr1] == ArArgType.MULTISETTING:
-            # Find multi setting
-            if attr2 not in ftr.multisetsByName and \
-                    (_FTR_GEN not in ctx.featuresByName or \
-                    attr2 not in ctx.featuresByName[_FTR_GEN].multisetsByName):
-                raise ArParserError("%s: Invalid multisetting arg type '%s'"
-                        % (filePath, attr2))
-
-            if attr2 in ftr.multisetsByName:
-                argType = ftr.multisetsByName[attr2]
-            else:
-                argType = ctx.featuresByName[_FTR_GEN].multisetsByName[attr2]
         else:
             argType = ArArgType.FROM_STRING[attr1]
 
@@ -1174,20 +1114,6 @@ def _link_to_msg(ctx, link):
 
 #===============================================================================
 #===============================================================================
-def finalize_ftrs(ctx):
-    # Finalize features
-    for ftr in ctx.features:
-        # Finalize multi settings
-        for multiset in ftr.multisets:
-            for link in multiset.links:
-                msg = _link_to_msg(ctx, link)
-                if not msg:
-                    raise ArParserError("%s: Bad multisetting link '%s'" % (
-                            filePath, link))
-                multiset.msgs.append(msg)
-
-#===============================================================================
-#===============================================================================
 def parse_xml(ctx, filePath):
     # Parse xml file
     try:
@@ -1216,9 +1142,6 @@ def main():
         if not f.endswith(".xml") or f == "generic.xml":
             continue
         parse_xml(ctx, os.path.join(path, f))
-
-    # Finalize MultiSettings
-    finalize_ftrs(ctx)
 
     #for prj in ctx.projects:
     #    print prj
