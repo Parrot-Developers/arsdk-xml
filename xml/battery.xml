@@ -78,8 +78,8 @@
 		<evt name="health" id="2">
 			<comment
 				title="Battery Health"
-				support="0914"
-				triggered="when State-Of-Health changes."/>
+				support="0914;0919"
+				triggered="at connection and when State-Of-Health changes."/>
 			<arg name="state_of_health" type="u8">
 				Battery State-Of-Health (%)
 			</arg>
@@ -92,6 +92,24 @@
 				triggered="regularly."/>
 			<arg name="voltage" type="u16">
 				Battery voltage in mV
+			</arg>
+		</evt>
+		<evt name="cycle_count" id="4">
+			<comment
+				title="Battery Cycle Count"
+				support="0914;0919"
+				triggered="at connection and when Cycle Count changes."/>
+			<arg name="count" type="u32">
+				Battery Cycle Count
+			</arg>
+		</evt>
+		<evt name="serial" id="5">
+			<comment
+				title="Battery Serial"
+				support="0914;0919"
+				triggered="at connection."/>
+			<arg name="serial" type="string">
+				Battery Serial
 			</arg>
 		</evt>
 	</msgs>

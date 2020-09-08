@@ -39,7 +39,10 @@
 				Thermal is disabled
 			</value>
 			<value name="standard">
-				Standard thermal mode
+				Standard thermal mode, streaming blended on controller side
+			</value>
+			<value name="blended">
+				Blended thermal mode, streaming blended on drone side
 			</value>
 		</enum>
 

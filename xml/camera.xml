@@ -43,6 +43,9 @@
 			<value name="thermal">
 				Thermal camera, for photo and/or video.
 			</value>
+			<value name="thermal_blended">
+				Thermal-blended camera, Visible and Thermal stream are blended, for photo and/or video.
+			</value>
 		</enum>
 
 		<enum name="supported">
@@ -640,6 +643,12 @@
 			<value name="res_720p_sd">
 				960x720 pixels (SD).
 			</value>
+			<value name="res_uhd_8k">
+				7680x4320 pixels (UHD).
+			</value>
+			<value name="res_5k">
+				5120x2880 pixels.
+			</value>
 		</enum>
 
 		<enum name="framerate">
@@ -672,7 +681,7 @@
 				119.88 fps.
 			</value>
 			<value name="fps_9">
-				For thermal only, capture triggered by thermal sensor.
+				9 fps. For thermal only, capture triggered by thermal sensor.
 			</value>
 			<value name="fps_15">
 				15 fps.
@@ -688,6 +697,12 @@
 			</value>
 			<value name="fps_240">
 				239.76 fps.
+			</value>
+			<value name="fps_10">
+				10 fps. For thermal only, capture triggered by thermal sensor.
+			</value>
+			<value name="fps_8_6">
+				8.57 fps. For thermal only, capture triggered by thermal sensor.
 			</value>
 		</enum>
 
@@ -972,7 +987,7 @@
 			<arg name="resolutions" type="bitfield:u16:resolution">
 				Supported resolutions in specified modes and framerates.
 			</arg>
-			<arg name="framerates" type="bitfield:u16:framerate">
+			<arg name="framerates" type="bitfield:u32:framerate">
 				Supported framerates in specified modes and resolutions.
 			</arg>
 			<arg name="hdr" type="enum:supported">

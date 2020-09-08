@@ -68,10 +68,19 @@
 			<value name="password_needed">
 				The media file system needs a password for decryption.
 			</value>
+			<value name="checking">
+				The media file system is being checked
+			</value>
+			<value name="external_access_ok">
+				The media file system is not managed by the drone itself but accessible by external means.
+			</value>
 		</enum>
 		<enum name="attribute">
 			<value name="low_perf">
 				The removable media has low performance.
+			</value>
+			<value name="encrypted">
+				The removable media is encrypted.
 			</value>
 		</enum>
 		<enum name="formatting_result">
@@ -205,9 +214,10 @@
 		</evt>
 		<evt name="sdcard_uuid" id="15">
 			<comment
-				title="Pull up SDCard UUID"
+				title="SDCard encryption UUID"
 				support="0914;0919"
-				triggered="After [format_with_encryption](#145-13) or when the file_system field of [state](#145-3) switches to password_needed"/>
+				triggered="During connection, if SDCard is encrypted, or after [format_with_encryption](#145-13)
+				or when the file_system field of [state](#145-3) switches to password_needed"/>
 			<arg name="uuid" type="string">
 				SDCard UUID
 			</arg>

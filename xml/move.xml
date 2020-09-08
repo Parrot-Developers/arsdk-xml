@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="170" name="move">
+	Move to and by
+	<enums>
+		<enum name="orientation_mode">
+			Orientation mode of the move to
+			<value name="none">
+				The drone won't change its orientation
+			</value>
+			<value name="to_target">
+				The drone will make a rotation to look in direction of the given location
+			</value>
+			<value name="heading_start">
+				The drone will orientate itself to the given heading before moving to the location
+			</value>
+			<value name="heading_during">
+				The drone will orientate itself to the given heading while moving to the location
+			</value>
+		</enum>
+		<enum name="indicator">
+			Indicators needed to start a move.
+			<value name="drone_gps">
+				Drone gps is not fixed.
+			</value>
+			<value name="drone_magneto">
+				Drone magneto is not valid.
+			</value>
+			<value name="drone_geofence">
+				Drone is out of geofence.
+			</value>
+			<value name="drone_min_altitude">
+				Drone is under min altitude.
+			</value>
+			<value name="drone_max_altitude">
+				Drone is above max altitude.
+			</value>
+			<value name="drone_flying">
+				Drone is not flying.
+			</value>
+			<value name="target_position_accuracy">
+				Target position has a bad accuracy.
+				Not applicable to Move.
+			</value>
+			<value name="target_image_detection">
+				Target image detection is not working.
+				Not applicable to Move.
+			</value>
+			<value name="drone_target_distance_min">
+				Drone is too close to target.
+				Not applicable to Move.
+			</value>
+			<value name="drone_target_distance_max">
+				Drone is too far from target.
+				Not applicable to Move.
+			</value>
+			<value name="target_horiz_speed">
+				Target horizontal speed is too high.
+				Not applicable to Move.
+			</value>
+			<value name="target_vert_speed">
+				Target vertical speed is too high.
+				Not applicable to Move.
+			</value>
+			<value name="target_altitude_accuracy">
+				Target altitude has a bad accuracy.
+				Not applicable to Move.
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<cmd name="extended_move_to" id="1">
+			<comment
+				title="Move to a location with max speeds settings"
+				desc="Move the drone to a specified location with speeds limited by the value given.\n
+				If a new command moveTo/ExtendedMoveTo is sent, the drone will immediatly run it (no cancel will be issued).\n
+				If a [CancelMoveTo](#1-0-11) command is sent, the ExtendedMoveTo is stopped.\n
+				During the ExtendedMoveTo, all pitch, roll and gaz values of the piloting command
+				will be ignored by the drone.\n
+				However, the yaw value can be used.
+				If all speeds are zero the command will result in event [MoveToChanged](#1-4-12) status ERROR"
+				support="0914:1.7.0;0919:1.7.0"
+				result="Event [MovingTo](#1-4-12) is triggered with state running.
+				Then, the drone will move to the given location according to max speed parameters.\n
+				Then, event [MoveToChanged](#1-4-12) is triggered with state succeed."/>
+			<expectations>
+				<immediate>
+					#1-4-12(latitude: this.latitude, longitude: this.longitude, altitude: this.altitude, orientation_mode: this.orientation_mode, status: RUNNING)
+				</immediate>
+			</expectations>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees) to reach
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees) to reach
+			</arg>
+			<arg name="altitude" type="double">
+				Altitude above take off point (in m) to reach
+			</arg>
+			<arg name="orientation_mode" type="enum:orientation_mode">
+				Orientation mode of the move to
+			</arg>
+			<arg name="heading" type="float">
+				Heading (relative to the North in degrees).
+				This value is only used if the orientation mode is 'heading_start' or 'heading_during'
+			</arg>
+			<arg name="max_horizontal_speed" type="float">
+				Maximum horizontal speed in m/s.
+			</arg>
+			<arg name="max_vertical_speed" type="float">
+				Maximum vertical speed in m/s.
+			</arg>
+			<arg name="max_yaw_rotation_speed" type="float">
+				Maximum vertical speed in degrees/s.
+			</arg>
+		</cmd>
+		<cmd name="extended_move_by" id="2">
+			<comment
+				title="Move the drone to a relative position"
+				desc="Move the drone to a relative position and rotate heading by a given angle, with maximum associated speed settings.\n
+				Moves are relative to the current drone orientation, (drone's reference).\n
+				Also note that the given rotation will not modify the move (i.e. moves are always rectilinear).
+				If all speeds are zero or are incoherent with asked d_x/d_y/d_z/d_psi the command will result with event [RelativeMoveEnded](#1-34-0) status ERROR"
+				support="0914:1.7.0;0919:1.7.0"
+				result="The drone will move of the given offsets.\n
+				Then, event [RelativeMoveEnded](#1-34-0) is triggered.\n
+				If you send a second relative move command, the drone will trigger a [RelativeMoveEnded](#1-34-0) with the offsets it managed to do before this new command and the value of error set to interrupted."/>
+			<expectations>
+				<immediate>
+					#1-34-0
+				</immediate>
+			</expectations>
+			<arg name="d_x" type="float">
+				Wanted displacement along the front axis [m]
+			</arg>
+			<arg name="d_y" type="float">
+				Wanted displacement along the right axis [m]
+			</arg>
+			<arg name="d_z" type="float">
+				Wanted displacement along the down axis [m]
+			</arg>
+			<arg name="d_psi" type="float">
+				Wanted rotation of heading [rad]
+			</arg>
+			<arg name="max_horizontal_speed" type="float">
+				Maximum horizontal speed in m/s.
+			</arg>
+			<arg name="max_vertical_speed" type="float">
+				Maximum vertical speed in m/s.
+			</arg>
+			<arg name="max_yaw_rotation_speed" type="float">
+				Maximum vertical speed in degrees/s.
+			</arg>
+		</cmd>
+		<evt name="info" id="3">
+			<comment
+				title="Move info"
+				desc="Describes the missing requirements to start a move."
+				support="091a"
+				triggered="During connection and when the list of missing requirements changes."/>
+			<arg name="missing_inputs" type="bitfield:u32:indicator">
+				List of missing requirements to start a move.
+				If at least one input is missing, drone won't be able to start a move.
+			</arg>
+		</evt>
+	</msgs>
+</feature>

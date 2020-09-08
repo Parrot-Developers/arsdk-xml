@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2020 Parrot SA
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+* Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in
+the documentation and/or other materials provided with the
+distribution.
+* Neither the name of Parrot nor the names
+of its contributors may be used to endorse or promote products
+derived from this software without specific prior written
+permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+-->
+<feature name="security_edition" id="169">
+    Security Edition feature
+    <enums>
+        <enum name="log_storage_state">
+            Log storage state.
+            <value name="disabled">
+                Log storage is disabled
+            </value>
+            <value name="enabled">
+                Log storage is enabled
+            </value>
+        </enum>
+        <enum name="supported_capabilities">
+            Supported capabilities
+
+            <value name="deactivate_logs">
+                Possibility to deactivate the logs
+            </value>
+        </enum>
+    </enums>
+
+    <msgs>
+        <evt name="capabilities" id="1">
+            <comment
+                title="Capabilities"
+                comment="Describes supported capabilities."
+                support="0914:1.7.0;0919:1.7.0"
+                triggered="At connection only."/>
+            <arg name="supported_capabilities" type="bitfield:u16:supported_capabilities">
+                    Supported capabilities.
+            </arg>
+        </evt>
+
+        <cmd name="deactivate_logs" id="2">
+            <comment
+                title="Deactivate logs"
+                desc="Deactivate logs."
+                support="0914:1.7.0;0919:1.7.0"
+                result="Log storage is disabled: the drone won't log anything.
+                The log storage stay disabled for the session, and will be
+                enabled again at the next restart.
+                Event [log_storage_state](#169-3) is triggered."/>
+                <expectations>
+                    <immediate>
+                        #169-3
+                    </immediate>
+                </expectations>
+        </cmd>
+
+        <evt name="log_storage_state" id="3">
+            <comment
+                title="Log storage state"
+                comment="Informs about log storage state changes."
+                support="0914:1.7.0;0919:1.7.0"
+                triggered="At connection; on changes."/>
+            <arg name="log_storage_state" type="enum:log_storage_state">
+                Logs state.
+            </arg>
+        </evt>
+    </msgs>
+</feature>

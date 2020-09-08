@@ -86,6 +86,12 @@
 			<value name="image_detection">
 				Target detection is done by image detection among other things
 			</value>
+			<value name="target_good_speed">
+				Target is at a good speed
+			</value>
+			<value name="drone_close_enough">
+				Drone is close enough to the target
+			</value>
 		</enum>
 		<enum name="geo_rel_configure_param">
 			Geographic and Relative follow me configuration parameters

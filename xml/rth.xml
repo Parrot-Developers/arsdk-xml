@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	Copyright (C) 2017 Parrot SA
+	Copyright (C) 2020 Parrot SA
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -38,25 +38,16 @@
 				No home type. This might be because the drone does not have a gps fix
 			</value>
 			<value name="takeoff">
-				The drone will return to the takeoff location
+				The drone will return to the last manual takeoff location
 			</value>
 			<value name="followee">
 				The drone will return to the followee position
 			</value>
 			<value name="custom">
-				The drone will return to a custom location
+				The drone will return to a user-set custom location
 			</value>
-		</enum>
-		<enum name="altitude_reference">
-			Altitude reference
-			<value name="none">
-				Altitude is not meaningful
-			</value>
-			<value name="above_sea_level">
-				Altitude is relative to sea level
-			</value>
-			<value name="above_take_off">
-				Altitude is relative to take off
+			<value name="pilot">
+				The drone will return to the pilot position
 			</value>
 		</enum>
 		<enum name="state">
@@ -115,12 +106,30 @@
 			</value>
 		</enum>
 		<enum name="auto_trigger_reason">
-			Home reachability
+			RTH auto-trigger reason
 			<value name="none">
 				There is no return home auto trigger planned.
 			</value>
 			<value name="battery_critical_soon">
 				Battery will soon be critical.
+			</value>
+		</enum>
+		<enum name="auto_trigger_mode">
+			RTH auto-trigger mode
+			<value name="off">
+				Auto trigger is off. RTH auto trigger will never occur.
+			</value>
+			<value name="on">
+				Auto trigger is on.
+			</value>
+		</enum>
+		<enum name="ending_behavior">
+			RTH ending behavior action.
+			<value name="landing">
+				The RTH end behavior is landing
+			</value>
+			<value name="hovering">
+				The RTH end behavior is hovering
 			</value>
 		</enum>
 	</enums>
@@ -129,73 +138,102 @@
 			<comment
 				title="Home type capabilities"
 				comment="Describes home types supported. This event is only sent during the connection"
-				support=""
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
 				triggered="at connection."/>
 			<arg name="values" type="bitfield:u32:home_type">
-				Bitfield of suported home types.
+				Bitfield of supported home types.
 			</arg>
 		</evt>
 		<evt name="home_type" id="2">
 			<comment
 				title="Home type"
 				comment="Current home type. Default is `takeoff`.
-				According to this home type, the location of the home can be known by reading the correct location.
-				For example, if the home type is takeoff, the home location can be get with [TakeoffLocation](#146-4).
+				This choice is made by the drone, according to the [set_preferred_home_type](#146-4)
+				and the home type availability. The drone will choose the type matching with the
+				user preference only if this type is available.
+				According to this home type, the location of the home can be known by reading
+				the correct location. For example, if the home type is takeoff, the home location
+				can be obtained with [takeoff_location](#146-4).
 				If gps fix is lost, type `none` is sent. When the drone will get back the gps fix,
-				the former home type will be automatically set.\n
-				After that the drone has started and got a gps fix, type is `takeoff`."
-				support="0914;0919"
+				the former home type will be automatically set.
+				After the drone has started and got a gps fix, type is `takeoff`."
+				support="0914;0919;091b:1.3.0"
 				triggered="when the home type changes and
 				when setting a new home type has been refused by the drone."/>
 			<arg name="type" type="enum:home_type">
 				Home type.
 			</arg>
 		</evt>
-		<cmd name="set_home_to_takeoff_location" id="3">
+		<evt name="preferred_home_type" id="3">
 			<comment
-				title="Set the home to takeoff"
-				desc="Set the home to the takeoff location."
-				support=""
-				result="If the [takeoff location](#146-4) is known, (i.e. if the drone has fixed),
-				[home_type](#146-2) is sent with type = `takeoff`,
-				otherwise it is sent back with the former home type."/>
+				title="Preferred home type"
+				desc="Preferred home type.
+				Please note that this is only a user preference. The actual type chosen is
+				given by the event [home_type](#146-2)."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="When the preferred return home type changes.
+				This event is triggered by [set_preferred_home_type](#146-4).
+				Note: This is a user preference, the actual type chosen is
+				given by the event [home_type](#146-2)."/>
+			<arg name="type" type="enum:home_type">
+				Preferred Home type.
+			</arg>
+		</evt>
+		<cmd name="set_preferred_home_type" id="4">
+			<comment
+				title="Set the preferred home type"
+				desc="Set the preferred home location type.
+				The drone will always choose this home type when available."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="The drone returns [preferred_home_type](#146-3).
+				In addition, the drone returns [home_type](#146-2) with this value if
+				the chosen home type is currently available."/>
 			<expectations>
 				<immediate>
-					#146-2(type: takeoff)
+					#146-3(preferred_home_type: this.type)
 				</immediate>
 			</expectations>
+			<arg name="type" type="enum:home_type">
+				Preferred home type.
+			</arg>
 		</cmd>
-		<evt name="takeoff_location" id="4">
+		<evt name="takeoff_location" id="5">
 			<comment
 				title="Takeoff location"
 				comment="Takeoff location."
-				support=""
-				triggered="regularly when drone is landed then one last time right before taking off, if gps is fixed.
-				If not, triggered on the first fix with the value fixed before takeoff set to `true`."/>
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="regularly when drone is landed then one last time right
+				before taking off, if gps is fixed. If not, triggered on the first
+				fix with the value fixed before takeoff set to `true`."/>
 			<arg name="latitude" type="double">
 				Latitude of the takeoff location
 			</arg>
 			<arg name="longitude" type="double">
 				Longitude of the takeoff location
 			</arg>
-			<arg name="fixedBeforeTakeoff" type="u8">
+			<arg name="altitude" type="float">
+				Altitude of the custom location above takeoff (ATO).
+			</arg>
+			<arg name="fixed_before_takeoff" type="u8">
 				1 if the location was acquired before the takeoff. 0 if it was acquired during the flight (i.e. is it
 				the first fix location).
 			</arg>
 		</evt>
-		<cmd name="set_home_to_custom_location" id="5">
+		<cmd name="set_custom_location" id="6">
 			<comment
-				title="Set a custom location as home"
-				desc="Set the home to a custom location."
-				support=""
+				title="Set a custom location"
+				desc="Set the custom location."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
 				result="If the drone knows its own location and
 				that the custom location is not outside a circle centered on the drone
 				with a radius equals to the max distance setting value,
 				[home_type](#146-2) is sent with type = `custom`,
-				otherwise it is sent back with the former home type."/>
+				otherwise it is sent back with the former home type.
+				Moreover, [custom_location](#146-7) is sent by the drone."/>
 			<expectations>
 				<immediate>
 					#146-2(type: custom)
+					#146-7(latitude: this.latitude, longitude: this.longitude, altitude: this.altitude)
 				</immediate>
 			</expectations>
 			<arg name="latitude" type="double">
@@ -204,79 +242,52 @@
 			<arg name="longitude" type="double">
 				Longitude of the takeoff location
 			</arg>
-			<arg name="altitude_reference" type="enum:altitude_reference">
-				Reference of the altitude, `none` if altitude is not given.
-			</arg>
-			<arg name="altitude" type="double">
-				Altitude of the custom location.
-				Only valid if `altitude_reference` is not `none`.
+			<arg name="altitude" type="float">
+				Altitude of the custom location above takeoff (ATO).
 			</arg>
 		</cmd>
-		<evt name="custom_location" id="6">
+		<evt name="custom_location" id="7">
 			<comment
 				title="Custom location"
 				comment="Custom location."
-				support=""
-				triggered="by [SetHomeToCustomLocation](#146-5)."/>
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="by [set_custom_location](#146-6)"/>
 			<arg name="latitude" type="double">
 				Latitude of the custom location
 			</arg>
 			<arg name="longitude" type="double">
 				Longitude of the custom location
 			</arg>
-			<arg name="altitude_reference" type="enum:altitude_reference">
-				Reference of the altitude, `none` if altitude is not given.
-			</arg>
-			<arg name="altitude" type="double">
-				Altitude of the custom location.
-				Only valid if `altitude_reference` is not `none`.
+			<arg name="altitude" type="float">
+				Altitude of the custom location above takeoff (ATO).
 			</arg>
 		</evt>
-		<cmd name="set_home_to_followee_location" id="7">
-			<comment
-				title="Set the home to followee"
-				desc="Set the home to the followee location.
-				Followee means the target of a FollowMe or LookAt with gps coordinates sent."
-				support=""
-				result="If the [followee location](#146-8) is known,
-				(i.e. if the drone has made a FollowMe or a LookAt with controller gps coordinates),
-				[home_type](#146-2) is sent with type = `followee`,
-				otherwise it is sent back with the former home type."/>
-			<expectations>
-				<immediate>
-					#146-2(type: followee)
-				</immediate>
-			</expectations>
-		</cmd>
 		<evt name="followee_location" id="8">
 			<comment
 				title="Followee location"
-				comment="Followee location.
-				Followee means the target of a FollowMe or LookAt with gps coordinates sent."
-				support=""
+				comment="Followee location. Followee means the target of a
+				FollowMe or LookAt with gps coordinates sent."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
 				triggered="regularly when drone is in FollowMe or LookAt
-				with [controller gps coordinates](#140-1) sent."/>
+				with [gps](#140-1) sent."/>
 			<arg name="latitude" type="double">
 				Latitude of the takeoff location
 			</arg>
 			<arg name="longitude" type="double">
 				Longitude of the takeoff location
 			</arg>
-			<arg name="altitude_reference" type="enum:altitude_reference">
-				Reference of the altitude, `none` if altitude is not given.
-			</arg>
-			<arg name="altitude" type="double">
-				Altitude of the custom location.
-				Only valid if `altitude_reference` is not `none`.
+			<arg name="altitude" type="float">
+				Altitude of the custom location above takeoff (ATO).
 			</arg>
 		</evt>
-		<cmd name="set_return_home_delay" id="9">
+		<cmd name="set_delay" id="9">
 			<comment
 				title="Set the return home delay"
-				desc="Set the delay after which the drone will automatically try to return home after a disconnection."
-				support=""
-				result="The delay of the return home is set.\n
-				Then, event [ReturnHomeDelay](#146-10) is triggered."/>
+				desc="Set the delay after which the drone will automatically
+				try to return home after a disconnection."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="The delay of the return home is set.
+				Then, event [delay](#146-10) is triggered."/>
 			<expectations>
 				<immediate>
 					#146-10(delay: this.delay)
@@ -286,13 +297,14 @@
 				Delay in second
 			</arg>
 		</cmd>
-		<evt name="return_home_delay" id="10">
+		<evt name="delay" id="10">
 			<comment
 				title="Return home delay"
-				desc="Return home trigger delay. This delay represents the time after which the return home is
-				automatically triggered after a disconnection."
-				support=""
-				triggered="by [SetReturnHomeDelay](#146-9)."/>
+				desc="Return home trigger delay. This delay represents
+				the time after which the return home is automatically
+				triggered after a disconnection."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="by [set_delay](#146-9)."/>
 			<arg name="delay" type="u16">
 				Delay in second
 			</arg>
@@ -306,18 +318,18 @@
 		<cmd name="return_to_home" id="11">
 			<comment
 				title="Return home"
-				desc="Return home.\n
-				Ask the drone to fly to its home position.\n
+				desc="Return home.
+				Ask the drone to fly to its home position.
 				Please note that the drone will wait to be hovering to start its return home.
 				This means that it will wait to have a [flag](#1-0-2) set at 0."
-				support=""
-				result="event [ReturnHomeState](#146-13) is triggered.
-				Then, the drone will fly back to its home position.\n
-				You can get a state pending if the drone is not ready to start its return home process
-				but will do it as soon as it is possible."/>
+				support="0914;0919;091b:1.3.0"
+				result="event [state](#146-13) is triggered.
+				Then, the drone will fly back to its home position.
+				You can get a state pending if the drone is not ready to start its
+				return home process but will do it as soon as it is possible."/>
 			<expectations>
 				<immediate>
-					#146-13(state: in_progress)
+					#146-13(state: in_progress, reason: user_request)
 				</immediate>
 			</expectations>
 		</cmd>
@@ -325,18 +337,23 @@
 			<comment
 				title="Abort a Return home"
 				desc="Abort a currently executing return to home."
-				support=""
-				result="The drone will abort its return home.\n
-				Then, event [ReturnHomeState](#146-13) is triggered."/>
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="The drone will abort its return home.
+				Then, event [state](#146-13) is triggered."/>
+			<expectations>
+				<immediate>
+					#146-13(state: available, reason: user_request)
+				</immediate>
+			</expectations>
 		</cmd>
 		<evt name="state" id="13">
 			<comment
 				title="Return home state"
-				desc="Return home state.\n
+				desc="Return home state.
 				Availability is related to gps fix, magnetometer calibration."
-				support=""
-				triggered="by [ReturnToHome](#146-11) or by [CancelReturnToHome](#146-12),
-				or when the state of the return home changes."/>
+				support="0914;0919;091b:1.3.0"
+				triggered="by [return_to_home](#146-11), [cancel_return_to_home](#146-16)
+				or by [abort](#146-12), or when the state of the return home changes."/>
 			<arg name="state" type="enum:state">
 				State of the return to home
 			</arg>
@@ -359,8 +376,8 @@
 				title="Return Home auto trigger."
 				desc="Return Home auto trigger information."
 				support="0914;0919"
-				triggered="when return home auto trigger information changes, then evey seconds while `reason` is
-				different from `none`."/>
+				triggered="when return home auto trigger information changes, then every seconds
+				while `reason` is different from `none`."/>
 			<arg name="reason" type="enum:auto_trigger_reason">
 				Reason of the auto trigger.
 			</arg>
@@ -374,10 +391,140 @@
 				title="Cancel RTH auto trigger"
 				desc="Cancel any current return home auto trigger.
 				This command has no effect if there is no auto trigger currently planned
-				(i.e. reason of [RTH auto trigger](#146-15) is `none`)."
+				(i.e. reason of [rth_auto_trigger](#146-15) is `none`)."
 				support="0914;0919"
-				result="The drone will cancel its return home auto trigger.\n
-				Then, event [RTH auto trigger](#146-15) is triggered with reason set to `none`."/>
+				result="The drone will cancel its return home auto trigger.
+				Then, event [rth_auto_trigger](#146-15) is triggered with reason set to `none`."/>
+			<expectations>
+				<immediate>
+					#146-15(reason: none)
+				</immediate>
+			</expectations>
 		</cmd>
+		<cmd name="set_min_altitude" id="17">
+			<comment
+				title="Set the return home min altitude"
+				desc="Set the return home minimum altitude.
+				If the drone is below this altitude when starting its return home,
+				it will first reach the minimum altitude. If it is higher than this
+				minimum altitude, it will operate its return home at its current altitude."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="The minimum altitude for the return home is set.
+				Then, event [min_altitude](#146-18) is triggered."/>
+			<expectations>
+				<immediate>
+					#146-18(current: this.altitude)
+				</immediate>
+			</expectations>
+			<arg name="altitude" type="float">
+				Return home min altitude above takeoff (ATO).
+			</arg>
+		</cmd>
+		<evt name="min_altitude" id="18">
+			<comment
+				title="Return home altitude"
+				desc="This altitude represents the minimum altitude used by the
+				drone during the return home."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="by [set_min_altitude](#146-17)."/>
+			<arg name="current" type="float">
+				Minimum altitude used by the drone during RTH. This value is above takeoff (ATO)
+			</arg>
+			<arg name="min" type="float">
+				Range min of altitude
+			</arg>
+			<arg name="max" type="float">
+				Range max of altitude
+			</arg>
+		</evt>
+		<cmd name="set_auto_trigger_mode" id="19">
+			<comment
+				title="Set mode for auto trigger return home"
+				desc="Set mode for auto trigger return home"
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="Drone changes auto trigger mode. Event [auto_trigger_mode](#146-20) is triggered."/>
+			<expectations>
+				<immediate>
+					#146-20(mode: this.mode)
+				</immediate>
+			</expectations>
+			<arg name="mode" type="enum:auto_trigger_mode">
+				Mode asked by user
+			</arg>
+		</cmd>
+		<evt name="auto_trigger_mode" id="20">
+			<comment
+				title="RTH auto trigger mode"
+				comment="Informs about RTH auto trigger mode changes."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="At connection; on changes."/>
+			<arg name="mode" type="enum:auto_trigger_mode">
+				RTH auto trigger mode.
+			</arg>
+		</evt>
+		<cmd name="set_ending_behavior" id="21">
+			<comment
+				title="Choose ending behavior action for RTH"
+				desc="Choose ending behavior action for RTH."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="The ending behavior action is set to the new one. Event
+				[ending_behavior](#146-22) is sent, otherwise it is sent back
+				with the former ending behavior type."/>
+			<expectations>
+				<immediate>
+					#146-22(ending_behavior: this.ending_behavior)
+				</immediate>
+			</expectations>
+			<arg name="ending_behavior" type="enum:ending_behavior">
+				Ending behavior action
+			</arg>
+		</cmd>
+		<evt name="ending_behavior" id="22">
+			<comment
+				title="Ending behavior"
+				comment="Current Ending behavior action for RTH."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="when the ending behavior action changes and
+				when setting a new ending behavior action has been refused by the drone."/>
+			<arg name="ending_behavior" type="enum:ending_behavior">
+				Ending behavior action
+			</arg>
+		</evt>
+		<cmd name="set_ending_hovering_altitude" id="23">
+			<comment
+				title="Set the return home ending hovering altitude"
+				desc="Set the return home ending hovering altitude.
+				If the ending behavior action is set to `hovering`, Use this altitude."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				result="The ending altitude for the return home is set.
+				Then, event [ending_hovering_altitude](#146-24) is triggered."/>
+			<expectations>
+				<immediate>
+					#146-24(current: this.altitude)
+				</immediate>
+			</expectations>
+			<arg name="altitude" type="float">
+				Altitude used by the drone when hovering at the end of return home.
+				This end altitude is AGL (above ground level).
+			</arg>
+		</cmd>
+		<evt name="ending_hovering_altitude" id="24">
+			<comment
+				title="Return Home ending hovering altitude"
+				desc="This altitude represents the altitude for the hovering at the
+				end of rth. It is only used when ending_behavior is set to hovering."
+				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
+				triggered="by [set_ending_hovering_altitude](#146-23)."/>
+			<arg name="current" type="float">
+				Altitude used by the drone when hovering at the end of return home.
+				This end altitude is AGL (above ground level).
+			</arg>
+			<arg name="min" type="float">
+				Range min of altitude
+			</arg>
+			<arg name="max" type="float">
+				Range max of altitude
+			</arg>
+		</evt>
 	</msgs>
 </feature>

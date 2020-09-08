@@ -67,7 +67,7 @@
 				Vertical speed (in meter per second) (down is positive)
 			</arg>
 			<arg name="timestamp" type="double">
-				Timestamp of the gps info
+				Timestamp of the gps info, in milliseconds since 00:00:00 UTC on 1 January 1970
 			</arg>
 		</cmd>
 		<cmd name="barometer" id="2" buffer="NON_ACK">
@@ -80,8 +80,17 @@
 				Atmospheric pressure in Pa
 			</arg>
 			<arg name="timestamp" type="double">
-				Timestamp of the barometer info
+				Timestamp of the barometer info, in milliseconds since 00:00:00 UTC on 1 January 1970
 			</arg>
 		</cmd>
+		<evt name="validity_from_drone" id="3" buffer="NON_ACK">
+			<comment
+				title="Controller gps validity from the drone point of view"
+				support="0914:1.7.0;0919:1.7.0"
+				result="The controller gps validity as seen by the drone. Sent once per second."/>
+			<arg name="is_valid" type="u8">
+				Boolean. Whether the gps is valid (1) or not (0), as seen by the drone
+			</arg>
+		</evt>
 	</msgs>
 </feature>

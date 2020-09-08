@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature name="dri" id="164">
+    All messages related to the Drone Remote Identification (DRI)
+    DRI is an identification broadcasted by the drone, which includes some of
+    its characteristics such as its manufacturer, Part Number and dynamic data
+    such as its GPS position.
+    <enums>
+        <enum name="mode">
+            The DRI mode
+            <value name="disabled">
+                DRI mode is disabled
+            </value>
+            <value name="enabled">
+                DRI mode is enabled
+            </value>
+        </enum>
+
+        <enum name="supported_capabilities">
+            Supported capabilities
+
+            <value name="on_off">
+                Possibility to enable or disable the DRI Mode
+            </value>
+        </enum>
+
+	<enum name="id_type">
+	    drone ID type
+	    <value name="FR_30_Octets">
+		    French 30 bytes format
+	    </value>
+	    <value name="ANSI_CTA_2063">
+		    ANSI CTA 2063 format on 40 bytes
+	    </value>
+	</enum>
+    </enums>
+
+    <msgs>
+        <evt name="capabilities" id="1">
+            <comment
+            title="Capabilities"
+            comment="Describes supported capabilities."
+            support="0914:1.6.8;0919:1.6.8"
+            triggered="At connection only."/>
+            <arg name="supported_capabilities" type="bitfield:u16:supported_capabilities">
+                Supported capabilities.
+            </arg>
+        </evt>
+
+        <cmd name="dri_mode" id="2">
+            <comment
+            title="Set DRI mode"
+            desc="Set DRI mode."
+            support="0914:1.6.8;0919:1.6.8"
+            result="The DRI mode is set.\n
+            Event [state](#164-3) is triggered."/>
+            <expectations>
+                <immediate>
+                    ##164-3(value: this.value)
+                </immediate>
+            </expectations>
+            <arg name="mode" type="enum:mode">
+                Mode asked by user
+            </arg>
+        </cmd>
+
+        <evt name="dri_state" id="3">
+            <comment
+            title="DRI state mode"
+            comment="Informs about DRI state mode changes."
+            support="0914:1.6.8;0919:1.6.8"
+            triggered="At connection; on changes."/>
+            <arg name="mode" type="enum:mode"/>
+        </evt>
+
+	<evt name="drone_id" id="4">
+	    <comment
+	    title="DRI identifier"
+	    comment="Report drone id"
+            support="0914:1.7.0;0919:1.7.0"
+	    triggered="At connection"/>
+	    <arg name="type" type="enum:id_type"/>
+	    <arg name="value" type="string"/>
+	</evt>
+
+    </msgs>
+</feature>

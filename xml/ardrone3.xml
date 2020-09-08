@@ -872,6 +872,12 @@
 				<enum name="almost_empty_battery">
 					Almost empty battery alert
 				</enum>
+				<enum name="magneto_pertubation">
+					Magnetometer is disturbed by a magnetic element
+				</enum>
+				<enum name="magneto_low_earth_field">
+					Local terrestrial magnetic field is too weak
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="NavigateHomeStateChanged" id="3">
@@ -2949,7 +2955,7 @@
 				Vertical Accuracy in meter ; equal -1 if no vertical Accuracy
 			</arg>
 		</cmd>
-		<cmd name="HomeType" id="3">
+		<cmd name="HomeType" id="3" deprecated="true">
 			<comment
 				title="Set the preferred home type"
 				desc="Set the preferred home type.\n
@@ -2976,7 +2982,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="ReturnHomeDelay" id="4">
+		<cmd name="ReturnHomeDelay" id="4" deprecated="true">
 			<comment
 				title="Set the return home delay"
 				desc="Set the delay after which the drone will automatically try to return home after a disconnection."
@@ -2992,7 +2998,7 @@
 				Delay in second
 			</arg>
 		</cmd>
-		<cmd name="ReturnHomeMinAltitude" id="5">
+		<cmd name="ReturnHomeMinAltitude" id="5" deprecated="true">
 			<comment
 				title="Set the return home min altitude"
 				desc="Set the return home minimum altitude.
@@ -3081,7 +3087,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="HomeTypeChanged" id="4">
+		<cmd name="HomeTypeChanged" id="4" deprecated="true">
 			<comment
 				title="Preferred home type"
 				desc="User preference for the home type.\n
@@ -3101,7 +3107,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="ReturnHomeDelayChanged" id="5">
+		<cmd name="ReturnHomeDelayChanged" id="5" deprecated="true">
 			<comment
 				title="Return home delay"
 				desc="Return home trigger delay. This delay represents the time after which the return home is automatically triggered after a disconnection."
@@ -3124,7 +3130,7 @@
 				GPS longitude in decimal degrees
 			</arg>
 		</cmd>
-		<cmd name="ReturnHomeMinAltitudeChanged" id="7">
+		<cmd name="ReturnHomeMinAltitudeChanged" id="7" deprecated="true">
 			<comment
 				title="Return home min altitude"
 				desc="Minumum altitude for return home changed."
@@ -3316,7 +3322,7 @@
 				The number of satellite
 			</arg>
 		</cmd>
-		<cmd name="HomeTypeAvailabilityChanged" id="1" type="MAP_ITEM">
+		<cmd name="HomeTypeAvailabilityChanged" id="1" type="MAP_ITEM" deprecated="true">
 			<comment
 				title="Home type availability"
 				desc="Home type availability."
@@ -3342,7 +3348,7 @@
 				1 if this type is available, 0 otherwise
 			</arg>
 		</cmd>
-		<cmd name="HomeTypeChosenChanged" id="2">
+		<cmd name="HomeTypeChosenChanged" id="2" deprecated="true">
 			<comment
 				title="Home type"
 				desc="Home type.\n
