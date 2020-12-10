@@ -1355,6 +1355,26 @@
 				Altitude in meters
 			</arg>
 		</cmd>
+		<cmd name="HeadingLockedStateChanged" id="23">
+			<comment
+				title="Drone's heading locked state"
+				desc="Drone's heading locked state."
+				support="0914:1.7.6;0919:1.7.6"
+				triggerd="at connection and on changes"/>
+			<arg name="state" type="enum">
+				Magneto state
+				<enum name="ok">
+					Magnetometer state allows heading lock
+				</enum>
+				<enum name="warning">
+					Magnetometer detects a weak magnetic field (close to Earth pole), or a
+					pertubated local magnetic field. Magnetometer has not lost heading lock yet.
+				</enum>
+				<enum name="critical">
+					Magnetometer lost heading lock.
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting
