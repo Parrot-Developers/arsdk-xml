@@ -67,7 +67,8 @@
 				Vertical speed (in meter per second) (down is positive)
 			</arg>
 			<arg name="timestamp" type="double">
-				Timestamp of the gps info, in milliseconds since 00:00:00 UTC on 1 January 1970
+				Timestamp of the gps info (in milliseconds), from a monotonic clock (not necessarily linked to utc
+				clock)
 			</arg>
 		</cmd>
 		<cmd name="barometer" id="2" buffer="NON_ACK">
@@ -80,7 +81,8 @@
 				Atmospheric pressure in Pa
 			</arg>
 			<arg name="timestamp" type="double">
-				Timestamp of the barometer info, in milliseconds since 00:00:00 UTC on 1 January 1970
+				Timestamp of the barometer info (in milliseconds), from a monotonic clock (not necessarily linked to utc
+				clock)
 			</arg>
 		</cmd>
 		<evt name="validity_from_drone" id="3" buffer="NON_ACK">

@@ -83,15 +83,16 @@ class ArArgType(object):
     STRING = 10
     ENUM = 11
     BITFIELD = 12
+    BINARY = 13
 
     TO_STRING = {I8: "i8", U8: "u8", I16: "i16", U16: "u16",
             I32: "i32", U32: "u32", I64: "i64", U64: "u64",
             FLOAT: "float", DOUBLE: "double", STRING: "string",
-            ENUM: "enum", BITFIELD: "bitfield"}
+            ENUM: "enum", BITFIELD: "bitfield", BINARY: "binary"}
     FROM_STRING = {"i8": I8, "u8": U8, "i16": I16, "u16": U16,
             "i32": I32, "u32": U32, "i64": I64, "u64": U64,
             "float": FLOAT, "double": DOUBLE, "string": STRING,
-            "enum": ENUM, "bitfield": BITFIELD}
+            "enum": ENUM, "bitfield": BITFIELD, "binary": BINARY}
 
 #===============================================================================
 #===============================================================================

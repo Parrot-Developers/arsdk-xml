@@ -51,18 +51,46 @@
             <value name="on_off">
                 Possibility to enable or disable the DRI Mode
             </value>
+	    <value name="french_regulation">
+		    French DRI regulation is supported
+	    </value>
+	    <value name="en4709_002_regulation">
+		    EN 4709-002 DRI regulation is supported
+	    </value>
         </enum>
 
-	<enum name="id_type">
-	    drone ID type
-	    <value name="FR_30_Octets">
-		    French 30 bytes format
+        <enum name="id_type">
+          drone ID type
+          <value name="FR_30_Octets">
+            French 30 bytes format
+          </value>
+          <value name="ANSI_CTA_2063">
+            ANSI CTA 2063 format on 40 bytes
+          </value>
+        </enum>
+
+	<enum name="dri_type">
+	    DRI Type
+	    <value name="french">
+		    DRI wifi beacon respects the french regulation
 	    </value>
-	    <value name="ANSI_CTA_2063">
-		    ANSI CTA 2063 format on 40 bytes
+	    <value name="en4709_002">
+		    DRI wifi beacon respects the EN4709-002 european regulation
 	    </value>
 	</enum>
-    </enums>
+
+        <enum name="status">
+          <value name="failure">
+		  A failure happened during the command execution
+          </value>
+          <value name="success">
+		  The related command successfully completed
+          </value>
+          <value name="invalid_id">
+		  DRI id is missing or was malformed
+          </value>
+        </enum>
+      </enums>
 
     <msgs>
         <evt name="capabilities" id="1">
@@ -112,5 +140,43 @@
 	    <arg name="value" type="string"/>
 	</evt>
 
+	<cmd name="set_dri_type" id="5">
+		<comment
+		title="Set DRI type"
+		desc="Set DRI type"
+		support="0914:1.7.7;0919:1.7.7"
+		result="The DRI type is set. The event [dri_type](#164-6) gives the command result" />
+		<expectations>
+			<immediate>
+				##163-6(value: this.value)
+			</immediate>
+		</expectations>
+		<arg name="type" type="enum:dri_type">
+			DRI type.
+		</arg>
+		<arg name="id" type="string">
+			Complete ID related to the DRI type. It can be empty if not required.
+			For EN4709 type, it should include the 3 secure characters (and the hyphen).
+		</arg>
+	</cmd>
+
+	<evt name="dri_type" id="6">
+	   <comment
+	   title="DRI type as stored by the drone"
+	   comment="This reports the DRI type current configuration as a result of command [set_dri_type](#164-5)"
+	   support="0914:1.7.7;0919:1.7.7"
+	   triggered="on change"/>
+		<arg name="id" type="string">
+			The ID related to the DRI type as stored by the drone.
+			For EN4709-002 type, it will not include the hyphen and
+			the 3 secure characters which are only used to verify the ID consistency.
+		</arg>
+		<arg name="type" type="enum:dri_type">
+			The DRI type the DRI system is configured with.
+		</arg>
+		<arg name="status" type="enum:status">
+			The current status of the DRI configuration.
+		</arg>
+	</evt>
     </msgs>
 </feature>
