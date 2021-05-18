@@ -113,7 +113,7 @@
             Event [state](#164-3) is triggered."/>
             <expectations>
                 <immediate>
-                    ##164-3(value: this.value)
+                    #164-3(mode: this.mode)
                 </immediate>
             </expectations>
             <arg name="mode" type="enum:mode">
@@ -148,7 +148,7 @@
 		result="The DRI type is set. The event [dri_type](#164-6) gives the command result" />
 		<expectations>
 			<immediate>
-				##163-6(value: this.value)
+				#164-6(type: this.type, id: this.id)
 			</immediate>
 		</expectations>
 		<arg name="type" type="enum:dri_type">
