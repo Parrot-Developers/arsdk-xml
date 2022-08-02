@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package arsdk.camera.alert;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.camera.alert";
+
+option (olympe_package) = "camera2.alert";
+
+enum Camera {
+  CAMERA_FRONT_STEREO = 0;
+  CAMERA_VERTICAL = 1;
+  CAMERA_FRONT = 2;
+}
+
+enum AlertState {
+  ALERT_STATE_ACTIVE = 0;
+  ALERT_STATE_INACTIVE = 1;
+}
+
+message Command {
+  reserved 1 to 15; /* reserved for non-acknowledged commands */
+
+  oneof id {
+    google.protobuf.Empty get_alerts = 16;
+  }
+
+}
+
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    TooDark too_dark = 16;
+    SensorFailure sensor_failure = 17;
+  }
+
+  message TooDark {
+    AlertState state = 1;
+    Camera camera = 2;
+
+    option (support) = "091a";
+  }
+
+  message SensorFailure {
+    AlertState state = 1;
+    Camera camera = 2;
+
+    option (support) = "091a";
+  }
+}

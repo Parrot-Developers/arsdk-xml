@@ -88,6 +88,15 @@
 			<value name="enabled">
 				Return to home enabled by product (unavailable->available)
 			</value>
+			<value name="flightplan">
+				Return to home during a flightplan (available->in_progress)
+			</value>
+			<value name="blocked">
+				Return to home could not find a path to home (in_progress->available)
+			</value>
+			<value name="icing">
+				Return to home triggered by propeller icing event (available->in_progress)
+			</value>
 		</enum>
 		<enum name="home_reachability">
 			Home reachability
@@ -132,6 +141,64 @@
 				The RTH end behavior is hovering
 			</value>
 		</enum>
+		<enum name="indicator">
+			Indicators needed to start return home.
+			<value name="drone_gps">
+				Drone gps is not fixed.
+			</value>
+			<value name="drone_magneto">
+				Drone magneto is not valid.
+			</value>
+			<value name="drone_geofence">
+				Drone is out of geofence.
+				Not applicable to Return home.
+			</value>
+			<value name="drone_min_altitude">
+				Drone is under min altitude.
+				Not applicable to Return home.
+			</value>
+			<value name="drone_max_altitude">
+				Drone is above max altitude.
+				Not applicable to Return home.
+			</value>
+			<value name="drone_flying">
+				Drone is not flying.
+			</value>
+			<value name="target_position_accuracy">
+				Target position has a bad accuracy.
+				Not applicable to Return home.
+			</value>
+			<value name="target_image_detection">
+				Target image detection is not working.
+				Not applicable to Return home.
+			</value>
+			<value name="drone_target_distance_min">
+				Drone is too close to target.
+				Not applicable to Return home.
+			</value>
+			<value name="drone_target_distance_max">
+				Drone is too far from target.
+				Not applicable to Return home.
+			</value>
+			<value name="target_horiz_speed">
+				Target horizontal speed is too high.
+				Not applicable to Return home.
+			</value>
+			<value name="target_vert_speed">
+				Target vertical speed is too high.
+				Not applicable to Return home.
+			</value>
+			<value name="target_altitude_accuracy">
+				Target altitude has a bad accuracy.
+				Not applicable to Return home.
+			</value>
+			<value name="drone_battery">
+				Drone battery is insufficient.
+			</value>
+			<value name="drone_state">
+				Drone is not in a valid state.
+			</value>
+		</enum>
 	</enums>
 	<msgs>
 		<evt name="home_type_capabilities" id="1">
@@ -153,7 +220,7 @@
 				user preference only if this type is available.
 				According to this home type, the location of the home can be known by reading
 				the correct location. For example, if the home type is takeoff, the home location
-				can be obtained with [takeoff_location](#146-4).
+				can be obtained with [takeoff_location](#146-5).
 				If gps fix is lost, type `none` is sent. When the drone will get back the gps fix,
 				the former home type will be automatically set.
 				After the drone has started and got a gps fix, type is `takeoff`."
@@ -190,7 +257,7 @@
 				the chosen home type is currently available."/>
 			<expectations>
 				<immediate>
-					#146-3(preferred_home_type: this.type)
+					#146-3(type: this.type)
 				</immediate>
 			</expectations>
 			<arg name="type" type="enum:home_type">
@@ -199,12 +266,10 @@
 		</cmd>
 		<evt name="takeoff_location" id="5">
 			<comment
-				title="Takeoff location"
-				comment="Takeoff location."
+				title="Takeoff-type home location"
+				comment="Takeoff-type home location."
 				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
-				triggered="regularly when drone is landed then one last time right
-				before taking off, if gps is fixed. If not, triggered on the first
-				fix with the value fixed before takeoff set to `true`."/>
+				triggered="when takeoff home location is known by the drone. If gps is fixed at the time of the takeoff, then `fixed_before_takeoff` is true, otherwise is false."/>
 			<arg name="latitude" type="double">
 				Latitude of the takeoff location
 			</arg>
@@ -212,7 +277,7 @@
 				Longitude of the takeoff location
 			</arg>
 			<arg name="altitude" type="float">
-				Altitude of the custom location above takeoff (ATO).
+				Altitude of the takeoff home location above takeoff (ATO).
 			</arg>
 			<arg name="fixed_before_takeoff" type="u8">
 				1 if the location was acquired before the takeoff. 0 if it was acquired during the flight (i.e. is it
@@ -225,8 +290,9 @@
 				desc="Set the custom location."
 				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
 				result="If the drone knows its own location and
-				that the custom location is not outside a circle centered on the drone
+				if the custom location is not outside a circle centered on the drone
 				with a radius equals to the max distance setting value,
+				and if preferred home type ([set_preferred_home_type](#146-4)) is compatible,
 				[home_type](#146-2) is sent with type = `custom`,
 				otherwise it is sent back with the former home type.
 				Moreover, [custom_location](#146-7) is sent by the drone."/>
@@ -237,10 +303,10 @@
 				</immediate>
 			</expectations>
 			<arg name="latitude" type="double">
-				Latitude of the takeoff location
+				Latitude of the custom location
 			</arg>
 			<arg name="longitude" type="double">
-				Longitude of the takeoff location
+				Longitude of the custom location
 			</arg>
 			<arg name="altitude" type="float">
 				Altitude of the custom location above takeoff (ATO).
@@ -271,13 +337,13 @@
 				triggered="regularly when drone is in FollowMe or LookAt
 				with [gps](#140-1) sent."/>
 			<arg name="latitude" type="double">
-				Latitude of the takeoff location
+				Latitude of the followee location
 			</arg>
 			<arg name="longitude" type="double">
-				Longitude of the takeoff location
+				Longitude of the followee location
 			</arg>
 			<arg name="altitude" type="float">
-				Altitude of the custom location above takeoff (ATO).
+				Altitude of the followee location above takeoff (ATO).
 			</arg>
 		</evt>
 		<cmd name="set_delay" id="9">
@@ -330,6 +396,7 @@
 			<expectations>
 				<immediate>
 					#146-13(state: in_progress, reason: user_request)
+					|#146-13(state: pending, reason: user_request)
 				</immediate>
 			</expectations>
 		</cmd>
@@ -342,7 +409,7 @@
 				Then, event [state](#146-13) is triggered."/>
 			<expectations>
 				<immediate>
-					#146-13(state: available, reason: user_request)
+					#146-13(state: available, reason: stopped)
 				</immediate>
 			</expectations>
 		</cmd>
@@ -352,7 +419,7 @@
 				desc="Return home state.
 				Availability is related to gps fix, magnetometer calibration."
 				support="0914;0919;091b:1.3.0"
-				triggered="by [return_to_home](#146-11), [cancel_return_to_home](#146-16)
+				triggered="on connection, by [return_to_home](#146-11)
 				or by [abort](#146-12), or when the state of the return home changes."/>
 			<arg name="state" type="enum:state">
 				State of the return to home
@@ -368,7 +435,7 @@
 				support="0914;0919"
 				triggered="when home reachability status changes."/>
 			<arg name="status" type="enum:home_reachability">
-				State of the return to home
+				Status of the home reachability
 			</arg>
 		</evt>
 		<evt name="rth_auto_trigger" id="15">
@@ -514,7 +581,7 @@
 				desc="This altitude represents the altitude for the hovering at the
 				end of rth. It is only used when ending_behavior is set to hovering."
 				support="0914:1.7.0;0919:1.7.0;091b:1.3.0"
-				triggered="by [set_ending_hovering_altitude](#146-23)."/>
+				triggered="At connection; by [set_ending_hovering_altitude](#146-23)."/>
 			<arg name="current" type="float">
 				Altitude used by the drone when hovering at the end of return home.
 				This end altitude is AGL (above ground level).
@@ -524,6 +591,17 @@
 			</arg>
 			<arg name="max" type="float">
 				Range max of altitude
+			</arg>
+		</evt>
+		<evt name="info" id="25">
+			<comment
+				title="Return home info"
+				desc="Describes the missing requirements to start a return home."
+				support="091a"
+				triggered="During connection and when the list of missing requirements changes."/>
+			<arg name="missing_inputs" type="bitfield:u32:indicator">
+				List of missing requirements to activate return home.
+				If at least one input is missing, drone won't be able to return home.
 			</arg>
 		</evt>
 	</msgs>

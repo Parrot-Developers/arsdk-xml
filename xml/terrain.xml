@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2022 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="176" name="terrain">
+	Altitude and other information based on terrain data
+	<enums>
+		<enum name="type">
+			Terrain data type
+			<value name="none">
+				No data.
+			</value>
+			<value name="dted">
+				DTED data.
+			</value>
+		</enum>
+		<enum name="calibration_state">
+			Line of sight calibration state
+			<value name="required">
+				Calibration is required to improve image center coordinates
+			</value>
+			<value name="ok">
+				Drone is calibrated
+			</value>
+		</enum>
+		<enum name="calibration_issue">
+			Possible issues for calibration
+			<value name="too_close">
+				Drone is too close to perform accurate calibration
+			</value>
+			<value name="too_low">
+				Drone is too low to perform accurate calibration
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<evt name="altitude_above_terrain" id="1" buffer="NON_ACK">
+			<comment
+				title="Altitude Above Terrain"
+				desc="Altitude of the drone above terrain using terrain maps."
+				triggered="regularly."
+				support="091e"/>
+			<arg name="altitude" type="i32">
+				Altitude(m) of the drone above the terrain, not relevant if type is none
+			</arg>
+			<arg name="type" type="enum:type">
+				Terrain type used.
+			</arg>
+			<arg name="grid_precision" type="float">
+				grid precision(°), not relevant if type is none
+			</arg>
+		</evt>
+		<cmd name="calibrate" id="2">
+			<comment
+				title="Calibration of Drone's Line of Sight."
+				desc="For calibration, the drone will assume that the pilot
+				is at the center of the image seen. Gimbal angles will be corrected
+				accordingly"
+				result="[calibration_state](#176-4) state field changes to `ok`.
+				or issue is filled with reasons"
+				support="091e"/>
+			<expectations>
+				<immediate>
+					#176-4(state: ok)
+					|#176-4(issue:too_low|too_close)
+				</immediate>
+			</expectations>
+		</cmd>
+		<cmd name="calibration_reset" id="3">
+			<comment
+				title="Reset the calibration of Drone's Line of Sight."
+				result="[calibration_state](#176-4) required"
+				support="091e"/>
+			<expectations>
+				<immediate>
+					#176-4(state: required)
+				</immediate>
+			</expectations>
+		</cmd>
+		<evt name="calibration_state" id="4">
+			<comment
+				title="State of calibration of Drone's Line of Sight."
+				triggered="At connection and whenever there is a change in the calibration state."
+				support="091e"/>
+			<arg name="state" type="enum:calibration_state">
+				State of the calibration
+			</arg>
+			<arg name="issue" type="bitfield:u8:calibration_issue">
+				Reported issue for drone calibration.
+				Updated whenever it changes.
+				If calibration_state is not changing to ok,
+				it indicates the reason of the failure.
+			</arg>
+		</evt>
+	</msgs>
+
+
+</feature>

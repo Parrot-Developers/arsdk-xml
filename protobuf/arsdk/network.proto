@@ -1,0 +1,248 @@
+syntax = "proto3";
+
+package arsdk.network;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.network";
+option java_outer_classname = "Network";
+
+option (olympe_package) = "network";
+
+/* This is the entry point to send messages to the drone. */
+message Command {
+	reserved 1 to 15; /* reserved for non-acknowledged commands */
+
+	oneof id {
+		GetState get_state = 16;
+		SetRoutingPolicy set_routing_policy = 17;
+		SetCellularMaxBitrate  set_cellular_max_bitrate = 18;
+		SetDirectConnection set_direct_connection = 19;
+	}
+
+	/* Get current state. */
+	message GetState {
+		/* Include default_capabilities in response. */
+		bool include_default_capabilities = 1;
+
+		option (on_success) = "Event.State()";
+		option (support) = "091a";
+	}
+
+	/* Set routing policy. */
+	message SetRoutingPolicy {
+		/* Routing policy. */
+		RoutingPolicy policy = 1;
+
+		option (on_success) = "Event.State()";
+		option (support) = "091a";
+	}
+
+	/* Change Cellular Max bitrate. */
+	message SetCellularMaxBitrate {
+		/* Maximum bitrate in Kbps (0 for default value) */
+		int32 max_bitrate = 1;
+
+		option (on_success) = "Event.State()";
+	}
+
+	/* Set direct connection mode
+	 * State is sent afterwards. */
+	message SetDirectConnection {
+		DirectConnectionMode mode = 1;
+		option (support) = "091a";
+		option (on_success) = "Event.State(mode=this.direct_connection_mode)";
+	}
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+	reserved 1 to 15; /* reserved for non-acknowledged events */
+
+	oneof id {
+		State state = 19;
+	}
+
+	reserved 16 to 18; /* deprecated events */
+
+	/* Current state. */
+	message State {
+		Capabilities default_capabilities = 1;
+		RoutingInfo routing_info = 2;
+		GlobalLinkQuality global_link_quality = 3;
+		LinksStatus links_status = 4;
+		CellularMaxBitrate cellular_max_bitrate = 5;
+		DirectConnectionMode direct_connection_mode = 6;
+	}
+}
+
+/* Capabilities. */
+message Capabilities {
+	/* Minimum bitrate of cellular link in Kbps. */
+	int32 cellular_min_bitrate = 1;
+	/* Maximum bitrate of cellular link in Kbps. */
+	int32 cellular_max_bitrate = 2;
+	/* DirectConnectionMode supported */
+	repeated DirectConnectionMode supported_direct_connection_modes = 3;
+}
+
+/* Routing information. */
+message RoutingInfo {
+	/* Routing policy. */
+	RoutingPolicy policy = 1;
+	/* Current selected link. */
+	RoutingLink current_link = 2;
+
+	option (support) = "091a";
+}
+
+/* Global link quality. */
+message GlobalLinkQuality {
+	/* Link quality indication: 1 (lower) to 5 (better),
+	 * 0 if not available. */
+	int32 quality = 1;
+
+	option (support) = "091a";
+}
+
+/* Links status. */
+message LinksStatus {
+	message LinkInfo {
+		/* Type of link. */
+		LinkType type = 1;
+		/* Link status. */
+		LinkStatus status = 2;
+		/* Link quality indication. (see GlobalLinkQuality) */
+		int32 quality = 3;
+		/* Link error. */
+		LinkError error = 4;
+		/* Extended status of cellular links. */
+		CellularStatus cellular_status = 5;
+	}
+	repeated LinkInfo links = 1;
+
+	option (support) = "091a";
+}
+
+/* Cellular Max bitrate. */
+message CellularMaxBitrate {
+	/* Maximum bitrate in Kbps. (0 for default value) */
+	int32 max_bitrate = 1;
+}
+
+/* Routing policy. */
+enum RoutingPolicy {
+	/* Broadcast to all links. */
+	ROUTING_POLICY_ALL = 0;
+	/* Use Wlan link if available, otherwise broadcast. */
+	ROUTING_POLICY_WLAN = 1;
+	/* Use Cellular link if available, otherwise broadcast. */
+	ROUTING_POLICY_CELLULAR = 2;
+	/* Select best link. */
+	ROUTING_POLICY_HYBRID = 3;
+}
+
+/* Routing link. */
+enum RoutingLink {
+	/* Unspecified link. */
+	ROUTING_LINK_ANY = 0;
+	/* Wlan link. */
+	ROUTING_LINK_WLAN = 1;
+	/* Cellular link. */
+	ROUTING_LINK_CELLULAR = 2;
+}
+
+/* Link status. */
+enum LinkStatus {
+	/* Interface is down. */
+	LINK_STATUS_DOWN = 0;
+	/* Interface is up with IP connectivity. */
+	LINK_STATUS_UP = 1;
+	/* Starfish session established on the link. */
+	LINK_STATUS_RUNNING = 2;
+	/* Link is ready to connect or accept connections. */
+	LINK_STATUS_READY = 3;
+	/* Connection in progress. */
+	LINK_STATUS_CONNECTING = 4;
+	/* Link error, see LinkError value. */
+	LINK_STATUS_ERROR = 5;
+}
+
+/* Link type. */
+enum LinkType {
+	/* Unknown. */
+	LINK_TYPE_UNKNOWN = 0;
+	/* Reserved. */
+	LINK_TYPE_LO = 1;
+	/* Reserved. */
+	LINK_TYPE_LAN = 2;
+	/* Wlan (Wi-Fi) interface. */
+	LINK_TYPE_WLAN = 3;
+	/* Cellular (4G) interface. */
+	LINK_TYPE_CELLULAR = 4;
+}
+
+/* Link error. */
+enum LinkError {
+	/* No error. */
+	LINK_ERROR_NONE = 0;
+	/* Failed to resolve DNS address. */
+	LINK_ERROR_DNS = 1;
+	/* Failed to connect to SIP server. */
+	LINK_ERROR_CONNECT = 2;
+	/* Failed to authenticate to server. */
+	LINK_ERROR_AUTHENTICATION = 3;
+	/* Failed to publish drone status. */
+	LINK_ERROR_PUBLISH = 4;
+	/* Failed to establish communication link. */
+	LINK_ERROR_COMM_LINK = 5;
+	/* Lost connection with peer. */
+	LINK_ERROR_TIMEOUT = 6;
+	/* Failed to invite drone. */
+	LINK_ERROR_INVITE = 7;
+}
+
+/* Direct connection mode */
+enum DirectConnectionMode {
+	/* Legacy mode: secure connection is not mandatory. */
+	DIRECT_CONNECTION_MODE_LEGACY = 0;
+	/* Only secure connections are authorized. */
+	DIRECT_CONNECTION_MODE_SECURE = 1;
+}
+
+/* Cellular status */
+enum CellularStatus {
+	CELLULAR_STATUS_UNKNOWN = 0;
+	/* Modem status. */
+	CELLULAR_STATUS_MODEM_OFF = 1;
+	CELLULAR_STATUS_MODEM_OFFLINE = 2;
+	CELLULAR_STATUS_MODEM_FLASHING = 3;
+	CELLULAR_STATUS_MODEM_ONLINE = 4;
+	CELLULAR_STATUS_MODEM_ERROR = 5;
+	/* SIM status. */
+	CELLULAR_STATUS_SIM_LOCKED = 6;
+	CELLULAR_STATUS_SIM_READY = 7;
+	CELLULAR_STATUS_SIM_ABSENT = 8;
+	CELLULAR_STATUS_SIM_ERROR = 9;
+	/* Network registration status. */
+	CELLULAR_STATUS_NETWORK_SEARCHING = 10;
+	CELLULAR_STATUS_NETWORK_HOME = 11;
+	CELLULAR_STATUS_NETWORK_ROAMING = 12;
+	CELLULAR_STATUS_NETWORK_REGISTRATION_DENIED = 13;
+	CELLULAR_STATUS_NETWORK_ACTIVATION_DENIED = 14;
+	/* Parrot server connection status. */
+	CELLULAR_STATUS_SERVER_WAIT_APC_TOKEN = 15;
+	CELLULAR_STATUS_SERVER_CONNECTING = 16;
+	CELLULAR_STATUS_SERVER_CONNECTED = 17;
+	CELLULAR_STATUS_SERVER_UNREACHABLE_DNS = 18;
+	CELLULAR_STATUS_SERVER_UNREACHABLE_CONNECT = 19;
+	CELLULAR_STATUS_SERVER_UNREACHABLE_AUTH = 20;
+	/* Drone/controller connection status. */
+	CELLULAR_STATUS_CONNECTION_OFFLINE = 21;
+	CELLULAR_STATUS_CONNECTION_CONNECTING = 22;
+	CELLULAR_STATUS_CONNECTION_ESTABLISHED = 23;
+	CELLULAR_STATUS_CONNECTION_ERROR = 24;
+	CELLULAR_STATUS_CONNECTION_ERROR_COMM_LINK = 25;
+	CELLULAR_STATUS_CONNECTION_ERROR_TIMEOUT = 26;
+	CELLULAR_STATUS_CONNECTION_ERROR_MISMATCH = 27;
+}

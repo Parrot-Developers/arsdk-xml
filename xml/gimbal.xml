@@ -39,6 +39,10 @@
 				Main gimbal.
 				Only one gimbal of this kind is allowed at a time on a drone.
 			</value>
+			<value name="fstcam">
+				Front Stereo Camera
+				Only one gimbal of this kind is allowed at a time on a drone.
+			</value>
 		</enum>
 
 		<enum name="state">
@@ -96,13 +100,13 @@
 		<enum name="axis">
 			Axis.
 			<value name="yaw">
-				Yaw axis
+				Yaw axis.
 			</value>
 			<value name="pitch">
-				Pitch axis
+				Pitch axis.
 			</value>
 			<value name="roll">
-				Roll axis
+				Roll axis.
 			</value>
 		</enum>
 		<enum name="control_mode">
@@ -117,19 +121,19 @@
 		<enum name="frame_of_reference">
 			Frame of reference.
 			<value name="none">
-				None
+				None, references are ignored.
 			</value>
 			<value name="relative">
-				Euler angles define gimbal attitude in the drone frame of reference, where, as seen from the drone:
+				References are expressed in the drone frame of reference, where as seen from the drone:
 				- roll axis points forward
 				- pitch axis points on the right hand side
 				- yaw axis points downward
 			</value>
 			<value name="absolute">
-				Euler angles define gimbal attitude in the Earth frame of reference, where:
+				References are expressed in the NED frame of reference, where:
 				- roll axis points North
 				- pitch axis points East
-				- yaw axis points toward the center of the Earth
+				- yaw axis points toward the center of the Earth (Down)
 			</value>
 		</enum>
 	</enums>
@@ -165,22 +169,22 @@
 				id of the gimbal.
 			</arg>
 			<arg name="min_yaw" type="float">
-				Minimum yaw value, in degrees, in the relative frame of reference
+				Minimum yaw value, in degrees, in the relative frame of reference.
 			</arg>
 			<arg name="max_yaw" type="float">
-				Maximum yaw value, in degrees, in the relative frame of reference
+				Maximum yaw value, in degrees, in the relative frame of reference.
 			</arg>
 			<arg name="min_pitch" type="float">
-				Minimum pitch value, in degrees, in the relative frame of reference
+				Minimum pitch value, in degrees, in the relative frame of reference.
 			</arg>
 			<arg name="max_pitch" type="float">
-				Maximum pitch value, in degrees, in the relative frame of reference
+				Maximum pitch value, in degrees, in the relative frame of reference.
 			</arg>
 			<arg name="min_roll" type="float">
-				Minimum roll value, in degrees, in the relative frame of reference
+				Minimum roll value, in degrees, in the relative frame of reference.
 			</arg>
 			<arg name="max_roll" type="float">
-				Maximum roll value, in degrees, in the relative frame of reference
+				Maximum roll value, in degrees, in the relative frame of reference.
 			</arg>
 		</evt>
 		<evt name="absolute_attitude_bounds" id="10">
@@ -193,22 +197,22 @@
 				id of the gimbal.
 			</arg>
 			<arg name="min_yaw" type="float">
-				Minimum yaw value, in degrees, in the absolute frame of reference
+				Minimum yaw value, in degrees, in the absolute frame of reference.
 			</arg>
 			<arg name="max_yaw" type="float">
-				Maximum yaw value, in degrees, in the absolute frame of reference
+				Maximum yaw value, in degrees, in the absolute frame of reference.
 			</arg>
 			<arg name="min_pitch" type="float">
-				Minimum pitch value, in degrees, in the absolute frame of reference
+				Minimum pitch value, in degrees, in the absolute frame of reference.
 			</arg>
 			<arg name="max_pitch" type="float">
-				Maximum pitch value, in degrees, in the absolute frame of reference
+				Maximum pitch value, in degrees, in the absolute frame of reference.
 			</arg>
 			<arg name="min_roll" type="float">
-				Minimum roll value, in degrees, in the absolute frame of reference
+				Minimum roll value, in degrees, in the absolute frame of reference.
 			</arg>
 			<arg name="max_roll" type="float">
-				Maximum roll value, in degrees, in the absolute frame of reference
+				Maximum roll value, in degrees, in the absolute frame of reference.
 			</arg>
 		</evt>
 		<evt name="max_speed" id="3">
@@ -224,31 +228,31 @@
 				Main/Built-in gimbal has id zero.
 			</arg>
 			<arg name="min_bound_yaw" type="float">
-				Lower bound of the max yaw speed, in degrees per seconds
+				Lower bound of the max yaw speed, in degrees per seconds.
 			</arg>
 			<arg name="max_bound_yaw" type="float">
-				Upper bound of the max yaw speed, in degrees per seconds
+				Upper bound of the max yaw speed, in degrees per seconds.
 			</arg>
 			<arg name="current_yaw" type="float">
-				Maximum yaw speed value, in degrees per seconds
+				Maximum yaw speed value, in degrees per seconds.
 			</arg>
 			<arg name="min_bound_pitch" type="float">
-				Lower bound of the max pitch speed, in degrees per seconds
+				Lower bound of the max pitch speed, in degrees per seconds.
 			</arg>
 			<arg name="max_bound_pitch" type="float">
-				Upper bound of the max pitch speed, in degrees per seconds
+				Upper bound of the max pitch speed, in degrees per seconds.
 			</arg>
 			<arg name="current_pitch" type="float">
-				Maximum pitch speed value, in degrees per seconds
+				Maximum pitch speed value, in degrees per seconds.
 			</arg>
 			<arg name="min_bound_roll" type="float">
-				Lower bound of the max roll speed, in degrees per seconds
+				Lower bound of the max roll speed, in degrees per seconds.
 			</arg>
 			<arg name="max_bound_roll" type="float">
-				Upper bound of the max roll speed, in degrees per seconds
+				Upper bound of the max roll speed, in degrees per seconds.
 			</arg>
 			<arg name="current_roll" type="float">
-				Maximum roll speed value, in degrees per seconds
+				Maximum roll speed value, in degrees per seconds.
 			</arg>
 		</evt>
 		<cmd name="set_max_speed" id="4">
@@ -266,16 +270,14 @@
 				id of the gimbal.
 			</arg>
 			<arg name="yaw" type="float">
-				Maximum yaw speed value, in degrees per seconds
-				This value will be clamped between [MaxSpeed](#148-3) min_bound_yaw and max_bound_yaw
+				Deprecated, only the pitch value is used for all axes.
 			</arg>
 			<arg name="pitch" type="float">
-				Maximum pitch speed value, in degrees per seconds
-				This value will be clamped between [MaxSpeed](#148-3) min_bound_pitch and max_bound_pitch
+				Maximum speed value, in degrees per seconds.
+				This value will be clamped between [MaxSpeed](#148-3) min_bound_pitch and max_bound_pitch.
 			</arg>
 			<arg name="roll" type="float">
-				Maximum roll speed value, in degrees per seconds
-				This value will be clamped between [MaxSpeed](#148-3) min_bound_roll and max_bound_roll
+				Deprecated, only the pitch value is used for all axes.
 			</arg>
 		</cmd>
 		<cmd name="set_target" id="5" buffer="NON_ACK">
@@ -293,7 +295,7 @@
 			</arg>
 			<arg name="yaw_frame_of_reference" type="enum:frame_of_reference">
 				Frame of reference of the yaw value.
-				`none` if the yaw target should not be changed
+				`none` if the yaw target should not be changed.
 			</arg>
 			<arg name="yaw" type="float">
 				Yaw value.
@@ -303,8 +305,8 @@
 				- `velocity`, value is in signed ratio (from -1 to 1) of the [MaxSpeed](#148-3) `current_yaw` parameter
 			</arg>
 			<arg name="pitch_frame_of_reference" type="enum:frame_of_reference">
-				Frame of reference of the pitch value
-				`none` if the pitch target should not be changed
+				Frame of reference of the pitch value.
+				`none` if the pitch target should not be changed.
 			</arg>
 			<arg name="pitch" type="float">
 				Pitch value.
@@ -314,8 +316,8 @@
 				- `velocity`, value is in signed ratio (from -1 to 1) of the [MaxSpeed](#148-3) `current_pitch` parameter
 			</arg>
 			<arg name="roll_frame_of_reference" type="enum:frame_of_reference">
-				Frame of reference of the roll value
-				`none` if the roll target should not be changed
+				Frame of reference of the roll value.
+				`none` if the roll target should not be changed.
 			</arg>
 			<arg name="roll" type="float">
 				Roll value.
@@ -423,31 +425,31 @@
 				offset update states.
 			</arg>
 			<arg name="min_bound_yaw" type="float">
-				Lower bound of the offset that can be set on the yaw axis, in degrees
+				Lower bound of the offset that can be set on the yaw axis, in degrees.
 			</arg>
 			<arg name="max_bound_yaw" type="float">
-				Upper bound of the offset that can be set on the yaw axis, in degrees
+				Upper bound of the offset that can be set on the yaw axis, in degrees.
 			</arg>
 			<arg name="current_yaw" type="float">
-				Current offset applied to the yaw axis, in degrees
+				Current offset applied to the yaw axis, in degrees.
 			</arg>
 			<arg name="min_bound_pitch" type="float">
-				Lower bound of the offset that can be set on the pitch axis, in degrees
+				Lower bound of the offset that can be set on the pitch axis, in degrees.
 			</arg>
 			<arg name="max_bound_pitch" type="float">
-				Upper bound of the offset that can be set on the pitch axis, in degrees
+				Upper bound of the offset that can be set on the pitch axis, in degrees.
 			</arg>
 			<arg name="current_pitch" type="float">
-				Current offset applied to the pitch axis, in degrees
+				Current offset applied to the pitch axis, in degrees.
 			</arg>
 			<arg name="min_bound_roll" type="float">
-				Lower bound of the offset that can be set on the roll axis, in degrees
+				Lower bound of the offset that can be set on the roll axis, in degrees.
 			</arg>
 			<arg name="max_bound_roll" type="float">
-				Upper bound of the offset that can be set on the roll axis, in degrees
+				Upper bound of the offset that can be set on the roll axis, in degrees.
 			</arg>
 			<arg name="current_roll" type="float">
-				Current offset applied to the roll axis, in degrees
+				Current offset applied to the roll axis, in degrees.
 			</arg>
 		</evt>
 		<cmd name="set_offsets" id="9">
@@ -469,22 +471,22 @@
 			</arg>
 			<arg name="yaw" type="float">
 				Offset, in degrees, that should be applied to the yaw axis.
-				This value will be clamped between [Offsets](#148-8) min_bound_yaw and max_bound_yaw
+				This value will be clamped between [Offsets](#148-8) min_bound_yaw and max_bound_yaw.
 			</arg>
 			<arg name="pitch" type="float">
 				Offset, in degrees, that should be applied to the pitch axis.
-				This value will be clamped between [[Offsets](#148-8) min_bound_pitch and max_bound_pitch
+				This value will be clamped between [[Offsets](#148-8) min_bound_pitch and max_bound_pitch.
 			</arg>
 			<arg name="roll" type="float">
 				Offset, in degrees, that should be applied to the roll axis.
-				This value will be clamped between [Offsets](#148-8) min_bound_roll and max_bound_roll
+				This value will be clamped between [Offsets](#148-8) min_bound_roll and max_bound_roll.
 			</arg>
 		</cmd>
 		<cmd name="reset_orientation" id="11">
 			<comment
-				title="Reset the orientation of the gimbal"
-				comment="Reset the orientation of the gimbal.
-				The orientation of the gimbal is set back to its default orientation.
+				title="Reset the reference orientation of the gimbal"
+				comment="Reset the reference orientation of the gimbal.
+				The reference orientation of the gimbal is set back to its default reference orientation.
 				Current frame of references are kept and controller should send none
 				in the [set_target](#148-5) command. As soon as the drone receive a target
 				different from none, the reset will be canceled."
@@ -547,7 +549,7 @@
 		<evt name="calibration_result" id="16" content="NOTIFICATION">
 			<comment
 				title="Calibration result."
-				comment="Result of calibrate](#148-15) command."
+				comment="Result of the calibration](#148-15) command."
 				support="0914"
 				triggered="At the end of the gimbal calibration."/>
 			<arg name="gimbal_id" type="u8">
@@ -569,6 +571,20 @@
 			</arg>
 			<arg name="error" type="bitfield:u8:error">
 				Error bitfield.
+			</arg>
+		</evt>
+
+		<evt name="stabilization_state" id="19" >
+			<comment
+				title="Gimbal stabilization state."
+				comment="Notify gimbal stabilization state."
+				support="0914"
+				triggered="At connection and on state change."/>
+			<arg name="gimbal_id" type="u8">
+				id of the gimbal.
+			</arg>
+			<arg name="state" type="enum:state">
+				Stabilization state.
 			</arg>
 		</evt>
 

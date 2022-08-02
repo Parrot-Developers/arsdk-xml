@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	Copyright (C) 2014 Parrot SA
+	Copyright (C) 2019 Parrot SA
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -29,53 +29,59 @@
 	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 	SUCH DAMAGE.
 -->
-<feature id="133" name="generic">
-	All generic messages
+<feature name="rc_transport" id="156">
+	Communication transport layer.
+
 	<enums>
-		<enum name="list_flags">
-			Flags use by maps and lists
-			<value name="First">
-				indicate it's the first element of the list.
+		<enum name="transport_layer">
+			Communication transport layer.
+
+			<value name="wifi">
+				Transport is over wifi 802.11
 			</value>
-			<value name="Last">
-				indicate it's the last element of the list.
-			</value>
-			<value name="Empty">
-				indicate the list is empty (implies First/Last). All other arguments should be ignored.
-			</value>
-			<value name="Remove">
-				This value should be removed from the existing list.
+			<value name="microhard">
+				Transport is over microhard
 			</value>
 		</enum>
+
 	</enums>
+
 	<msgs>
-		<cmd name="custom_cmd" id="1">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</cmd>
 
-		<cmd name="custom_cmd_non_ack" id="2" buffer="NON_ACK">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</cmd>
-
-		<evt name="custom_evt" id="3">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
+		<evt name="transport" id="1">
+			<comment
+				title="Current transport layer"
+				comment="Notifies about transport layer changes."
+				triggered="At connection; on changes by [set_transport](#156-2)"/>
+			<arg name="transport" type="enum:transport_layer">
+				Current transport layer used by the skycontroller
+			</arg>
 		</evt>
 
-		<evt name="custom_evt_non_ack" id="4" buffer="NON_ACK">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
+		<cmd name="set_transport" id="2">
+			<comment
+				title="Sets transport layer"
+				desc="Configures transport layer."
+				result="[transport](#156-1) event with the new transport layer."/>
+			<expectations>
+				<immediate>
+					#156-1(transport: this.transport)
+				</immediate>
+			</expectations>
+			<arg name="transport" type="enum:transport_layer">
+				Requested transport_layer.
+			</arg>
+		</cmd>
+
+		<evt name="capabilities" id="3">
+			<comment
+				title="Capabilities"
+				comment="Describes transports capabilities."
+				triggered="At connection only."/>
+			<arg name="transports" type="bitfield:u8:transport_layer">
+				Supported transport layers.
+			</arg>
 		</evt>
+
 	</msgs>
-
 </feature>

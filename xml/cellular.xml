@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature name="cellular" id="171">
+	Cellular.
+	<enums>
+		<enum name="supported_capabilities">
+			Supported capabilities.
+
+			<value name="4g">
+				Supports 4G.
+			</value>
+		</enum>
+
+		<enum name="mode">
+			Cellular mode.
+
+			<value name="disabled">
+				Cellular feature is disabled, Airplane mode.
+			</value>
+			<value name="nodata">
+				Cellular feature is enabled, data are disabled.
+			</value>
+			<value name="data">
+				Cellular feature is enabled, data are enabled.
+			</value>
+		</enum>
+
+		<enum name="sim_status">
+			SIM card status.
+
+			<value name="unknown">
+				SIM card status is unknown.
+			</value>
+			<value name="absent">
+				No SIM card is available.
+			</value>
+			<value name="initializing">
+				SIM card is initializing.
+			</value>
+			<value name="locked">
+				SIM card is locked and requires a PIN code to unlock.
+			</value>
+			<value name="ready">
+				SIM card is ready.
+			</value>
+		</enum>
+
+		<enum name="modem_status">
+			Modem status.
+
+			<value name="off">
+				Modem is off.
+			</value>
+			<value name="offline">
+				Modem is offline.
+			</value>
+			<value name="online">
+				Modem is online.
+			</value>
+			<value name="error">
+				Modem initialization error.
+			</value>
+			<value name="flashing">
+				Flashing of the modem is ongoing.
+			</value>
+		</enum>
+
+		<enum name="registration_status">
+			Registration status.
+
+			<value name="not_registered">
+				Not registered.
+			</value>
+			<value name="searching">
+				Searching.
+			</value>
+			<value name="registered_home">
+				Registered with home operator.
+			</value>
+			<value name="registered_roaming">
+				Registered with roaming operator.
+			</value>
+			<value name="denied">
+				Registration denied.
+			</value>
+		</enum>
+
+		<enum name="network_status">
+			Network status.
+
+			<value name="deactivated">
+				Network is deactivated.
+			</value>
+			<value name="activated">
+				Network is activated.
+			</value>
+			<value name="denied">
+				Network activation was denied.
+			</value>
+			<value name="error">
+				Internal error.
+			</value>
+		</enum>
+
+		<enum name="technology">
+			Access technology.
+
+			<value name="gsm">
+				Global System for Mobile Communications.
+			</value>
+			<value name="gprs">
+				General Packet Radio Service.
+			</value>
+			<value name="edge">
+				Enhanced Data Rates for GSM Evolution.
+			</value>
+			<value name="3g">
+				3G.
+			</value>
+			<value name="hsdpa">
+				High Speed Downlink Packet Access.
+			</value>
+			<value name="hsupa">
+				High Speed Uplink Packet Access.
+			</value>
+			<value name="hspa">
+				High Speed Packet Access.
+			</value>
+			<value name="4g">
+				4G.
+			</value>
+			<value name="4g_plus">
+				4G+ Band aggregation.
+			</value>
+			<value name="5g">
+				5G.
+			</value>
+		</enum>
+
+		<enum name="network_mode">
+			Configured access technology.
+
+			<value name="auto">
+				Mode auto
+			</value>
+			<value name="3g">
+				3G.
+			</value>
+			<value name="4g">
+				4G.
+			</value>
+			<value name="5g">
+				5G.
+			</value>
+		</enum>
+	</enums>
+
+	<msgs>
+		<evt name="capabilities" id="1">
+			<comment
+				title="Capabilities"
+				comment="Describes supported capabilities."
+				support="091a"
+				triggered="At connection only."/>
+			<arg name="modem_id" type="u8">
+				id of the modem.
+				Modem id is unique and persistent: the same modem model on a same drone model always has the same id.
+				Main/Built-in modem has id zero.
+			</arg>
+			<arg name="supported_capabilities" type="bitfield:u16:supported_capabilities">
+				Supported capabilities.
+			</arg>
+		</evt>
+
+		<evt name="mode" id="2">
+			<comment
+				title="Mode of cellular feature"
+				comment="Mode of cellular feature."
+				support="091a"
+				triggered="At connection or on changes by [set_mode](#171-3)."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="mode" type="enum:mode">
+				Mode of cellular feature.
+			</arg>
+		</evt>
+
+		<cmd name="set_mode" id="3">
+			<comment
+				title="Set mode of cellular feature"
+				desc="Set mode of cellular feature."
+				support="091a"
+				result="Requested cellular mode is set and [mode](#171-2) event is triggered with the
+				new mode."/>
+			<expectations>
+				<delayed>
+					#171-2(mode: this.mode)
+				</delayed>
+			</expectations>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="mode" type="enum:mode">
+				Requested cellular mode.
+			</arg>
+		</cmd>
+
+		<evt name="sim_information" id="4">
+			<comment
+				title="SIM card information"
+				comment="Informs about SIM card."
+				support="091a"
+				triggered="At connection; on changes after [set_pin_code](#171-5) and by the drone."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="status" type="enum:sim_status">
+				SIM card status.
+			</arg>
+			<arg name="iccid" type="string">
+				SIM card serial number.
+			</arg>
+			<arg name="imsi" type="string">
+				International Mobile Subscriber Identity.
+			</arg>
+		</evt>
+
+		<cmd name="set_pin_code" id="5">
+			<comment
+				title="Set PIN code"
+				desc="Set SIM card PIN code."
+				support="091a"
+				result="Unlock of the SIM card with the PIN code is tried, and event
+				[sim_information](#171-4) is sent accordingly,
+				or [pincode_request](#171-15) event if pin code is wrong."/>
+			<expectations>
+				<delayed>
+					#171-4(status: ready)
+				</delayed>
+			</expectations>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="pin" type="string">
+				SIM card PIN code.
+			</arg>
+		</cmd>
+
+		<evt name="registration_information" id="6">
+			<comment
+				title="Registration information"
+				comment="Informs about registration."
+				support="091a"
+				triggered="At connection or when network information changed on drone."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="status" type="enum:registration_status">
+				Registration status.
+			</arg>
+			<arg name="operator" type="string">
+				Operator name.
+			</arg>
+			<arg name="technology" type="enum:technology">
+				Access technology.
+			</arg>
+		</evt>
+
+		<evt name="network_mode" id="7">
+			<comment
+				title="Mobile technology"
+				comment="Informs about mobile technology."
+				support="091a"
+				triggered="At connection or on changes after [set_network_mode](#171-8)."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="network_mode" type="enum:network_mode">
+				Allowed access technology.
+			</arg>
+		</evt>
+
+		<cmd name="set_network_mode" id="8">
+			<comment
+				title="Force mobile technology"
+				desc="Force a specific mobile technology."
+				support="091a"
+				result="Modem will only register on network with selected technology and
+				won't change automatically"/>
+			<expectations>
+				<delayed>
+					#171-7(network_mode: this.network_mode)
+				</delayed>
+			</expectations>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="network_mode" type="enum:network_mode">
+				Access technology.
+			</arg>
+		</cmd>
+
+		<evt name="roaming_allowed" id="9">
+			<comment
+				title="Roaming allowed"
+				comment="Roaming allowed."
+				support="091a"
+				triggered="At connection or on changes after [set_roaming_allowed](#171-10)."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="roaming_allowed" type="u8">
+				1 if roaming is allowed, 0 if disallowed.
+			</arg>
+		</evt>
+
+		<cmd name="set_roaming_allowed" id="10">
+			<comment
+				title="Allow or disallow roaming"
+				desc="Allow or disallow roaming."
+				support="091a"
+				result="Roaming setting is set, and event [roaming_allowed](#171-9)
+				is sent accordingly."/>
+			<expectations>
+				<delayed>
+					#171-9(roaming_allowed: this.allowed)
+				</delayed>
+			</expectations>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="allowed" type="u8">
+				1 to allow roaming, 0 to disallow roaming.
+			</arg>
+		</cmd>
+
+		<evt name="modem_information" id="11">
+			<comment
+				title="Modem information"
+				comment="Informs about modem."
+				support="091a"
+				triggered="At connection or on changes."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="status" type="enum:modem_status">
+				Modem status.
+			</arg>
+			<arg name="imei" type="string">
+				International mobile equipment identity.
+			</arg>
+		</evt>
+
+		<evt name="network_information" id="12">
+			<comment
+				title="Network status"
+				comment="Informs about network status."
+				support="091a"
+				triggered="At connection or on changes."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="status" type="enum:network_status">
+				Network status.
+			</arg>
+		</evt>
+
+		<evt name="apn_information" id="13">
+			<comment
+				title="Apn information"
+				comment="Informs about the apn."
+				support="091a"
+				triggered="At connection or on changes by [set_apn](#171-14)."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="mode" type="u8">
+				0 for auto mode, 1 for manually set apn
+			</arg>
+			<arg name="url" type="string">
+				Access Point Name URL.
+			</arg>
+			<arg name="username" type="string">
+				Access Point Name username.
+			</arg>
+			<arg name="password" type="string">
+				Access Point Name password.
+			</arg>
+		</evt>
+
+		<cmd name="set_apn" id="14">
+			<comment
+				title="Configure APN"
+				desc="Set APN configuration."
+				support="091a"
+				result="APN settings are set, and event [apn_information](#171-13)
+				is sent accordingly."/>
+			<expectations>
+				<delayed>
+					#171-13(mode: this.mode, url: this.url, username: this.username, password: this.password)
+				</delayed>
+			</expectations>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="mode" type="u8">
+				0 for auto mode, 1 to set apn manually
+			</arg>
+			<arg name="url" type="string">
+				APN URL.
+			</arg>
+			<arg name="username" type="string">
+				APN username.
+			</arg>
+			<arg name="password" type="string">
+				APN password.
+			</arg>
+		</cmd>
+
+		<evt name="pincode_request" id="15">
+			<comment
+				title="PIN code request"
+				comment="Asks user to enter the PIN code."
+				support="091a"
+				triggered="After SIM has been detected; if no valid PIN code has been provided for that SIM."/>
+			<arg name="modem_id" type="u8">
+				Id of the modem.
+			</arg>
+			<arg name="invalid_pincode" type="u8">
+				0 if no PIN code has been provided yet, 1 if an invalid PIN code has been rejected by the SIM.
+			</arg>
+			<arg name="pin_remaining_tries" type="u8">
+				Remaining PIN code tries.
+			</arg>
+		</evt>
+
+		<cmd name="reset_config" id="16">
+			<comment
+				title="Reset configuration"
+				desc="Resets configuration and reboots the product if it is not flying."
+				support="091a"
+				result="All settings are reset to their default values and the product will reboot if the command can be executed, otherwise the event [reset_config_failed](#171-17) is sent."/>
+		</cmd>
+
+		<evt name="reset_config_failed" id="17">
+			<comment
+				title="Reset configuration failed"
+				comment="Reset configuration failed because the product is not ready, try again later."
+				support="091a"
+				triggered="After a reset_config command if the operation has failed."/>
+		</evt>
+	</msgs>
+</feature>

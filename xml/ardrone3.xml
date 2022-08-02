@@ -44,7 +44,6 @@
 				Then, event [FlyingState](#1-4-1) is triggered."/>
 			<expectations>
 				<immediate>
-					#1-4-1(state: motor_ramping)
 					#1-4-1(state: takingoff)
 				</immediate>
 			</expectations>
@@ -402,6 +401,21 @@
 				If there is no current relative move, this command has no effect."
 				result="Event [RelativeMoveChanged](#1-4-16) is triggered with state canceled."/>
 		</cmd>
+		<cmd name="SmartTakeOffLand" id="16">
+			<comment
+				title="Take off or land"
+				desc="Ask the drone to take off or land."
+				support="091a"
+				result="The drone takes off if its [FlyingState](#1-4-1) was landed.
+				The drone lands if its [FlyingState](#1-4-1) was taking off, hovering or flying.
+				Then, event [FlyingState](#1-4-1) is triggered."/>
+			<expectations>
+				<immediate>
+					#1-4-1(state: takingoff)
+					|#1-4-1(state: landing)
+				</immediate>
+			</expectations>
+		</cmd>
 	</class>
 	<class name="Animations" id="5">
 		Animation commands
@@ -433,7 +447,7 @@
 			</arg>
 		</cmd>
 	</class>
-	<class name="Camera" id="1">
+	<class name="Camera" id="1" deprecated="true">
 		Ask the drone to move camera
 		<cmd name="Orientation" id="0" buffer="NON_ACK" deprecated="true">
 			<comment
@@ -454,7 +468,7 @@
 				Saturation value is sent by thre drone through CameraSettingsChanged command.
 			</arg>
 		</cmd>
-		<cmd name="OrientationV2" id="1" buffer="NON_ACK">
+		<cmd name="OrientationV2" id="1" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Move the camera"
 				desc="Move the camera.\n
@@ -473,7 +487,7 @@
 				Saturation value is sent by thre drone through CameraSettingsChanged command.
 			</arg>
 		</cmd>
-		<cmd name="Velocity" id="2" buffer="NON_ACK">
+		<cmd name="Velocity" id="2" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Move the camera using velocity"
 				desc="Move the camera given velocity consign.\n
@@ -843,7 +857,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="AlertStateChanged" id="2">
+		<cmd name="AlertStateChanged" id="2" deprecated="true">
 			<comment
 				title="Alert state"
 				desc="Alert state."
@@ -924,6 +938,12 @@
 				</enum>
 				<enum name="enabled">
 					Navigate home enabled by product (unavailable->available)
+				</enum>
+				<enum name="flightplan">
+					Return to home during a flightplan (available->in_progress)
+				</enum>
+				<enum name="icing">
+					Return to home triggered by propeller icing event (available->in_progress)
 				</enum>
 			</arg>
 		</cmd>
@@ -1301,6 +1321,15 @@
 				<enum name="BATTERY_CRITICAL_SOON">
 					Battery will soon be critical, so forced landing auto trigger is planned.
 				</enum>
+				<enum name="PROPELLER_ICING_CRITICAL">
+					Propellers are critically iced, so forced landing auto trigger is planned.
+				</enum>
+				<enum name="BATTERY_TOO_COLD">
+					Battery is too cold, so forced landing auto trigger is planned.
+				</enum>
+				<enum name="BATTERY_TOO_HOT">
+					Battery is too hot, so forced landing auto trigger is planned.
+				</enum>
 			</arg>
 			<arg name="delay" type="u32">
 				Delay until the landing is automatically triggered by the drone, in seconds.
@@ -1375,6 +1404,28 @@
 				</enum>
 			</arg>
 		</cmd>
+		<cmd name="IcingLevelChanged" id="26">
+			<comment
+				title="Propeller icing level"
+				desc="Propeller icing level.\n
+				Informs that drone propellers are iced, which result in a degraded flying behavior."
+				support="091a:7.3.0"
+				triggered="at connection and on changes."/>
+			<arg name="state" type="enum">
+				Drone propeller icing level
+				<enum name="ok">
+					The level of propeller icing is low or non-existent.
+				</enum>
+				<enum name="warning">
+					The level of propeller icing begins to be too strong and can impact drone flying
+					capacity.
+				</enum>
+				<enum name="critical">
+					The level of propeller icing is high, will impact drone flying capacity and
+					eventually damage motors.
+				</enum>
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingEvent" id="34">
 		Events of Piloting
@@ -1416,6 +1467,13 @@
 					Command moveBy interrupted
 				</enum>
 			</arg>
+		</cmd>
+		<cmd name="UserTakeoffReady" id="1">
+			<comment
+				title="Drone ready to be thrown during UserTakeoff"
+				desc="Sent when the drone is ready to be thrown during a user takeoff."
+				support="091a"
+				triggered="when the motors are done ramping up during a [user takeoff](#1-0-8)."/>
 		</cmd>
 	</class>
 	<class name="Network" id="13">
@@ -3167,7 +3225,7 @@
 			</arg>
 		</cmd>
 	</class>
-	<class name="CameraState" id="25">
+	<class name="CameraState" id="25" deprecated="true">
 		Camera state
 		<cmd name="Orientation" id="0" buffer="NON_ACK" deprecated="true">
 			<comment
@@ -3196,7 +3254,7 @@
 				Pan value (in degree)
 			</arg>
 		</cmd>
-		<cmd name="OrientationV2" buffer="NON_ACK" id="2">
+		<cmd name="OrientationV2" buffer="NON_ACK" id="2" deprecated="true">
 			<comment
 				title="Camera orientation"
 				desc="Camera orientation with float arguments."
@@ -3209,7 +3267,7 @@
 				Pan camera consign for the drone [deg]
 			</arg>
 		</cmd>
-		<cmd name="defaultCameraOrientationV2" id="3">
+		<cmd name="defaultCameraOrientationV2" id="3" deprecated="true">
 			<comment
 				title="Orientation of the camera center"
 				desc="Orientation of the center of the camera.\n
@@ -3223,7 +3281,7 @@
 				Pan value [deg]
 			</arg>
 		</cmd>
-		<cmd name="VelocityRange" id="4">
+		<cmd name="VelocityRange" id="4" deprecated="true">
 			<comment
 				title="Camera velocity range"
 				desc="Camera Orientation velocity limits."

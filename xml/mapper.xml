@@ -126,6 +126,15 @@
 				In picture mode: take a picture
 				In record mode: start/stop record
 			</value>
+			<value name="debug_tag">
+				Add a debug tag to logs, and send it to the drone
+			</value>
+			<value name="smart_takeoff_land">
+				Smart take off or land (Drone will decide what to do)
+			</value>
+			<value name="toggle_antenna">
+				toggle between internal and external antenna
+			</value>
 		</enum>
 		<enum name="axis_action">
 			The action (mapped on an axis)

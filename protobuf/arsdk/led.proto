@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package arsdk.led;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.led";
+option java_outer_classname = "Led";
+
+option (olympe_package) = "led";
+
+// This is the entry point to send messages to SkyController
+// or drones in the futur
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    google.protobuf.Empty get_luminosity = 16;
+    SetLuminosity set_luminosity = 17;
+  }
+
+  message SetLuminosity {
+    uint32 value = 1; // the value is in %
+    option (support) = "0918";
+    option (support) = "091c";
+    option (support) = "091d";
+  }
+}
+
+// This is the entry point to receive messages from SkyController
+// and could be extended to drones in the futur
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    Luminosity luminosity = 16;
+  }
+
+  message Luminosity {
+    uint32 value = 1; // the value is in %
+    option (support) = "0918";
+    option (support) = "091c";
+    option (support) = "091d";
+  }
+}
+

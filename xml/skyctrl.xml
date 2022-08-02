@@ -520,6 +520,28 @@
 				Datetime with the ISO-8601 complete short format: "%Y%m%dT%H%M%S%z"
 			</arg>
 		</cmd>
+		<cmd name="ImminentShutdownChanged" id="2">
+			<comment
+				title="Imminent shutdown changed"
+				desc="The skycontroller will shutdown in 'duration' ms."
+				support="091d"
+				triggered="when the user start to press power button"/>
+			<arg name="duration" type="i16">
+				Remaining time (in milliseconds) before the Skycontroller shutdown.
+				'-1' means aborted shutdown (when the power button is released before the end).
+			</arg>
+		</cmd>
+		<cmd name="BootId" id="3">
+			<comment
+				title="Controller Boot id"
+				desc="Controller Boot id.\n
+				A Boot Id identifies a boot session and does not change between controller power on and power off."
+				support="0918;091c;091d"
+				triggered="At connection."/>
+			<arg name="bootId" type="string">
+				Id of the boot
+			</arg>
+		</cmd>
 	</class>
 	<class name="SkyControllerState" id="8">
 		Sky Controller states

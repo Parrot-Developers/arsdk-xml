@@ -32,6 +32,51 @@
 <feature id="140" name="controller_info">
 	Controller info feature
 	<enums>
+		<enum name="source">
+			Source of data.
+			<value name="main">
+				Gps data are coming from main gps device.
+			</value>
+			<value name="auxiliary">
+				Gps data are coming from an auxiliary gps device
+			</value>
+		</enum>
+		<enum name="supported_command">
+			Command supported by drone.
+			<value name="gps">
+				Gps command is supported.
+			</value>
+			<value name="gps_v2">
+				Gps v2 command is supported.
+			</value>
+		</enum>
+		<enum name="available_data">
+			Available data.
+			<value name="amsl_altitude">
+				Altitude (in meters above the mean sea level) is available.
+			</value>
+			<value name="wgs84_altitude">
+				Altitude above the WGS 84 ellipsoid is available.
+			</value>
+			<value name="altitude_accuracy">
+				Altitude accuracy is available.
+			</value>
+			<value name="north_velocity">
+				North velocity is available.
+			</value>
+			<value name="east_velocity">
+				East velocity is available.
+			</value>
+			<value name="up_velocity">
+				Up velocity is available.
+			</value>
+			<value name="velocity_accuracy">
+				Velocity accuracy is available.
+			</value>
+			<value name="number_of_satellites">
+				Number of satellites is available.
+			</value>
+		</enum>
 	</enums>
 	<msgs>
 		<cmd name="gps" id="1" buffer="NON_ACK">
@@ -39,7 +84,7 @@
 				title="Controller gps info"
 				desc="Controller gps info.\n
 				This command is not acknowledged by the drone."
-				support="090c:4.0.0;0914;0919"
+				support="090c:4.0.0;0914;0919;091a;091b;091e"
 				result="The position of the controller is known by the drone.\n
 				It can be used for RTH or FollowMe."/>
 			<arg name="latitude" type="double">
@@ -74,7 +119,7 @@
 		<cmd name="barometer" id="2" buffer="NON_ACK">
 			<comment
 				title="Controller barometer info"
-				support="090c:4.0.0;0914;0919"
+				support="090c:4.0.0;0914;0919;091a;091b;091e"
 				result="The altitude of the controller is known by the drone.\n
 				This command is not acknowledged by the drone."/>
 			<arg name="pressure" type="float">
@@ -87,12 +132,86 @@
 		</cmd>
 		<evt name="validity_from_drone" id="3" buffer="NON_ACK">
 			<comment
-				title="Controller gps validity from the drone point of view"
-				support="0914:1.7.0;0919:1.7.0"
-				result="The controller gps validity as seen by the drone. Sent once per second."/>
+				title="Controller gps validity viewed by the drone estimators"
+				support="0914:1.7.0;0919:1.7.0;091a;091b;091e"
+				result="The controller gps validity as seen by the drone. Sent on status change and at connection."/>
 			<arg name="is_valid" type="u8">
 				Boolean. Whether the gps is valid (1) or not (0), as seen by the drone
 			</arg>
 		</evt>
+		<evt name="capabilities" id="4">
+			<comment
+				title="capabilities"
+				comment="Describes controller info capabilities."
+				support="0914;0919;091a;091b;091e"
+				triggered="At connection."/>
+			<arg name="supported_command" type="bitfield:u8:supported_command">
+				Commands supported by the drone
+			</arg>
+		</evt>
+		<cmd name="gps_v2_available_data" id="5">
+			<comment
+				title="Gps available data"
+				support="0914;0919;091a;091b;091e"
+				desc="Gps available data."
+				result="The drone will know which data are available in gps_v2 command."/>
+			<arg name="source" type="enum:source">
+				Gps data source
+			</arg>
+			<arg name="available_data" type="bitfield:u16:available_data">
+				Available data.
+			</arg>
+		</cmd>
+		<cmd name="gps_v2" id="6" buffer="NON_ACK">
+			<comment
+				title="Controller gps info"
+				support="0914;0919;091a;091b;091e"
+				desc="Controller gps info.\n
+				This command is not acknowledged by the drone."
+				result="The position of the controller is known by the drone."/>
+			<arg name="source" type="enum:source">
+				Gps data source
+			</arg>
+			<arg name="latitude" type="double">
+				Latitude (in deg)
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude (in deg)
+			</arg>
+			<arg name="amsl_altitude" type="float">
+				Altitude (in meters above the mean sea level)
+			</arg>
+			<arg name="wgs84_altitude" type="float">
+				Altitude (in meters above the WGS 84 ellipsoid)
+			</arg>
+			<arg name="latitude_accuracy" type="float">
+				Latitude accuracy (in meter)
+			</arg>
+			<arg name="longitude_accuracy" type="float">
+				Longitude accuracy (in meter)
+			</arg>
+			<arg name="altitude_accuracy" type="float">
+				Altitude accuracy (in meter)
+			</arg>
+			<arg name="north_velocity" type="float">
+				North velocity (in meter per second)
+			</arg>
+			<arg name="east_velocity" type="float">
+				East velocity (in meter per second)
+			</arg>
+			<arg name="up_velocity" type="float">
+				Vertical velocity (in meter per second) (positive when moving up)
+			</arg>
+			<arg name="velocity_accuracy" type="float">
+				Velocity accuracy (in meter per second)
+			</arg>
+			<arg name="number_of_satellites" type="u8">
+				The number of satellites
+			</arg>
+			<arg name="timestamp" type="u64">
+				Timestamp of the gps info (in milliseconds), from a monotonic clock (not necessarily linked to utc
+				clock)
+			</arg>
+		</cmd>
 	</msgs>
 </feature>

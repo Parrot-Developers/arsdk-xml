@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package arsdk.microhard;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.microhard";
+option java_outer_classname = "Microhard";
+
+option (olympe_package) = "microhard";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    PowerOn power_on = 17;
+    ShutDown shutdown = 18;
+    PairDevice pair_device = 19;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+  }
+
+  message PowerOn {
+  }
+
+  message ShutDown {
+  }
+
+  message PairDevice {
+    string network_id = 1;
+    string encryption_key = 2;
+    PairingParameters pairing_parameters = 3;
+    ConnectionParameters connection_parameters = 4;
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+    HardwareError hardware_error = 18;
+    Pairing pairing = 19;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    oneof state {
+      microhard.State.Offline offline = 2;
+      microhard.State.Booting booting = 3;
+      microhard.State.Idle idle = 4;
+      microhard.State.Pairing pairing = 5;
+      microhard.State.Connecting connecting = 6;
+      microhard.State.Connected connected = 7;
+    }
+  }
+
+  message HardwareError {
+      microhard.HardwareErrorCause cause = 1;
+  }
+
+  message Pairing {
+    oneof status {
+      PairingStatus.Failure failure = 1;
+      PairingStatus.Success success = 2;
+    }
+    string network_id = 3;
+  }
+}
+
+message Capabilities {
+  uint32 channel_min = 1;
+  uint32 channel_max = 2;
+  uint32 power_min = 3;
+  uint32 power_max = 4;
+  repeated Bandwidth bandwidths = 5;
+  repeated Encryption encryption_algorithms = 6;
+}
+
+message ConnectionParameters {
+  uint32 channel = 1;
+  uint32 power = 2;
+  Bandwidth bandwidth = 3;
+}
+
+message State {
+  message Offline {
+  }
+
+  message Booting {
+  }
+
+  message Idle {
+  }
+
+  message Pairing {
+    string network_id = 1;
+    PairingParameters pairing_parameters = 2;
+    ConnectionParameters connection_parameters = 3;
+  }
+
+  message Connecting {
+    string device_uid = 1;
+  }
+
+  message Connected {
+    string device_uid = 1;
+  }
+}
+
+message PairingParameters {
+  uint32 channel = 1;
+  uint32 power = 2;
+  Bandwidth bandwidth = 3;
+  Encryption encryption_algorithm = 4;
+}
+
+message PairingStatus {
+  message Failure {
+    PairingFailureReason reason = 1;
+  }
+
+  message Success {
+    string device_uid = 1;
+  }
+}
+
+enum Bandwidth {
+  BANDWIDTH_1MHZ = 0;
+  BANDWIDTH_2MHZ = 1;
+  BANDWIDTH_4MHZ = 2;
+  BANDWIDTH_8MHZ = 3;
+}
+
+enum Encryption {
+  ENCRYPTION_NONE = 0;
+  ENCRYPTION_AES128 = 1;
+  ENCRYPTION_AES256 = 2;
+}
+
+enum HardwareErrorCause {
+  HARDWARE_ERROR_CAUSE_INTERNAL = 0;
+}
+
+enum PairingFailureReason {
+  PAIRING_FAILURE_REASON_INTERNAL_ERROR = 0;
+  PAIRING_FAILURE_REASON_ALREADY_PAIRED = 1;
+  PAIRING_FAILURE_REASON_DEVICE_NOT_REACHABLE = 2;
+  PAIRING_FAILURE_REASON_INVALID_STATE = 3;
+  PAIRING_FAILURE_REASON_INVALID_CONFIG = 4;
+}

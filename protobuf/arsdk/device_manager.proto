@@ -1,0 +1,192 @@
+syntax = "proto3";
+
+package arsdk.devicemanager;
+
+import "google/protobuf/wrappers.proto";
+import "parrot/protobuf/extensions.proto";
+import "arsdk/microhard.proto";
+
+option java_package = "com.parrot.drone.arsdk.devicemanager";
+option java_outer_classname = "DeviceManager";
+
+option (olympe_package) = "devicemanager";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    ConnectDevice connect_device = 17;
+    ForgetDevice forget_device = 18;
+    DiscoverDevices discover_devices = 19;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+  }
+
+  message ConnectDevice {
+    string uid = 1;
+
+    oneof transport {
+      Wifi wifi = 2;
+      Cellular cellular = 3;
+      Microhard microhard = 4;
+    }
+
+    message Wifi {
+      string security_key = 1;
+    }
+
+    message Cellular {
+    }
+
+    message Microhard {
+      google.protobuf.UInt32Value power = 1; // leave empty to use default
+    }
+  }
+
+  message ForgetDevice {
+    string uid = 1;
+  }
+
+  message DiscoverDevices {
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+    ConnectionFailure connection_failure = 17;
+    DiscoveredDevices discovered_devices = 18;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+
+    message KnownDevices {
+      repeated KnownDevice devices = 2;
+    }
+
+    KnownDevices known_devices = 3;
+
+    oneof connection_state {
+      ConnectionState.Idle idle = 4;
+      ConnectionState.Searching searching = 5;
+      ConnectionState.Connecting connecting = 6;
+      ConnectionState.Connected connected = 7;
+      ConnectionState.Disconnecting disconnecting = 8;
+    }
+  }
+
+  message ConnectionFailure {
+    DeviceInfo device = 1;
+    Transport transport = 2;
+    ConnectionFailureReason reason = 3;
+  }
+
+  message DiscoveredDevices {
+    repeated DiscoveredDevice devices = 1;
+  }
+}
+
+message Capabilities {
+  repeated Transport discovery_transports = 1;
+
+  message Microhard {
+    uint32 power_min = 2;
+    uint32 power_max = 3;
+  }
+
+  Microhard microhard = 2; // null if no microhard support
+}
+
+message ConnectionState {
+
+  message Idle {
+  }
+
+  message Searching {
+  }
+
+  message Connecting {
+    DeviceInfo device = 1;
+    Transport transport = 2;
+ }
+
+  message Connected {
+    DeviceInfo device = 1;
+    Transport transport = 2;
+  }
+
+  message Disconnecting {
+    DeviceInfo device = 1;
+    Transport transport = 2;
+  }
+}
+
+message DeviceInfo {
+  string uid = 1;
+  uint32 model = 2;
+  string network_id = 3;
+}
+
+message WifiInfo {
+  WifiSecurity security = 1;
+  bool saved_key = 2;
+}
+
+message CellularInfo {
+}
+
+message MicrohardInfo {
+  uint32 power = 1;
+  uint32 channel = 2;
+  arsdk.microhard.Bandwidth bandwidth = 3;
+  arsdk.microhard.Encryption encryption_algorithm = 4;
+}
+
+message KnownDevice {
+  DeviceInfo info = 1;
+  WifiInfo wifi = 2;
+  CellularInfo cellular = 3;
+  MicrohardInfo microhard = 4;
+}
+
+message DiscoveredDevice {
+  DeviceInfo info = 1;
+  bool known = 2;
+
+  message WifiVisibility {
+    WifiInfo transport_info = 1;
+    sint32 rssi = 2;
+  }
+
+  WifiVisibility wifi_visibility = 3;
+
+  message CellularVisibility {
+    CellularInfo transport_info = 1;
+  }
+
+  CellularVisibility cellular_visibility = 4;
+}
+
+enum ConnectionFailureReason {
+  CONNECTION_FAILURE_REASON_PEER_LIMIT = 0;
+  CONNECTION_FAILURE_REASON_AUTHENTICATION_FAILED = 1;
+}
+
+enum Transport {
+  TRANSPORT_WIFI = 0;
+  TRANSPORT_CELLULAR = 1;
+  TRANSPORT_MICROHARD = 2;
+}
+
+enum WifiSecurity {
+  WIFI_SECURITY_NONE = 0;
+  WIFI_SECURITY_WPA2 = 1;
+}

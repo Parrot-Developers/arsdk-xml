@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package arsdk.controllerprivacy;
+
+import "parrot/protobuf/extensions.proto";
+import "arsdk/privacy.proto";
+
+option java_package = "com.parrot.drone.arsdk.controllerprivacy";
+option java_outer_classname = "ControllerPrivacy";
+
+option (olympe_package) = "controllerPrivacy";
+
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    arsdk.privacy.Command.GetState get_state = 16;
+    arsdk.privacy.Command.SetLogMode set_log_mode = 17;
+  }
+}
+
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    arsdk.privacy.Event.State state = 16;
+  }
+}

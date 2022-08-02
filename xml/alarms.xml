@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2021 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="175" name="alarms">
+	Alarms
+	<enums>
+		<enum name="type">
+			Alarm type.
+			<value name="user_emergency">
+				User emergency alert.
+			</value>
+			<value name="motor_cutout">
+				Motor Cut out alert.
+			</value>
+			<value name="drone_inclination_too_high">
+				The angle of the drone is too high.
+			</value>
+			<value name="magneto_perturbation">
+				Magnetometer is disturbed by a magnetic element.
+			</value>
+			<value name="magneto_low_earth_field">
+				Local terrestrial magnetic field is too weak.
+			</value>
+			<value name="horizontal_geofence_reached">
+				Geofence horizontal reached alert.
+			</value>
+			<value name="vertical_geofence_reached">
+				Geofence vertical reached alert.
+			</value>
+			<value name="freefall_detected">
+				freefall detected.
+			</value>
+			<value name="fstcam_decalibrated">
+				Stereo camera is decalibrated.
+			</value>
+		</enum>
+
+		<enum name="takeoff_checklist_type">
+			takeoff readiness checks.
+			<value name="update_ongoing">
+				Firmware update is ongoing.
+			</value>
+			<value name="gyro">
+				Gyro health check.
+			</value>
+			<value name="magneto">
+				Magneto health check.
+			</value>
+			<value name="baro">
+				Barometer health check.
+			</value>
+			<value name="gps">
+				GPS check.
+			</value>
+			<value name="ultrasound">
+				Ultrasound check.
+			</value>
+			<value name="vcam">
+				VCAM check.
+			</value>
+			<value name="vertical_tof">
+				Vertical TOF check.
+			</value>
+			<value name="cellular_flashing">
+				Cellular modem flashing check.
+			</value>
+			<value name="drone_inclination_too_high">
+				Drone inclination check.
+			</value>
+			<value name="battery_critical">
+				Battery level check.
+			</value>
+			<value name="battery_identification">
+				Battery identification check.
+			</value>
+			<value name="battery_is_connected">
+				Battery USB connection check.
+			</value>
+			<value name="battery_is_too_hot">
+				Battery temperature check.
+			</value>
+			<value name="battery_is_too_cold">
+				Battery temperature check.
+			</value>
+			<value name="battery_old_fw">
+				Battery update needed check.
+			</value>
+			<value name="magneto_calibration">
+				Magneto calibration check.
+			</value>
+		</enum>
+
+		<enum name="state">
+			Alarm state.
+			<value name="off">
+				Alarm is off.
+			</value>
+			<value name="on">
+				Alarm is on.
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<evt name="alarms" id="1" type="MAP_ITEM:type">
+			<comment
+				title="Alarms"
+				desc="List of alarms raised."
+				triggered="At connection; on changes."
+				support="0914;0919;091b;091e;091a"/>
+			<arg name="type" type="enum:type">
+				Alarm type.
+			</arg>
+			<arg name="state" type="enum:state">
+				Alarm state.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+
+		<evt name="takeoff_checklist" id="2" type="MAP_ITEM:check">
+			<comment
+				title="Takeoff checklist"
+				desc="List of checks for takeoff_ready."
+				triggered="At connection; on changes."
+				support="0914;0919;091b;091e;091a"/>
+			<arg name="check" type="enum:takeoff_checklist_type">
+				Takeoff ready check type.
+			</arg>
+			<arg name="state" type="enum:state">
+				State of check, "on" means there is an event that prevents takeoff.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+	</msgs>
+</feature>

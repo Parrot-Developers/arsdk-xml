@@ -91,6 +91,12 @@
 				The resulting set of photos can then be retrieved as a single media that may be post-processed to make
 				panoramic images.
 			</value>
+			<value name="super_wide_photo_panorama">
+				The drone takes photos at different camera yaw for several camera pitch.
+				The resulting set of photos can then be retrieved as a single media that may
+				be post-processed to make a wide angle image.
+			</value>
+
 		</enum>
 		<enum name="state">
 			Animation state.
@@ -278,6 +284,72 @@
 				Move zoom level back to x1.
 			</value>
 		</enum>
+		<enum name="indicator">
+			Indicators needed to start an animation.
+			<value name="drone_gps">
+				Drone gps is not fixed.
+			</value>
+			<value name="drone_magneto">
+				Drone magneto is not valid.
+			</value>
+			<value name="drone_geofence">
+				Drone is out of geofence.
+			</value>
+			<value name="drone_min_altitude">
+				Drone is under min altitude.
+			</value>
+			<value name="drone_max_altitude">
+				Drone is above max altitude.
+			</value>
+			<value name="drone_flying">
+				Drone is not flying.
+			</value>
+			<value name="target_position_accuracy">
+				Target position has a bad accuracy.
+			</value>
+			<value name="target_image_detection">
+				Target image detection is not working.
+			</value>
+			<value name="drone_target_distance_min">
+				Drone is too close to target.
+			</value>
+			<value name="drone_target_distance_max">
+				Drone is too far from target.
+			</value>
+			<value name="target_horiz_speed">
+				Target horizontal speed is too high.
+			</value>
+			<value name="target_vert_speed">
+				Target vertical speed is too high.
+			</value>
+			<value name="target_altitude_accuracy">
+				Target altitude has a bad accuracy.
+			</value>
+			<value name="drone_battery">
+				Drone battery is insufficient.
+			</value>
+			<value name="drone_state">
+				Drone is not in a valid state.
+			</value>
+		</enum>
+		<enum name="mode">
+			Piloting mode necessary to start an animation.
+			<value name="follow_me">
+				Follow me mode.
+			</value>
+			<value name="manual">
+				Manual mode.
+			</value>
+			<value name="poi">
+				Point of interest mode.
+			</value>
+			<value name="look_at">
+				Look at mode.
+			</value>
+			<value name="flight_plan">
+				Flight plan mode.
+			</value>
+		</enum>
 	</enums>
 	<msgs>
 		<evt name="availability" id="1">
@@ -373,12 +445,12 @@
 				otherwise default value should be used.
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
-				Not used when rotation angle of provided_params param is 0.
+				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
+				Not used when the rotation angle of provided_params param is 0.
 			</arg>
 			<arg name="rotation_speed" type="float">
 				The desired rotation speed of the anim in rad/s
-				Not used when rotation speed of provided_params param is 0.
+				Not used when the rotation speed of provided_params param is 0.
 			</arg>
 		</cmd>
 		<evt name="horizontal_panorama_state" id="7">
@@ -392,7 +464,7 @@
 				State of the animation
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
+				Rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_speed" type="float">
@@ -550,12 +622,12 @@
 				Not used when vertical distance of provided_params param is 0.
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
-				Not used when rotation angle of provided_params param is 0.
+				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
+				Not used when the rotation angle of provided_params param is 0.
 			</arg>
 			<arg name="rotation_speed" type="float">
 				The desired rotation speed of the anim in rad/s
-				Not used when rotation speed of provided_params param is 0.
+				Not used when the rotation speed of provided_params param is 0.
 			</arg>
 			<arg name="play_mode" type="enum:play_mode">
 				Desired play mode.
@@ -581,7 +653,7 @@
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
+				Rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_speed" type="float">
@@ -633,7 +705,7 @@
 			</arg>
 			<arg name="revolution_nb" type="float">
 				The number of revolution (in turn).
-				Positive value makes a clockwise spiral, negative is anti-clockwise.
+				Positive value makes a clockwise spiral, negative if anti-clockwise.
 				Example: 1.5 makes an entire turn plus half of a turn
 			</arg>
 			<arg name="play_mode" type="enum:play_mode">
@@ -956,12 +1028,12 @@
 				Not used when vertical distance of provided_params param is 0.
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
-				Not used when rotation angle of provided_params param is 0.
+				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
+				Not used when the rotation angle of provided_params param is 0.
 			</arg>
 			<arg name="rotation_speed" type="float">
 				The desired rotation speed of the anim in rad/s
-				Not used when rotation speed of provided_params param is 0.
+				Not used when the rotation speed of provided_params param is 0.
 			</arg>
 			<arg name="play_mode" type="enum:play_mode">
 				Desired play mode.
@@ -987,7 +1059,7 @@
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
+				Rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_speed" type="float">
@@ -1033,12 +1105,12 @@
 				Not used when vertical distance of provided_params param is 0.
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
-				Not used when rotation angle of provided_params param is 0.
+				Desired rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
+				Not used when the rotation angle of provided_params param is 0.
 			</arg>
 			<arg name="rotation_speed" type="float">
 				The desired rotation speed of the anim in rad/s
-				Not used when rotation speed of provided_params param is 0.
+				Not used when the rotation speed of provided_params param is 0.
 			</arg>
 			<arg name="play_mode" type="enum:play_mode">
 				Desired play mode.
@@ -1064,7 +1136,7 @@
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_angle" type="float">
-				Rotation angle in rad. Positive value makes a clockwise panorama, negative is anti-clockwise.
+				Rotation angle in rad. Positive value makes a clockwise panorama, negative if anti-clockwise.
 				(only accurate if state is not idle)
 			</arg>
 			<arg name="rotation_speed" type="float">
@@ -1164,5 +1236,60 @@
 				State of the animation
 			</arg>
 		</evt>
+		<evt name="capabilities" id="34" type="MAP_ITEM:mode">
+			<comment
+				title="Mode capabilities"
+				desc="List of animations supported for a mode."
+				support="091a"
+				triggered="During connection"/>
+			<arg name="mode" type="enum:mode">
+				 Piloting Mode.
+			</arg>
+			<arg name="type" type="bitfield:u32:type">
+				List of animations supported for a mode.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+		<evt name="info" id="35" type="MAP_ITEM:type">
+			<comment
+				title="Animation information"
+				desc="Describes for each animation the list of missing requirements"
+				support="091a"
+				triggered="During connection and when the list of missing requirements changes"/>
+			<arg name="type" type="enum:type">
+				Animation type.
+			</arg>
+			<arg name="missing_inputs" type="bitfield:u32:indicator">
+				List of missing requirements to start animation.
+				If at least one input is missing, drone won't be able to start the animation.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+		<evt name="super_wide_photo_panorama_state" id="36">
+			<comment
+				title="Super wide photo panorama state"
+				comment="Informs about super wide photo panorama animation state."
+				support="091a"
+				triggered="by [StartSuperWidePhotoPanorama](#144-37) and when the state changes."/>
+			<arg name="state" type="enum:state">
+				State of the animation
+			</arg>
+		</evt>
+		<cmd name="start_super_wide_photo_panorama" id="37">
+			<comment
+				title="Start super wide photo panorama"
+				desc="Starts a super wide photo panorama animation."
+				support="091a"
+				result="If an animation was running, this animation is canceling, then canceled. Then, this animation is
+				started, [SuperWidePhotoPanoramaState](#144-36) is triggered with state `running` and
+				[State](#144-2) is triggered with type equals to `super_wide_photo_panorama`."/>
+			<expectations>
+				<immediate>
+					#144-36(state: running)
+					#144-2(type: super_wide_photo_panorama)
+				</immediate>
+			</expectations>
+		</cmd>
+
 	</msgs>
 </feature>

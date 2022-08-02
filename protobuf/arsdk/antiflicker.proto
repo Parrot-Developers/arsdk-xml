@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package arsdk.antiflicker;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.antiflicker";
+option java_outer_classname = "AntiFlicker";
+
+option (olympe_package) = "antiflicker";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetMode set_mode = 17;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+    option (support) = "091a";
+  }
+
+  message SetMode {
+    Mode mode = 1;
+    option (support) = "091a";
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+
+    oneof mode {
+      google.protobuf.Empty disabled = 2;
+      Frequency fixed = 3;
+      Frequency automatic = 4;
+    }
+    option (support) = "091a";
+  }
+}
+
+message Capabilities {
+    repeated Mode supported_modes = 1;
+}
+
+enum Mode {
+  MODE_DISABLED = 0;
+  MODE_AUTOMATIC = 1;
+  MODE_50_HZ = 2;
+  MODE_60_HZ = 3;
+}
+
+enum Frequency {
+  FREQUENCY_50_HZ = 0;
+  FREQUENCY_60_HZ = 1;
+}

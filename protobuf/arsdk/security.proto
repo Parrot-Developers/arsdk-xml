@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package arsdk.security;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.security";
+option java_outer_classname = "Security";
+
+option (olympe_package) = "security";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    RegisterApcToken register_apc_token = 16;
+    RegisterApcDroneList register_apc_drone_list = 17;
+  }
+
+  message RegisterApcToken {
+    string token = 1;
+
+    option (support) = "091a";
+  }
+
+  message RegisterApcDroneList {
+    string list = 1;
+
+    option (support) = "091a";
+  }
+}

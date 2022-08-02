@@ -95,6 +95,12 @@
 				Target altitude has a bad accuracy.
 				Not applicable to Move.
 			</value>
+			<value name="drone_battery">
+				Drone battery is insufficient.
+			</value>
+			<value name="drone_state">
+				Drone is not in a valid state.
+			</value>
 		</enum>
 	</enums>
 	<msgs>
@@ -140,7 +146,7 @@
 				Maximum vertical speed in m/s.
 			</arg>
 			<arg name="max_yaw_rotation_speed" type="float">
-				Maximum vertical speed in degrees/s.
+				Maximum yaw rotation speed in degrees/s.
 			</arg>
 		</cmd>
 		<cmd name="extended_move_by" id="2">
@@ -178,7 +184,7 @@
 				Maximum vertical speed in m/s.
 			</arg>
 			<arg name="max_yaw_rotation_speed" type="float">
-				Maximum vertical speed in degrees/s.
+				Maximum yaw rotation speed in degrees/s.
 			</arg>
 		</cmd>
 		<evt name="info" id="3">

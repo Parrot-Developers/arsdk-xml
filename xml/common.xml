@@ -460,6 +460,9 @@
 				<enum name="vertical_camera">
 					Vertical Camera sensor
 				</enum>
+				<enum name="vertical_tof">
+					Vertical Time Of Flight sensor
+				</enum>
 			</arg>
 			<arg name="sensorState" type="u8">
 				Sensor state (1 if the sensor is OK, 0 if the sensor is NOT OK)
@@ -653,6 +656,18 @@
 				Id of the boot
 			</arg>
 		</cmd>
+		<cmd name="FlightId" id="18">
+			<comment
+				title="Current Drone Flight id"
+				desc="Current Drone Flight id.\n
+				A Flight Id identifies a drone flight (between takeoff and land)."
+				support="0914;0919;091a;091b;091e"
+				triggered="At connection, and at each takeoff.\n
+                                Also at each landing, flightid is updated with an empty string value"/>
+			<arg name="flightId" type="string">
+				Id of the flight
+			</arg>
+		</cmd>
 	</class>
 	<class name="OverHeat" id="6">
 		Over heat commands
@@ -806,6 +821,9 @@
 				<enum name="mapMyHouse">
 					Mavlink file for MapMyHouse
 				</enum>
+				<enum name="flightPlanV2">
+					Mavlink file for FlightPlan V2 (better follow the standard)
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="Pause" id="1">
@@ -867,6 +885,9 @@
 				</enum>
 				<enum name="mapMyHouse">
 					Mavlink file for MapMyHouse
+				</enum>
+				<enum name="flightPlanV2">
+					Mavlink file for FlightPlan V2 (better follow the standard)
 				</enum>
 			</arg>
 		</cmd>
@@ -1002,7 +1023,7 @@
 				support="0901;090c;090e;0914;0919"
 				triggered="when the calibration requirement changes."/>
 			<arg name="required" type="u8">
-				1 if calibration is required, 0 if current calibration is still valid
+				1 if calibration is required, 0 if current calibration is still valid, 2 if calibration is recommended
 			</arg>
 		</cmd>
 		<cmd name="MagnetoCalibrationAxisToCalibrateChanged" id="2">
@@ -1153,6 +1174,15 @@
 				<enum name="CameraAvailable">
 					Drone camera component.
 					State is 0 when the drone needs to wait camera availability.
+				</enum>
+				<enum name="Mavlink_State">
+					Mavlink state component.
+					State is 0 when the mavlink did not start because of drone bad state.
+				</enum>
+				<enum name="Mavlink_Media">
+					Mavlink Media component.
+					State is 0 when the mavlink did not start because of a media action
+					which cannot be performed.
 				</enum>
 			</arg>
 			<arg name="State" type="u8">

@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package arsdk.controllernetwork;
+
+import "parrot/protobuf/extensions.proto";
+import "arsdk/network.proto";
+
+option java_package = "com.parrot.drone.arsdk.controllernetwork";
+option java_outer_classname = "ControllerNetwork";
+
+option (olympe_package) = "controllerNetwork";
+
+/* This is the entry point to send messages to the drone. */
+message Command {
+	reserved 1 to 15; /* reserved for non-acknowledged commands */
+
+	oneof id {
+		GetState get_state = 16;
+	}
+
+	/* Get current state. */
+	message GetState {
+		option (support) = "091d";
+	}
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+	reserved 1 to 15; /* reserved for non-acknowledged events */
+
+	oneof id {
+		State state = 16;
+	}
+
+	/* Current state. */
+	message State {
+		arsdk.network.LinksStatus links_status = 4;
+	}
+}

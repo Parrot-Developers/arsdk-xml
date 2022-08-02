@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="163" name="auto_look_at">
+	Auto Look At feature
+	<enums>
+		<enum name="mode">
+			Mode of look at.
+			<value name="none">
+				No look at.
+			</value>
+			<value name="target">
+				Look at the target without moving automatically.
+			</value>
+			<value name="pilot">
+				Look at the pilot without moving automatically.
+				Animations are available.
+			</value>
+		</enum>
+		<enum name="indicator">
+			Indicators needed to start or improve the look at.
+			<value name="drone_gps">
+				Drone gps is not fixed.
+			</value>
+			<value name="drone_magneto">
+				Drone magneto is not valid.
+			</value>
+			<value name="drone_geofence">
+				Drone is out of geofence.
+			</value>
+			<value name="drone_min_altitude">
+				Drone is under min altitude.
+			</value>
+			<value name="drone_max_altitude">
+				Drone is above max altitude.
+			</value>
+			<value name="drone_flying">
+				Drone is not flying.
+			</value>
+			<value name="target_position_accuracy">
+				Target position has a bad accuracy.
+			</value>
+			<value name="target_image_detection">
+				Target image detection is not working.
+			</value>
+			<value name="drone_target_distance_min">
+				Drone is too close to target.
+			</value>
+			<value name="drone_target_distance_max">
+				Drone is too far from target.
+			</value>
+			<value name="target_horiz_speed">
+				Target horizontal speed is too high.
+			</value>
+			<value name="target_vert_speed">
+				Target vertical speed is too high.
+			</value>
+			<value name="target_altitude_accuracy">
+				Target altitude has a bad accuracy.
+			</value>
+			<value name="drone_battery">
+				Drone battery is insufficient.
+			</value>
+			<value name="drone_state">
+				Drone is not in a valid state.
+			</value>
+		</enum>
+		<enum name="behavior">
+			Behavior.
+			<value name="idle">
+				Drone is not looking at the target.
+			</value>
+			<value name="look_at">
+				Look at the target.
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<evt name="info" id="1" type="MAP_ITEM:mode">
+			<comment
+				title="Look at info"
+				desc="Describes the missing inputs which prevent from starting a look at mode,
+				and improvements"
+				support="091a"
+				triggered="During connection and when the list of missing requirements
+				or improvements changes for the mode"/>
+			<arg name="mode" type="enum:mode">
+				Mode of look at.
+			</arg>
+			<arg name="missing_inputs" type="bitfield:u32:indicator">
+				List of missing requirements to enter this mode.
+				If at least one input is missing, drone won't be able to look at the target.
+				It won't use any fallback either.
+			</arg>
+			<arg name="improvements" type="bitfield:u32:indicator">
+				List of inputs that can improve the mode.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+		<cmd name="start" id="2">
+			<comment
+				title="Start look at mode"
+				desc="Start a look at. Sending this command will stop other running look at."
+				support="091a"
+				result="Event [state](#163-4)."/>
+			<expectations>
+				<immediate>
+					#163-4(mode: this.mode, behavior: look_at)
+				</immediate>
+			</expectations>
+			<arg name="mode" type="enum:mode"/>
+		</cmd>
+		<cmd name="stop" id="3">
+			<comment
+				title="Stop current look at."
+				desc="Stop current look at."
+				support="091a"
+				result="Event [state](#163-4) is triggered with mode equals to none."/>
+			<expectations>
+				<immediate>
+					#163-4(mode: none, behavior: idle)
+				</immediate>
+			</expectations>
+		</cmd>
+		<evt name="state" id="4">
+			<comment
+				title="State of the look at."
+				desc="State of the look at."
+				support="091a"
+				triggered="by any changes on the look at, like [start](#163-2),\n
+				[stop](#163-3) ..."/>
+			<arg name="mode" type="enum:mode">
+				Current mode.
+			</arg>
+			<arg name="behavior" type="enum:behavior">
+				Current behavior.
+			</arg>
+		</evt>
+	</msgs>
+</feature>

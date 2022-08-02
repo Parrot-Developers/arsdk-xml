@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package arsdk.privacy;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.privacy";
+option java_outer_classname = "Privacy";
+
+option (olympe_package) = "privacy";
+
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetLogMode set_log_mode = 17;
+  }
+
+  /* Get Current State.
+     A State event is expected afterwards. */
+  message GetState {
+    bool include_default_capabilities = 1;
+    option (support) = "091a";
+  }
+
+  /* Set log mode.
+     A State event is expected afterwards. */
+  message SetLogMode {
+    LogStorage log_storage = 1;
+    LogConfigPersistence log_config_persistence = 2;
+    option (support) = "091a";
+  }
+}
+
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  /* Sent after GetState or SetLogMode is received, or on changes. */
+  message State {
+    /* Only present if triggered from a GetState with include_default_capabilities == true. */
+    Capabilities default_capabilities = 1;
+
+    LogStorage log_storage = 2;
+    LogConfigPersistence log_config_persistence = 3;
+
+    option (support) = "091a";
+  }
+}
+
+message Capabilities {
+  repeated LogStorage supported_log_storage = 1;
+  repeated LogConfigPersistence supported_log_config_persistence = 2;
+}
+
+enum LogConfigPersistence {
+  /* Persistent configuration. */
+  LOG_CONFIG_PERSISTENCE_PERSISTENT = 0;
+  /* Configuration will only be valid for the current device boot.
+     Configuration will revert to the default factory configuration after the device reboots (and not the previous persistent one). */
+  LOG_CONFIG_PERSISTENCE_ONESHOT = 1;
+}
+
+enum LogStorage {
+  /* Logs are written to persistent storage. */
+  LOG_STORAGE_PERSISTENT = 0;
+  /* Logs are written to volatile storage, non persistent across reboots.
+     Some logs will be disabled in this mode. */
+  LOG_STORAGE_VOLATILE = 1;
+  /* Logs are not written. */
+  LOG_STORAGE_NONE = 2;
+}

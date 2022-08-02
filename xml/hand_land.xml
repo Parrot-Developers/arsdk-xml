@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	Copyright (C) 2014 Parrot SA
+	Copyright (C) 2020 Parrot SA
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -29,53 +29,30 @@
 	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 	SUCH DAMAGE.
 -->
-<feature id="133" name="generic">
-	All generic messages
+
+<feature name="hand_land" id="161">
+	Hand land.
 	<enums>
-		<enum name="list_flags">
-			Flags use by maps and lists
-			<value name="First">
-				indicate it's the first element of the list.
+		<enum name="state">,
+			Hand land state.
+			<value name="idle">
+				Hand land is idle.
 			</value>
-			<value name="Last">
-				indicate it's the last element of the list.
-			</value>
-			<value name="Empty">
-				indicate the list is empty (implies First/Last). All other arguments should be ignored.
-			</value>
-			<value name="Remove">
-				This value should be removed from the existing list.
+			<value name="ongoing">
+				Hand land is ongoing.
 			</value>
 		</enum>
 	</enums>
 	<msgs>
-		<cmd name="custom_cmd" id="1">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</cmd>
-
-		<cmd name="custom_cmd_non_ack" id="2" buffer="NON_ACK">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</cmd>
-
-		<evt name="custom_evt" id="3">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</evt>
-
-		<evt name="custom_evt_non_ack" id="4" buffer="NON_ACK">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
+		<evt name="state" id="1">
+			<comment
+				title="Hand land state."
+				comment="Describe hand land current state."
+				support="091a"
+				triggered="At connection and on changes."/>
+			<arg name="state" type="enum:state">
+				Hand land state.
+			</arg>
 		</evt>
 	</msgs>
-
 </feature>

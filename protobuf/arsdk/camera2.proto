@@ -1,0 +1,802 @@
+syntax = "proto3";
+
+package arsdk.camera;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.camera";
+option java_outer_classname = "Camera";
+
+option (olympe_package) = "camera2";
+
+// This is the entry point to send messages to the drone
+message Command {
+  reserved 2 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    SetZoomTarget set_zoom_target = 1; // non-ack
+
+    ListCameras list_cameras = 16;
+    GetState get_state = 17;
+    Configure configure = 18;
+    StartPhoto start_photo = 19;
+    StopPhoto stop_photo = 20;
+    StartRecording start_recording = 21;
+    StopRecording stop_recording = 22;
+    LockExposure lock_exposure = 23;
+    LockWhiteBalance lock_white_balance = 24;
+    SetMediaMetadata set_media_metadata = 25;
+    ResetZoom reset_zoom = 26;
+  }
+
+  message ListCameras {
+    /* TODO: Replace documentation example */
+    option (message_doc) =
+      "Message documentation example. "
+      "This is a reference to an other message [Event.CameraList].";
+    repeated CameraModel model_filter = 1
+      [(field_doc) = ""];
+
+    option (on_success) = "Event.CameraList()";
+    option (support) = "091a";
+  }
+
+  message GetState {
+    uint64 camera_id = 1;
+    bool include_default_capabilities = 2;
+
+    option (on_success) = "Event.State(camera_id=this.camera_id)";
+    option (support) = "091a";
+  }
+
+  message Configure {
+    uint64 camera_id = 1;
+    Config config = 2;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id, config=this.config"
+      ")";
+    option (on_failure) =
+      "Event.State("
+        "camera_id=this.camera_id, config=NotEqual(this.config),"
+        "_policy='wait'"
+      ")";
+    option (support) = "091a";
+  }
+
+  message SetZoomTarget {
+    uint64 camera_id = 1;
+    ZoomControlMode control_mode = 2;
+    double target = 3;
+
+    option (support) = "091a";
+  }
+
+  message ResetZoom {
+    uint64 camera_id = 1;
+
+    option (support) = "091a";
+  }
+
+  message StartPhoto {
+    uint64 camera_id = 1;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id,"
+        "photo=Event.State.Photo("
+          "state='PHOTO_STATE_ACTIVE')"
+      ") &"
+      "Event.Photo("
+        "camera_id=this.camera_id, type='PHOTO_EVENT_START'"
+      ")";
+    option (support) = "091a";
+  }
+
+  message StopPhoto {
+    uint64 camera_id = 1;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id,"
+        "photo=Event.State.Photo("
+          "state='PHOTO_STATE_INACTIVE')"
+      ") &"
+      "Event.Photo("
+        "camera_id=this.camera_id, type='PHOTO_EVENT_STOP'"
+      ")";
+    option (support) = "091a";
+  }
+
+  message StartRecording {
+    uint64 camera_id = 1;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id,"
+        "recording=Event.State.Recording(state='RECORDING_STATE_ACTIVE')"
+      ") &"
+      "Event.Recording("
+        "camera_id=this.camera_id, type='RECORDING_EVENT_START'"
+      ")";
+    option (support) = "091a";
+  }
+
+  message StopRecording {
+    uint64 camera_id = 1;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id,"
+        "recording=Event.State.Recording(state='RECORDING_STATE_INACTIVE')"
+      ") &"
+      "Event.Recording("
+        "camera_id=this.camera_id, type='RECORDING_EVENT_STOP'"
+      ")";
+    option (support) = "091a";
+  }
+
+  message LockExposure {
+    uint64 camera_id = 1;
+    ExposureLockMode mode = 2;
+    ExposureRoi.Center roi = 3;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id,"
+        "exposure_lock=Event.State.ExposureLock(mode=this.mode)"
+      ")";
+    option (support) = "091a";
+  }
+
+  message LockWhiteBalance {
+    uint64 camera_id = 1;
+    WhiteBalanceLockMode mode = 2;
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id, white_balance_lock=this.mode"
+      ")";
+    option (support) = "091a";
+  }
+
+  message SetMediaMetadata {
+    uint64 camera_id = 1;
+    MediaMetadata metadata = 2;
+
+
+    option (on_success) =
+      "Event.State("
+        "camera_id=this.camera_id, media_metadata=this.metadata"
+      ")";
+    option (support) = "091a";
+  }
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 4 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    Exposure camera_exposure = 1; // non-ack
+    ZoomLevel zoom_level = 2; // non-ack
+    NextPhotoInterval next_photo_interval = 3; // non-ack
+
+    CameraList camera_list = 16;
+    State state = 17;
+    Photo photo = 18;
+    Recording recording = 19;
+  }
+
+  message CameraList {
+    map<uint64, CameraModel> cameras = 1;
+
+    option (support) = "091a";
+  }
+
+  message State {
+    uint64 camera_id = 1;
+
+    map<uint32, google.protobuf.Empty> selected_fields = 2;
+
+    bool active = 3;
+    Capabilities default_capabilities = 4;
+    Capabilities current_capabilities = 5;
+    Config config = 6;
+
+    message Photo {
+      PhotoState state = 1;
+      uint64 start_timestamp = 2;
+      uint32 photo_count = 3;
+      StorageType storage = 4;
+    }
+
+    Photo photo = 7;
+
+    message Recording {
+      RecordingState state = 1;
+      uint64 start_timestamp = 2;
+      uint32 video_bitrate = 3;
+      StorageType storage = 4;
+    }
+
+    Recording recording = 8;
+
+    message WhiteBalanceLock {
+      repeated WhiteBalanceLockMode supported_modes = 1;
+      WhiteBalanceLockMode mode = 2;
+    }
+
+    WhiteBalanceLock white_balance_lock = 9;
+
+    message ExposureLock {
+      repeated ExposureLockMode supported_modes = 1;
+      ExposureLockMode mode = 2;
+    }
+
+    ExposureLock exposure_lock = 10;
+
+    message Zoom {
+      double zoom_level_max = 1;
+      double zoom_high_quality_level_max = 2;
+    }
+
+    Zoom zoom = 11;
+
+    MediaMetadata media_metadata = 12;
+
+    option (support) = "091a";
+  }
+
+  message Exposure {
+    uint64 camera_id = 1;
+    ShutterSpeed shutter_speed = 2;
+    IsoSensitivity iso_sensitivity = 3;
+    ExposureRoi exposure_lock_region = 4;
+
+    option (support) = "091a";
+  }
+
+  message ZoomLevel {
+    uint64 camera_id = 1;
+    double level = 2;
+
+    option (support) = "091a";
+  }
+
+  message NextPhotoInterval {
+    uint64 camera_id = 1;
+    PhotoMode mode = 2;
+    double interval = 3;
+
+    option (support) = "091a";
+  }
+
+  message Photo {
+    uint64 camera_id = 1;
+    PhotoEvent type = 2;
+    string media_id = 3;
+    PhotoStopReason stop_reason = 4;
+    string resource_id = 5;
+
+    option (support) = "091a";
+  }
+
+  message Recording {
+    uint64 camera_id = 1;
+    RecordingEvent type = 2;
+    string media_id = 3;
+    RecordingStopReason stop_reason = 4;
+
+    option (support) = "091a";
+  }
+}
+
+message Capabilities {
+  message Rule {
+    uint64 index = 1;
+
+    map<uint32, google.protobuf.Empty> selected_fields = 2;
+
+    repeated CameraMode camera_modes = 3;
+    repeated PhotoMode photo_modes = 4;
+    repeated DynamicRange photo_dynamic_ranges = 5;
+    repeated PhotoResolution photo_resolutions = 6;
+    repeated PhotoFormat photo_formats = 7;
+    repeated PhotoFileFormat photo_file_formats = 8;
+    repeated BurstValue photo_burst_values = 9;
+    repeated BracketingPreset photo_bracketing_presets = 10;
+    DoubleRange photo_time_lapse_interval_range = 11;
+    DoubleRange photo_gps_lapse_interval_range = 12;
+    repeated PhotoStreamingMode photo_streaming_modes = 13;
+    repeated VideoRecordingMode video_recording_modes = 14;
+    repeated DynamicRange video_recording_dynamic_ranges = 15;
+    repeated VideoCodec video_recording_codecs = 16;
+    repeated VideoResolution video_recording_resolutions = 17;
+    repeated Framerate video_recording_framerates = 18;
+    reserved 19;
+    repeated AudioRecordingMode audio_recording_modes = 20;
+    reserved 21, 22;
+    repeated ExposureMode exposure_modes = 23;
+    repeated ShutterSpeed exposure_manual_shutter_speeds = 24;
+    repeated IsoSensitivity exposure_manual_iso_sensitivities = 25;
+    repeated IsoSensitivity exposure_maximum_iso_sensitivities = 26;
+    repeated WhiteBalanceMode white_balance_modes = 27;
+    repeated WhiteBalanceTemperature white_balance_temperatures = 28;
+    repeated EvCompensation ev_compensations = 29;
+    repeated ImageStyle image_styles = 30;
+    DoubleRange image_contrast_range = 31;
+    DoubleRange image_saturation_range = 32;
+    DoubleRange image_sharpness_range = 33;
+    DoubleRange zoom_max_speed_range = 34;
+    repeated ZoomVelocityControlQualityMode zoom_velocity_control_quality_modes = 35;
+    repeated AutoRecordMode auto_record_modes = 36;
+    DoubleRange alignment_offset_pitch_range = 37;
+    DoubleRange alignment_offset_roll_range = 38;
+    DoubleRange alignment_offset_yaw_range = 39;
+    repeated DigitalSignature photo_signatures = 40;
+    repeated ExposureMetering exposure_meterings = 41;
+    repeated StoragePolicy storage_policies = 42;
+    repeated uint32 video_recording_bitrates = 43;
+  }
+
+  repeated Rule rules = 1;
+}
+
+message Config {
+  map<uint32, google.protobuf.Empty> selected_fields = 1;
+
+  CameraMode camera_mode = 2;
+  PhotoMode photo_mode = 3;
+  DynamicRange photo_dynamic_range = 4;
+  PhotoResolution photo_resolution = 5;
+  PhotoFormat photo_format = 6;
+  PhotoFileFormat photo_file_format = 7;
+  BurstValue photo_burst_value = 8;
+  BracketingPreset photo_bracketing_preset = 9;
+  double photo_time_lapse_interval = 10;
+  double photo_gps_lapse_interval = 11;
+  PhotoStreamingMode photo_streaming_mode = 12;
+  VideoRecordingMode video_recording_mode = 13;
+  DynamicRange video_recording_dynamic_range = 14;
+  VideoCodec video_recording_codec = 15;
+  VideoResolution video_recording_resolution = 16;
+  Framerate video_recording_framerate = 17;
+  reserved 18;
+  AudioRecordingMode audio_recording_mode = 19;
+  reserved 20, 21;
+  ExposureMode exposure_mode = 22;
+  ShutterSpeed exposure_manual_shutter_speed = 23;
+  IsoSensitivity exposure_manual_iso_sensitivity = 24;
+  IsoSensitivity exposure_maximum_iso_sensitivity = 25;
+  WhiteBalanceMode white_balance_mode = 26;
+  WhiteBalanceTemperature white_balance_temperature = 27;
+  EvCompensation ev_compensation = 28;
+  ImageStyle image_style = 29;
+  double image_contrast = 30;
+  double image_saturation = 31;
+  double image_sharpness = 32;
+  double zoom_max_speed = 33;
+  ZoomVelocityControlQualityMode zoom_velocity_control_quality_mode = 34;
+  AutoRecordMode auto_record_mode = 35;
+  double alignment_offset_pitch = 36;
+  double alignment_offset_roll = 37;
+  double alignment_offset_yaw = 38;
+  DigitalSignature photo_signature = 39;
+  ExposureMetering exposure_metering = 40;
+  StoragePolicy storage_policy = 41;
+  uint32 video_recording_bitrate = 42;
+}
+
+message DoubleRange {
+  double min = 1;
+  double max = 2;
+}
+
+message ExposureRoi {
+  message Center {
+    double x = 1;
+    double y = 2;
+  }
+
+  Center center = 1;
+  double width = 2;
+  double height = 3;
+}
+
+message MediaMetadata {
+  map<uint32, google.protobuf.Empty> selected_fields = 1;
+  string copyright = 2;
+  string custom_id = 3;
+  string custom_title = 4;
+}
+
+enum AudioRecordingMode {
+  /* TODO: Replace documentation example */
+  AUDIO_RECORDING_MODE_MUTE = 0
+    [(enum_value_doc) = ""];
+  AUDIO_RECORDING_MODE_DRONE = 1
+    [(enum_value_doc) = ""];
+
+  option (enum_doc) =
+    "This is an enum documentation example.";
+}
+
+enum AutoRecordMode {
+  AUTO_RECORD_MODE_DISABLED = 0;
+  AUTO_RECORD_MODE_FLIGHT = 1;
+}
+
+enum BracketingPreset {
+  BRACKETING_PRESET_1EV = 0;
+  BRACKETING_PRESET_2EV = 1;
+  BRACKETING_PRESET_3EV = 2;
+  BRACKETING_PRESET_1EV_2EV = 3;
+  BRACKETING_PRESET_1EV_3EV = 4;
+  BRACKETING_PRESET_2EV_3EV = 5;
+    BRACKETING_PRESET_1EV_2EV_3EV = 6;
+}
+
+enum BurstValue {
+  BURST_VALUE_14_OVER_4S = 0;
+  BURST_VALUE_14_OVER_2S = 1;
+  BURST_VALUE_14_OVER_1S = 2;
+  BURST_VALUE_10_OVER_4S = 3;
+  BURST_VALUE_10_OVER_2S = 4;
+  BURST_VALUE_10_OVER_1S = 5;
+  BURST_VALUE_4_OVER_4S = 6;
+  BURST_VALUE_4_OVER_2S = 7;
+  BURST_VALUE_4_OVER_1S = 8;
+}
+
+enum CameraMode {
+  CAMERA_MODE_PHOTO = 0;
+  CAMERA_MODE_RECORDING = 1;
+}
+
+enum CameraModel {
+  CAMERA_MODEL_MAIN = 0;
+}
+
+enum DigitalSignature {
+  DIGITAL_SIGNATURE_NONE = 0;
+  DIGITAL_SIGNATURE_DRONE = 1;
+}
+
+enum DynamicRange {
+  DYNAMIC_RANGE_STANDARD = 0;
+  DYNAMIC_RANGE_HDR8 = 1;
+  DYNAMIC_RANGE_HDR10 = 2;
+}
+
+enum EvCompensation {
+  EV_COMPENSATION_MINUS_3_00 = 0;
+  EV_COMPENSATION_MINUS_2_67 = 1;
+  EV_COMPENSATION_MINUS_2_33 = 2;
+  EV_COMPENSATION_MINUS_2_00 = 3;
+  EV_COMPENSATION_MINUS_1_67 = 4;
+  EV_COMPENSATION_MINUS_1_33 = 5;
+  EV_COMPENSATION_MINUS_1_00 = 6;
+  EV_COMPENSATION_MINUS_0_67 = 7;
+  EV_COMPENSATION_MINUS_0_33 = 8;
+  EV_COMPENSATION_0_00 = 9;
+  EV_COMPENSATION_0_33 = 10;
+  EV_COMPENSATION_0_67 = 11;
+  EV_COMPENSATION_1_00 = 12;
+  EV_COMPENSATION_1_33 = 13;
+  EV_COMPENSATION_1_67 = 14;
+  EV_COMPENSATION_2_00 = 15;
+  EV_COMPENSATION_2_33 = 16;
+  EV_COMPENSATION_2_67 = 17;
+  EV_COMPENSATION_3_00 = 18;
+}
+
+enum ExposureLockMode {
+  EXPOSURE_LOCK_MODE_UNLOCKED = 0;
+  EXPOSURE_LOCK_MODE_FULL_LOCK = 1;
+  EXPOSURE_LOCK_MODE_ROI_LOCK = 2;
+}
+
+enum ExposureMetering {
+  EXPOSURE_METERING_STANDARD = 0;
+  EXPOSURE_METERING_CENTER_TOP = 1;
+}
+
+enum ExposureMode {
+  EXPOSURE_MODE_AUTOMATIC = 0;
+  EXPOSURE_MODE_AUTOMATIC_PREFER_ISO_SENSITIVITY = 1;
+  EXPOSURE_MODE_AUTOMATIC_PREFER_SHUTTER_SPEED = 2;
+  EXPOSURE_MODE_MANUAL_ISO_SENSITIVITY = 3;
+  EXPOSURE_MODE_MANUAL_SHUTTER_SPEED = 4;
+  EXPOSURE_MODE_MANUAL = 5;
+}
+
+enum Framerate {
+  FRAMERATE_24 = 0;
+  FRAMERATE_25 = 1;
+  FRAMERATE_30 = 2;
+  FRAMERATE_48 = 3;
+  FRAMERATE_50 = 4;
+  FRAMERATE_60 = 5;
+  FRAMERATE_96 = 6;
+  FRAMERATE_100 = 7;
+  FRAMERATE_120 = 8;
+}
+
+enum ImageStyle {
+  IMAGE_STYLE_CUSTOM = 0;
+  IMAGE_STYLE_STANDARD = 1;
+  IMAGE_STYLE_PLOG = 2;
+  IMAGE_STYLE_INTENSE = 3;
+  IMAGE_STYLE_PASTEL = 4;
+  IMAGE_STYLE_PHOTOGRAMMETRY = 5;
+}
+
+enum IsoSensitivity {
+  ISO_SENSITIVITY_25 = 0;
+  ISO_SENSITIVITY_50 = 1;
+  ISO_SENSITIVITY_64 = 2;
+  ISO_SENSITIVITY_80 = 3;
+  ISO_SENSITIVITY_100 = 4;
+  ISO_SENSITIVITY_125 = 5;
+  ISO_SENSITIVITY_160 = 6;
+  ISO_SENSITIVITY_200 = 7;
+  ISO_SENSITIVITY_250 = 8;
+  ISO_SENSITIVITY_320 = 9;
+  ISO_SENSITIVITY_400 = 10;
+  ISO_SENSITIVITY_500 = 11;
+  ISO_SENSITIVITY_640 = 12;
+  ISO_SENSITIVITY_800 = 13;
+  ISO_SENSITIVITY_1000 = 14;
+  ISO_SENSITIVITY_1200 = 15;
+  ISO_SENSITIVITY_1600 = 16;
+  ISO_SENSITIVITY_2000 = 17;
+  ISO_SENSITIVITY_2500 = 18;
+  ISO_SENSITIVITY_3200 = 19;
+  ISO_SENSITIVITY_4000 = 20;
+  ISO_SENSITIVITY_5000 = 21;
+  ISO_SENSITIVITY_6400 = 22;
+  ISO_SENSITIVITY_8000 = 23;
+  ISO_SENSITIVITY_10000 = 24;
+  ISO_SENSITIVITY_12800 = 25;
+  ISO_SENSITIVITY_16000 = 26;
+  ISO_SENSITIVITY_20000 = 27;
+  ISO_SENSITIVITY_25600 = 28;
+  ISO_SENSITIVITY_32000 = 29;
+  ISO_SENSITIVITY_40000 = 30;
+  ISO_SENSITIVITY_51200 = 31;
+}
+
+enum PhotoState {
+  PHOTO_STATE_UNAVAILABLE = 0;
+  PHOTO_STATE_INACTIVE = 1;
+  PHOTO_STATE_ACTIVE = 2;
+}
+
+enum PhotoEvent {
+  PHOTO_EVENT_START = 0;
+  PHOTO_EVENT_TAKING_PHOTO = 1;
+  reserved 2, 3;
+  PHOTO_EVENT_STOP = 4;
+}
+
+enum PhotoFileFormat {
+  PHOTO_FILE_FORMAT_JPEG = 0;
+  reserved 1;
+  PHOTO_FILE_FORMAT_DNG_JPEG = 2;
+}
+
+enum PhotoFormat {
+  PHOTO_FORMAT_FULL_FRAME = 0;
+  PHOTO_FORMAT_RECTILINEAR = 1;
+  PHOTO_FORMAT_FULL_FRAME_STABILIZED = 2;
+}
+
+enum PhotoMode {
+  PHOTO_MODE_SINGLE = 0;
+  PHOTO_MODE_BRACKETING = 1;
+  PHOTO_MODE_BURST = 2;
+  PHOTO_MODE_TIME_LAPSE = 3;
+  PHOTO_MODE_GPS_LAPSE = 4;
+}
+
+enum PhotoResolution {
+  PHOTO_RESOLUTION_48_MEGA_PIXELS = 0;
+  reserved 1;
+  PHOTO_RESOLUTION_12_MEGA_PIXELS = 2;
+}
+
+enum PhotoStopReason {
+  PHOTO_STOP_REASON_USER_REQUEST = 0;
+  PHOTO_STOP_REASON_CAPTURE_DONE = 1;
+  PHOTO_STOP_REASON_CONFIGURATION_CHANGE = 2;
+  PHOTO_STOP_REASON_INTERNAL_ERROR = 3;
+  PHOTO_STOP_REASON_INSUFFICIENT_STORAGE_SPACE = 4;
+}
+
+enum PhotoStreamingMode {
+  PHOTO_STREAMING_MODE_INTERRUPT = 0;
+  PHOTO_STREAMING_MODE_CONTINUOUS = 1;
+}
+
+enum RecordingEvent {
+  RECORDING_EVENT_START = 0;
+  RECORDING_EVENT_STOP = 1;
+  RECORDING_EVENT_STOPPING = 2;
+}
+
+enum RecordingState {
+  RECORDING_STATE_UNAVAILABLE = 0;
+  RECORDING_STATE_INACTIVE = 1;
+  RECORDING_STATE_ACTIVE = 3;
+}
+
+enum RecordingStopReason {
+  RECORDING_STOP_REASON_USER_REQUEST = 0;
+  RECORDING_STOP_REASON_CONFIGURATION_CHANGE = 2;
+  RECORDING_STOP_REASON_INTERNAL_ERROR = 3;
+  RECORDING_STOP_REASON_INSUFFICIENT_STORAGE_SPACE = 4;
+  RECORDING_STOP_REASON_INSUFFICIENT_STORAGE_SPEED = 5;
+}
+
+enum VideoRecordingMode {
+  VIDEO_RECORDING_MODE_STANDARD = 0;
+}
+
+enum ShutterSpeed {
+  SHUTTER_SPEED_1_OVER_10000 = 0;
+  SHUTTER_SPEED_1_OVER_8000 = 1;
+  SHUTTER_SPEED_1_OVER_6400 = 2;
+  SHUTTER_SPEED_1_OVER_5000 = 3;
+  SHUTTER_SPEED_1_OVER_4000 = 4;
+  SHUTTER_SPEED_1_OVER_3200 = 5;
+  SHUTTER_SPEED_1_OVER_2500 = 6;
+  SHUTTER_SPEED_1_OVER_2000 = 7;
+  SHUTTER_SPEED_1_OVER_1600 = 8;
+  SHUTTER_SPEED_1_OVER_1250 = 9;
+  SHUTTER_SPEED_1_OVER_1000 = 10;
+  SHUTTER_SPEED_1_OVER_800 = 11;
+  SHUTTER_SPEED_1_OVER_640 = 12;
+  SHUTTER_SPEED_1_OVER_500 = 13;
+  SHUTTER_SPEED_1_OVER_400 = 14;
+  SHUTTER_SPEED_1_OVER_320 = 15;
+  SHUTTER_SPEED_1_OVER_240 = 16;
+  SHUTTER_SPEED_1_OVER_200 = 17;
+  SHUTTER_SPEED_1_OVER_160 = 18;
+  SHUTTER_SPEED_1_OVER_120 = 19;
+  SHUTTER_SPEED_1_OVER_100 = 20;
+  SHUTTER_SPEED_1_OVER_80 = 21;
+  SHUTTER_SPEED_1_OVER_60 = 22;
+  SHUTTER_SPEED_1_OVER_50 = 23;
+  SHUTTER_SPEED_1_OVER_40 = 24;
+  SHUTTER_SPEED_1_OVER_30 = 25;
+  SHUTTER_SPEED_1_OVER_25 = 26;
+  SHUTTER_SPEED_1_OVER_15 = 27;
+  SHUTTER_SPEED_1_OVER_10 = 28;
+  SHUTTER_SPEED_1_OVER_8 = 29;
+  SHUTTER_SPEED_1_OVER_6 = 30;
+  SHUTTER_SPEED_1_OVER_4 = 31;
+  SHUTTER_SPEED_1_OVER_3 = 32;
+  SHUTTER_SPEED_1_OVER_2 = 33;
+  SHUTTER_SPEED_1_OVER_1_POINT_5 = 34;
+  SHUTTER_SPEED_1 = 35;
+}
+
+enum StoragePolicy {
+  STORAGE_POLICY_AUTO = 0;
+  STORAGE_POLICY_INTERNAL = 1;
+  STORAGE_POLICY_REMOVABLE = 2;
+}
+
+enum StorageType {
+  STORAGE_TYPE_INTERNAL = 0;
+  STORAGE_TYPE_REMOVABLE = 1;
+}
+
+enum VideoCodec {
+  VIDEO_CODEC_H264 = 0;
+  VIDEO_CODEC_H265 = 1;
+}
+
+enum VideoResolution {
+  VIDEO_RESOLUTION_RESERVED = 0;
+  VIDEO_RESOLUTION_2160P = 1;
+  reserved 2;
+  VIDEO_RESOLUTION_1080P = 3;
+}
+
+enum WhiteBalanceLockMode {
+  WHITE_BALANCE_LOCK_MODE_UNLOCKED = 0;
+  WHITE_BALANCE_LOCK_MODE_LOCKED = 1;
+}
+
+enum WhiteBalanceMode {
+  WHITE_BALANCE_MODE_CUSTOM = 0;
+  WHITE_BALANCE_MODE_AUTOMATIC = 1;
+  WHITE_BALANCE_MODE_CANDLE = 2;
+  WHITE_BALANCE_MODE_SUNSET = 3;
+  WHITE_BALANCE_MODE_INCANDESCENT = 4;
+  WHITE_BALANCE_MODE_WARM_WHITE_FLUORESCENT = 5;
+  WHITE_BALANCE_MODE_HALOGEN = 6;
+  WHITE_BALANCE_MODE_FLUORESCENT = 7;
+  WHITE_BALANCE_MODE_COOL_WHITE_FLUORESCENT = 8;
+  WHITE_BALANCE_MODE_FLASH = 9;
+  WHITE_BALANCE_MODE_DAYLIGHT = 10;
+  WHITE_BALANCE_MODE_SUNNY = 11;
+  WHITE_BALANCE_MODE_CLOUDY = 12;
+  WHITE_BALANCE_MODE_SNOW = 13;
+  WHITE_BALANCE_MODE_HAZY = 14;
+  WHITE_BALANCE_MODE_SHADED = 15;
+  WHITE_BALANCE_MODE_GREEN_FOLIAGE = 16;
+  WHITE_BALANCE_MODE_BLUE_SKY = 17;
+}
+
+enum WhiteBalanceTemperature {
+  WHITE_BALANCE_TEMPERATURE_1500 = 0;
+  WHITE_BALANCE_TEMPERATURE_1750 = 1;
+  WHITE_BALANCE_TEMPERATURE_2000 = 2;
+  WHITE_BALANCE_TEMPERATURE_2250 = 3;
+  WHITE_BALANCE_TEMPERATURE_2500 = 4;
+  WHITE_BALANCE_TEMPERATURE_2750 = 5;
+  WHITE_BALANCE_TEMPERATURE_3000 = 6;
+  WHITE_BALANCE_TEMPERATURE_3250 = 7;
+  WHITE_BALANCE_TEMPERATURE_3500 = 8;
+  WHITE_BALANCE_TEMPERATURE_3750 = 9;
+  WHITE_BALANCE_TEMPERATURE_4000 = 10;
+  WHITE_BALANCE_TEMPERATURE_4250 = 11;
+  WHITE_BALANCE_TEMPERATURE_4500 = 12;
+  WHITE_BALANCE_TEMPERATURE_4750 = 13;
+  WHITE_BALANCE_TEMPERATURE_5000 = 14;
+  WHITE_BALANCE_TEMPERATURE_5250 = 15;
+  WHITE_BALANCE_TEMPERATURE_5500 = 16;
+  WHITE_BALANCE_TEMPERATURE_5750 = 17;
+  WHITE_BALANCE_TEMPERATURE_6000 = 18;
+  WHITE_BALANCE_TEMPERATURE_6250 = 19;
+  WHITE_BALANCE_TEMPERATURE_6500 = 20;
+  WHITE_BALANCE_TEMPERATURE_6750 = 21;
+  WHITE_BALANCE_TEMPERATURE_7000 = 22;
+  WHITE_BALANCE_TEMPERATURE_7250 = 23;
+  WHITE_BALANCE_TEMPERATURE_7500 = 24;
+  WHITE_BALANCE_TEMPERATURE_7750 = 25;
+  WHITE_BALANCE_TEMPERATURE_8000 = 26;
+  WHITE_BALANCE_TEMPERATURE_8250 = 27;
+  WHITE_BALANCE_TEMPERATURE_8500 = 28;
+  WHITE_BALANCE_TEMPERATURE_8750 = 29;
+  WHITE_BALANCE_TEMPERATURE_9000 = 30;
+  WHITE_BALANCE_TEMPERATURE_9250 = 31;
+  WHITE_BALANCE_TEMPERATURE_9500 = 32;
+  WHITE_BALANCE_TEMPERATURE_9750 = 33;
+  WHITE_BALANCE_TEMPERATURE_10000 = 34;
+  WHITE_BALANCE_TEMPERATURE_10250 = 35;
+  WHITE_BALANCE_TEMPERATURE_10500 = 36;
+  WHITE_BALANCE_TEMPERATURE_10750 = 37;
+  WHITE_BALANCE_TEMPERATURE_11000 = 38;
+  WHITE_BALANCE_TEMPERATURE_11250 = 39;
+  WHITE_BALANCE_TEMPERATURE_11500 = 40;
+  WHITE_BALANCE_TEMPERATURE_11750 = 41;
+  WHITE_BALANCE_TEMPERATURE_12000 = 42;
+  WHITE_BALANCE_TEMPERATURE_12250 = 43;
+  WHITE_BALANCE_TEMPERATURE_12500 = 44;
+  WHITE_BALANCE_TEMPERATURE_12750 = 45;
+  WHITE_BALANCE_TEMPERATURE_13000 = 46;
+  WHITE_BALANCE_TEMPERATURE_13250 = 47;
+  WHITE_BALANCE_TEMPERATURE_13500 = 48;
+  WHITE_BALANCE_TEMPERATURE_13750 = 49;
+  WHITE_BALANCE_TEMPERATURE_14000 = 50;
+  WHITE_BALANCE_TEMPERATURE_14250 = 51;
+  WHITE_BALANCE_TEMPERATURE_14500 = 52;
+  WHITE_BALANCE_TEMPERATURE_14750 = 53;
+  WHITE_BALANCE_TEMPERATURE_15000 = 54;
+}
+
+enum ZoomControlMode {
+  ZOOM_CONTROL_MODE_LEVEL = 0;
+  ZOOM_CONTROL_MODE_VELOCITY = 1;
+}
+
+enum ZoomVelocityControlQualityMode {
+  ZOOM_VELOCITY_CONTROL_QUALITY_MODE_ALLOW_DEGRADATION = 0;
+  ZOOM_VELOCITY_CONTROL_QUALITY_MODE_STOP_BEFORE_DEGRADATION = 1;
+}

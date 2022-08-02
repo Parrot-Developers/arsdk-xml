@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature name="motors" id="173">
+	Motors statuses.
+
+	<enums>
+		<enum name="motor_id">
+			Motor identifier
+			<value name="none">
+				No identifier given.
+			</value>
+			<value name="front_left">
+				Front left motor.
+			</value>
+			<value name="front_right">
+				Front right motor.
+			</value>
+			<value name="back_right">
+				Back right motor.
+			</value>
+			<value name="back_left">
+				Back left motor.
+			</value>
+		</enum>
+
+		<enum name="three_motors_reason">
+			Motor error reason for three motors flight.
+			<value name="unknown">
+				Unkown reason.
+			</value>
+			<value name="motor_stalled">
+				ESC error : Motor Stalled.
+			</value>
+			<value name="propeller_security">
+				ESC error : Propeller Security.
+			</value>
+			<value name="rc_emergency_stop">
+				ESC error : Emergency Stop.
+			</value>
+			<value name="defective_prop">
+				Defective propeller detected.
+			</value>
+		</enum>
+	</enums>
+
+	<msgs>
+		<evt name="three_motors_flight_started" id="1">
+			<comment
+				title="Three motors mode started"
+				comment="Drone started three motors flight as one motor is not currently working."
+				support="091a"
+				triggered="When a motor is down and conditions for three motors flight are met.
+				When the user reconnects during a three motors flight."/>
+			<arg name="id" type="enum:motor_id">
+				ID of the defective motor responsible for three motors flight.
+			</arg>
+			<arg name="reason" type="enum:three_motors_reason">
+				Motor error reason for three motors flight.
+			</arg>
+		</evt>
+
+		<evt name="three_motors_flight_ended" id="2">
+			<comment
+				title="Three motors mode ended"
+				comment="Drone has finished three motors flight and will land or cutout motors."
+				support="091a"
+				triggered="When the drone has finished three motors flight."/>
+		</evt>
+	</msgs>
+</feature>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature name="obstacle_avoidance" id="172">
+	Obstacle avoidance.
+
+	<enums>
+		<enum name="mode">
+			Obstacle avoidance mode.
+			<value name="disabled">
+				Obstacle avoidance is disabled.
+			</value>
+			<value name="standard">
+				Obstacle avoidance is enabled, in standard mode.
+			</value>
+		</enum>
+
+		<enum name="state">
+			Obstacle avoidance drone state.
+			<value name="inactive">
+				Obstacle avoidance is not currently active.
+			</value>
+			<value name="active">
+				Obstacle avoidance is currently active and fully operational.
+			</value>
+			<value name="degraded">
+				Obstacle avoidance is currently active but in degraded mode.
+			</value>
+		</enum>
+
+		<enum name="availability">
+			Obstacle avoidance availability.
+			<value name="unavailable">
+				Obstacle avoidance is not currently available.
+			</value>
+			<value name="available">
+				Obstacle avoidance is currently available.
+			</value>
+			<value name="degraded">
+				Obstacle avoidance is currently available but with degraded performance.
+			</value>
+		</enum>
+
+		<enum name="alert">
+			Obstacle avoidance alert.
+			<value name="high_deviation">
+				Distance from nominal trajectory exceeds threshold.
+			</value>
+			<value name="stuck">
+				Drone is stuck by a presumably large obstacle.
+			</value>
+			<value name="stereo_failure">
+				Perception system is unplugged or not working properly.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="stereo_lens_failure">
+				Perception system lens is dirty or broken.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="gimbal_failure">
+				Gimbal is not stabilized in direction of motion.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="too_dark">
+				Environment is too dark for perception system or vertical camera.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="estimation_unreliable">
+				GPS and vertical camera do not provide reliable data.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="calibration_failure">
+				Perception system is not calibrated.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="poor_gps">
+				Obstacle Avoidance is in degraded mode due to poor GPS quality.
+				Obstacle avoidance is available with degraded performance.
+			</value>
+			<value name="strong_wind">
+				Obstacle Avoidance is in degraded mode due to strong wind.
+				Obstacle avoidance is available with degraded performance.
+			</value>
+			<value name="computational_error">
+				Obstacle avoidance failed to compute trajectories.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="blind_motion_direction">
+				The perception system is blind in the current motion direction.
+				Obstacle avoidance is available and state may be active.
+			</value>
+			<value name="freeze">
+				The drone is frozen and does not respond to PCMD
+				Obstacle avoidance mode needs to be set to disabled for the drone to move again.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+		</enum>
+	</enums>
+
+	<msgs>
+		<cmd name="set_mode" id="1">
+			<comment
+				title="Sets obstacle avoidance mode"
+				desc="Configures obstacle avoidance mode."
+				support="091a"
+				result="Activation or deactivation of obstacle avoidance. Event [status](#172-2) is triggered."/>
+			<arg name="mode" type="enum:mode">
+				Obstacle avoidance mode.
+			</arg>
+			<expectations>
+				<immediate>
+					#172-2(mode: this.mode)
+				</immediate>
+			</expectations>
+		</cmd>
+
+		<evt name="status" id="2">
+			<comment
+				title="Obstacle avoidance status"
+				comment="Informs about obstacle avoidance status changes."
+				support="091a"
+				triggered="At connection; on changes."/>
+			<arg name="mode" type="enum:mode">
+				Obstacle avoidance mode.
+			</arg>
+			<arg name="state" type="enum:state">
+				Obstacle avoidance state.
+			</arg>
+			<arg name="availability" type="enum:availability">
+				Obstacle avoidance availability.
+			</arg>
+		</evt>
+
+		<evt name="alerts" id="3">
+			<comment
+				title="Obstacle avoidance alerts"
+				support="091a"
+				triggered="At connection; When entering or leaving any OA alert state."/>
+			<arg name="alerts" type="bitfield:u16:alert">
+				Bitfield of activated obstacle avoidance alerts.
+			</arg>
+		</evt>
+		<evt name="alert_timer" id="4">
+			<comment
+				title="Obstacle avoidance timer for alert"
+				comment="Timer that will disable obstacle avoidance at the end of it.
+				For example, when freeze alert is raised in [alerts](#172-3) this event will also be raised.
+				At the end of the timer, obstacle avoidance will be automatically disabled."
+				support="091a"
+				triggered="At connection; on changes."/>
+			<arg name="alert" type="enum:alert">
+				Alert raised.
+			</arg>
+			<arg name="timer" type="u32">
+				Timer until the deactivation of obstacle avoidance in seconds.
+			</arg>
+		</evt>
+	</msgs>
+</feature>

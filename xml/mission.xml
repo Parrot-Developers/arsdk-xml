@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+
+<feature id="165" name="mission">
+	Missions feature.
+	<enums>
+		<enum name="state">
+			State of mission.
+			<value name="unavailable">
+				Mission is not available.
+			</value>
+			<value name="unloaded">
+				Mission is not available.
+			</value>
+			<value name="idle">
+				Mission can be activated.
+			</value>
+			<value name="active">
+				Mission is active.
+			</value>
+		</enum>
+		<enum name="unavailability_reason">
+			Unavailability reasons.
+			<value name="none">
+				No reason.
+				The mission is actually available.
+			</value>
+			<value name="broken">
+				Broken. Version is not supported or mission is
+				corrupted. The mission will never be able to
+				load or start.
+			</value>
+			<value name="load_failed">
+				The mission failed to load.
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<evt name="capabilities" id="1" type="MAP_ITEM:uid">
+			<comment
+				title="Missions capabilities."
+				comment="Missions capabilities. This event list the drone's missions.
+				It is sent only at connection and does not change after.
+				This event will be received before all other events."
+				support="091a"
+				triggered="At connection."/>
+			<arg name="uid" type="string">
+				Unique id of the mission
+			</arg>
+			<arg name="name" type="string">
+				Name of the mission.
+			</arg>
+			<arg name="desc" type="string">
+				Description of the mission.
+			</arg>
+			<arg name="version" type="string">
+				Version of the mission.
+			</arg>
+			<arg name="recipient_id" type="u16">
+				Id to use to exchange messages with the mission (given by the drone)
+			</arg>
+			<arg name="target_model_id" type="u16">
+				Model id of the supported target.
+			</arg>
+			<arg name="target_min_version" type="string">
+				Minimum version of target firmware supported.
+			</arg>
+			<arg name="target_max_version" type="string">
+				Maximum version of target firmware supported.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+
+		<evt name="state" id="2">
+			<comment
+				title="State of missions."
+				desc="At connection and whenever there is a change in the mission state."
+				support="091a"/>
+			<arg name="uid" type="string">
+				Unique id of the mission
+			</arg>
+			<arg name="state" type="enum:state">
+				State of activation of the mission.
+			</arg>
+			<arg name="unavailability_reason" type="enum:unavailability_reason">
+				Unavailability reason(s) to load the mission.
+				Empty if mission is activate.
+			</arg>
+		</evt>
+		<cmd name="load" id="3">
+			<comment
+				title="Load mission."
+				desc="Tells the drone to load the corresponding mission."
+				support="091a"
+				result="The drone sends [state](#165-2)."/>
+			<expectations>
+				<immediate>
+					#165-2(uid: this.uid, state: idle)
+				</immediate>
+			</expectations>
+			<arg name="uid" type="string">
+				Unique id of the mission
+			</arg>
+		</cmd>
+		<cmd name="activate" id="4">
+			<comment
+				title="Start the mission."
+				desc="Tells the drone to start the mission.
+				The mission will start only if there is no missing_requirements and
+				if it was previously loaded (.idle state)."
+				support="091a"
+				result="The drone sends [state](#165-2)."/>
+			<expectations>
+				<immediate>
+					#165-2(uid: this.uid, state: active)
+				</immediate>
+			</expectations>
+			<arg name="uid" type="string">
+				Unique id of the mission
+			</arg>
+		</cmd>
+		<cmd name="unload" id="5">
+			<comment
+				title="Unload the mission."
+				desc="Tells the drone to unload the mission."
+				support="091a"
+				result="The drone sends [state](#165-2)."/>
+			<expectations>
+				<immediate>
+					#165-2(uid: this.uid, state: unloaded)
+				</immediate>
+			</expectations>
+			<arg name="uid" type="string">
+				Unique id of the mission
+			</arg>
+		</cmd>
+		<cmd name="custom_cmd" id="6">
+			<comment title="" desc="" support="091a" triggered=""/>
+			<arg name="recipient_id" type="u16"></arg>
+			<arg name="service_id" type="u16"></arg>
+			<arg name="msg_num" type="u16"></arg>
+			<arg name="payload" type="binary"></arg>
+		</cmd>
+		<evt name="custom_evt" id="7">
+			<comment title="" desc="" support="091a" triggered=""/>
+			<arg name="recipient_id" type="u16"></arg>
+			<arg name="service_id" type="u16"></arg>
+			<arg name="msg_num" type="u16"></arg>
+			<arg name="payload" type="binary"></arg>
+		</evt>
+		<evt name="suggested_activation" id="8">
+			<comment
+				title="Suggested activation"
+				desc="Suggested activation of a mission."
+				support="091a"
+				triggered="When a mission is in idle mode, it can trigger this event"/>
+			<arg name="uid" type="string">
+				Unique id of the mission
+			</arg>
+		</evt>
+		<cmd name="custom_msg_enable" id="9">
+			<comment
+				title="Enable custom messages"
+				desc="Enable custom messages for all missions."
+				support="091a"/>
+		</cmd>
+		<cmd name="custom_msg_disable" id="10">
+			<comment
+				title="Disable custom messages"
+				desc="Disable custom messages for all missions."
+				support="091a"/>
+		</cmd>
+	</msgs>
+</feature>

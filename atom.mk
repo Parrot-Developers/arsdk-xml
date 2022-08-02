@@ -32,13 +32,19 @@ include $(CLEAR_VARS)
 
 arsdkxml_files := \
 	$(call all-files-under,xml,.xml)
+arsdkproto_files := \
+	$(call all-files-under,protobuf/arsdk,.proto)
 
 LOCAL_MODULE := arsdkparser
 LOCAL_DEPENDS_MODULES := python
 LOCAL_COPY_FILES := arsdkparser.py:usr/lib/python/site-packages/
 LOCAL_COPY_FILES += \
 	$(foreach __f,$(arsdkxml_files), \
-		$(__f):$(TARGET_OUT_STAGING)/usr/lib/python/site-packages/arsdk-xml/$(__f) \
+		$(__f):$(TARGET_OUT_STAGING)/usr/lib/python/site-packages/arsdk/$(__f) \
+	)
+LOCAL_COPY_FILES += \
+	$(foreach __f,$(arsdkproto_files), \
+		$(__f):$(TARGET_OUT_STAGING)/usr/lib/python/site-packages/arsdk/$(__f:protobuf/arsdk/%=%) \
 	)
 
 include $(BUILD_CUSTOM)
@@ -61,6 +67,102 @@ $(arsdk_xml_archive_path): $(wildcard $(LOCAL_PATH)/xml/*.xml)
 
 LOCAL_CLEAN_FILES := $(arsdk_xml_archive_path)
 LOCAL_COPY_FILES := $(arsdk_xml_archive_path):usr/share/arsdk/
+
+include $(BUILD_CUSTOM)
+
+###############################################################################
+# libarsdk-pb
+###############################################################################
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libarsdk-pb
+
+LOCAL_DESCRIPTION := Protobuf types for AR-SDK
+LOCAL_CXXFLAGS := -std=c++11
+LOCAL_PUBLIC_LIBRARIES := \
+	parrot-protobuf-extensions-cpp \
+	protobuf
+LOCAL_EXPORT_C_INCLUDES := $(call local-get-build-dir)/gen
+
+libarsdk_proto_path := protobuf
+libarsdk_proto_files := $(call all-files-under,$(libarsdk_proto_path),.proto)
+
+$(foreach __f,$(libarsdk_proto_files), \
+	$(eval LOCAL_CUSTOM_MACROS += protoc-macro:cpp,gen,$(LOCAL_PATH)/$(__f),$(LOCAL_PATH)/$(libarsdk_proto_path)) \
+)
+
+include $(BUILD_LIBRARY)
+
+###############################################################################
+# libarsdk-msghub
+###############################################################################
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libarsdk-msghub
+
+LOCAL_DESCRIPTION := Msghub integration of protobuf types for AR-SDK
+LOCAL_CXXFLAGS := -std=c++11
+LOCAL_LIBRARIES := libulog protobuf libarsdk-pb libmsghub
+LOCAL_EXPORT_C_INCLUDES := $(call local-get-build-dir)/gen
+
+libarsdk_proto_path := protobuf
+libarsdk_proto_files := $(call all-files-under,$(libarsdk_proto_path),.proto)
+
+$(foreach __f,$(libarsdk_proto_files), \
+	$(eval LOCAL_CUSTOM_MACROS += msghub-macro:cpp,gen,$(LOCAL_PATH)/$(__f),$(LOCAL_PATH)/$(libarsdk_proto_path)) \
+)
+
+include $(BUILD_LIBRARY)
+
+###############################################################################
+# libarsdk-pbc
+###############################################################################
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libarsdk-pbc
+
+LOCAL_DESCRIPTION := Protobuf types for AR-SDK
+LOCAL_PUBLIC_LIBRARIES := \
+	libprotobuf-c-base \
+	parrot-protobuf-extensions-c \
+	protobuf-c
+
+LOCAL_EXPORT_C_INCLUDES := $(call local-get-build-dir)/gen
+
+libarsdk_proto_path := protobuf
+libarsdk_proto_files := $(call all-files-under,$(libarsdk_proto_path),.proto)
+
+$(foreach __f,$(libarsdk_proto_files), \
+	$(eval LOCAL_CUSTOM_MACROS += protoc-c-macro:c,gen,$(LOCAL_PATH)/$(__f),$(LOCAL_PATH)/$(libarsdk_proto_path)) \
+)
+
+include $(BUILD_LIBRARY)
+
+###############################################################################
+# libarsdk-pbpy
+###############################################################################
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libarsdk-pbpy
+
+LOCAL_DESCRIPTION := Protobuf types for AR-SDK
+LOCAL_PUBLIC_LIBRARIES := \
+	parrot-protobuf-extensions-py \
+	protobuf-python
+
+libarsdk_proto_path := protobuf
+libarsdk_proto_files := $(call all-files-under,$(libarsdk_proto_path),.proto)
+
+$(foreach __f,$(libarsdk_proto_files), \
+	$(eval LOCAL_CUSTOM_MACROS += $(subst $(space),,protoc-macro:python, \
+		$(TARGET_OUT_STAGING)/usr/lib/python/site-packages, \
+		$(LOCAL_PATH)/$(__f), \
+		$(LOCAL_PATH)/$(libarsdk_proto_path))) \
+)
 
 include $(BUILD_CUSTOM)
 
@@ -132,9 +234,8 @@ endif
 
 # Update alchemy variables for the module
 LOCAL_CLEAN_FILES += $$(arsdkgen_done_file) $(if $(call is-path-absolute,$2),$(empty),$$(arsdkgen_gen_files))
-LOCAL_EXPORT_PREREQUISITES += $$(arsdkgen_gen_files)
-LOCAL_PREREQUISITES += $$(arsdkgen_gen_files)
-LOCAL_CUSTOM_TARGETS += $$(arsdkgen_done_file)
+LOCAL_EXPORT_PREREQUISITES += $$(arsdkgen_gen_files) $$(arsdkgen_done_file)
+LOCAL_PREREQUISITES += $$(arsdkgen_gen_files) $$(arsdkgen_done_file)
 LOCAL_DEPENDS_HOST_MODULES += host.arsdkgen
 LOCAL_C_INCLUDES += $$(arsdkgen_out_dir)
 LOCAL_DONE_FILES += $$(notdir $$(arsdkgen_done_file))

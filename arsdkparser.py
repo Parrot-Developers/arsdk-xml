@@ -882,6 +882,9 @@ def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
                 cmtTriggered, cmtResult)
     else:
         oldComment = _get_node_content(msgNode)
+        if not len(oldComment):
+            raise ArParserError("%s: Missing comment for '%s'" %
+                    (filePath, msgNode.getAttribute("name")))
         msgObj.doc = ArComment(oldComment.splitlines()[0], oldComment, None,
                 None, None)
 

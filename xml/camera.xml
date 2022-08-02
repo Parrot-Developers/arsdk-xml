@@ -1493,7 +1493,7 @@
 				All values are expressed as the tangent of the angle in degrees per seconds."
 				support="0914;0919"
 				triggered="during connection, when range changes and when the current value is set by
-				[SetMaxZoomSpeed](#143-24)."/>
+				[SetMaxZoomSpeed](#143-25)."/>
 			<arg name="cam_id" type="u8">
 				Id of the camera.
 			</arg>
@@ -1515,7 +1515,7 @@
 			<comment
 				title="Set the max zoom speed"
 				desc="Set the max zoom speed setting.\n
-				You can get bounds using [MaxZoomSpeed](#143-25)."
+				You can get bounds using [MaxZoomSpeed](#143-24)."
 				support="0914;0919"
 				result="The max zoom speed is set.\n
 				Then, event [MaxZoomSpeed](#143-24) is triggered with the current max value."/>
@@ -1928,10 +1928,12 @@
 			<comment
 				title="Stop video recording."
 				support="0914;0919"
-				result="[recording_progress](#143-44) with the progress of the recording."/>
+				result="[recording_progress](#143-44) with the progress of the recording.
+					[recording_state](#143-45) will change to `inactive` when the camera is no longer recording"/>
 			<expectations>
 				<immediate>
 					#143-44(cam_id: this.cam_id, result: stopped)
+					#143-45(cam_id: this.cam_id, state: inactive)
 				</immediate>
 			</expectations>
 			<arg name="cam_id" type="u8">

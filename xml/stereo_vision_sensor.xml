@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	Copyright (C) 2014 Parrot SA
+	Copyright (C) 2020 Parrot SA
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -29,53 +29,68 @@
 	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 	SUCH DAMAGE.
 -->
-<feature id="133" name="generic">
-	All generic messages
+<feature name="stereo_vision_sensor" id="159">
+	Messages related to the stereo vision sensor.
+
 	<enums>
-		<enum name="list_flags">
-			Flags use by maps and lists
-			<value name="First">
-				indicate it's the first element of the list.
+		<enum name="model">
+			Stereo vision sensor model.
+			<value name="fstcam">
+				Main sensor.
+				Only one sensor of this kind is allowed at a time on a drone.
 			</value>
-			<value name="Last">
-				indicate it's the last element of the list.
+		</enum>
+
+		<enum name="feature">
+			Stereo vision sensor feature.
+			<value name="calibration">
+				Calibration feature.
 			</value>
-			<value name="Empty">
-				indicate the list is empty (implies First/Last). All other arguments should be ignored.
+		</enum>
+
+		<enum name="calibration_state">
+			Calibration state.
+			<value name="required">
+				Calibration is required.
 			</value>
-			<value name="Remove">
-				This value should be removed from the existing list.
+			<value name="ok">
+				Calibration is ok.
 			</value>
 		</enum>
 	</enums>
+
 	<msgs>
-		<cmd name="custom_cmd" id="1">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</cmd>
-
-		<cmd name="custom_cmd_non_ack" id="2" buffer="NON_ACK">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
-		</cmd>
-
-		<evt name="custom_evt" id="3">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
+		<evt name="capabilities" id="1">
+			<comment
+				title="Stereo vision sensor capabilities"
+				desc="Describes stereo vision sensor supported capabilities."
+				support="091a"
+				triggered="At connection only."/>
+			<arg name="sensor_id" type="u8">
+				Id of the stereo vision sensor.
+				Sensor id is unique and persistent: the same sensor model on a same drone model has always the same id.
+				Main/Built-in sensor has id zero.
+			</arg>
+			<arg name="model" type="enum:model">
+				Sensor model.
+			</arg>
+			<arg name="supported_features" type="bitfield:u16:feature">
+				Supported features.
+			</arg>
 		</evt>
 
-		<evt name="custom_evt_non_ack" id="4" buffer="NON_ACK">
-			<comment title="" desc="" support="" triggered=""/>
-			<arg name="service_id" type="u16"></arg>
-			<arg name="msg_num" type="u16"></arg>
-			<arg name="payload" type="binary"></arg>
+		<evt name="calibration_state" id="2">
+			<comment
+				title="Calibration state"
+				comment="Current calibration state."
+				support="091a"
+				triggered="At connection and when calibration state changes."/>
+			<arg name="sensor_id" type="u8">
+				Id of the sensor.
+			</arg>
+			<arg name="state" type="enum:calibration_state">
+				Current state
+			</arg>
 		</evt>
 	</msgs>
-
 </feature>

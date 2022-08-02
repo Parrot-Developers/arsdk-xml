@@ -44,6 +44,12 @@
 			<value name="too_cold">
 				Battery is too cold.
 			</value>
+			<value name="gauge_too_old">
+				Battery Gauge is too old.
+			</value>
+			<value name="authentication_failure">
+				Authentication has failed.
+			</value>
 		</enum>
 
 		<enum name="alert_level">
@@ -64,7 +70,7 @@
 		<evt name="alert" id="1" type="MAP_ITEM:alert">
 			<comment
 				title="Battery alerts"
-				support="0914"
+				support="0914;091a"
 				triggered="when an alert level changes."/>
 			<arg name="alert" type="enum:alert">
 				Alert.
@@ -78,38 +84,123 @@
 		<evt name="health" id="2">
 			<comment
 				title="Battery Health"
-				support="0914;0919"
+				support="0914;0919;091a"
 				triggered="at connection and when State-Of-Health changes."/>
 			<arg name="state_of_health" type="u8">
 				Battery State-Of-Health (%)
 			</arg>
 		</evt>
+
 		<evt name="voltage" id="3" buffer="NON_ACK">
 			<comment
 				title="Battery voltage"
 				desc="Battery voltage."
-				support="0914:1.6.2;0919:1.6.2"
+				support="0914:1.6.2;0919:1.6.2;091a"
 				triggered="regularly."/>
 			<arg name="voltage" type="u16">
 				Battery voltage in mV
 			</arg>
 		</evt>
+
 		<evt name="cycle_count" id="4">
 			<comment
 				title="Battery Cycle Count"
-				support="0914;0919"
+				support="0914;0919;091a"
 				triggered="at connection and when Cycle Count changes."/>
 			<arg name="count" type="u32">
 				Battery Cycle Count
 			</arg>
 		</evt>
-		<evt name="serial" id="5">
+
+		<evt name="serial" id="5" deprecated="true">
 			<comment
 				title="Battery Serial"
-				support="0914;0919"
+				support="0914;0919;091a"
 				triggered="at connection."/>
 			<arg name="serial" type="string">
 				Battery Serial
+			</arg>
+		</evt>
+
+		<evt name="description" id="6">
+			<comment
+				title="Battery Description"
+				support="091a"
+				triggered="at connection."/>
+			<arg name="serial" type="string">
+				Battery Serial
+			</arg>
+			<arg name="date" type="string">
+				Battery Configuration Date
+			</arg>
+			<arg name="design" type="u32">
+				Battery Design Capacity in mAh
+			</arg>
+			<arg name="cell_count" type="u16">
+				Battery cell count
+			</arg>
+			<arg name="cell_min_voltage" type="u16">
+				Battery cell minimum Voltage in mV
+			</arg>
+			<arg name="cell_max_voltage" type="u16">
+				Battery cell maximum Voltage in mV
+			</arg>
+		</evt>
+
+		<evt name="temperature" id="7" buffer="NON_ACK">
+			<comment
+				title="Battery Temperature"
+				support="091a"
+				triggered="regularly."/>
+			<arg name="temperature" type="u16">
+				Battery Temperature in Kelvin
+			</arg>
+		</evt>
+
+		<evt name="capacity" id="8">
+			<comment
+				title="Battery Capacity"
+				support="091a"
+				triggered="at connection and when Capacity changes."/>
+			<arg name="full_charge" type="u32">
+				Battery Full Charge Capacity in mAh
+			</arg>
+			<arg name="remaining" type="u32">
+				Battery Remaining Capacity in mAh
+			</arg>
+		</evt>
+
+		<evt name="cell_voltage" id="9" buffer="NON_ACK">
+			<comment
+				title="Cell voltage"
+				desc="Battery cell voltage."
+				support="091a"
+				triggered="regularly."/>
+			<arg name="index" type="u16">
+				Cell index starting from 0
+			</arg>
+			<arg name="cell_voltage" type="u16">
+				Cell Voltage in mV
+			</arg>
+		</evt>
+
+		<evt name="version" id="10">
+			<comment
+				title="Version"
+				desc="Version of the components of the battery."
+				support="091a"
+				triggered="at connection."/>
+			<arg name="hw_revision" type="u16">
+				Battery Hardware Revision
+			</arg>
+			<arg name="fw_version" type="string">
+				Battery Firmware Version
+			</arg>
+			<arg name="gauge_version" type="string">
+				Battery Gauge Version
+			</arg>
+			<arg name="usb_version" type="string">
+				Battery USB Version
 			</arg>
 		</evt>
 	</msgs>

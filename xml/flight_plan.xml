@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2020 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="167" name="flight_plan">
+	Flight plan
+	<enums>
+		<enum name="indicator">
+			Indicators needed to start flight plan.
+			<value name="drone_gps">
+				Drone gps is not fixed.
+			</value>
+			<value name="drone_magneto">
+				Drone magneto is not valid.
+			</value>
+			<value name="drone_geofence">
+				Drone is out of geofence.
+				Not applicable to Flight plan.
+			</value>
+			<value name="drone_min_altitude">
+				Drone is under min altitude.
+				Not applicable to Flight plan.
+			</value>
+			<value name="drone_max_altitude">
+				Drone is above max altitude.
+				Not applicable to Flight plan.
+			</value>
+			<value name="drone_flying">
+				Drone is not flying.
+				Not applicable to Flight plan.
+			</value>
+			<value name="target_position_accuracy">
+				Target position has a bad accuracy.
+				Not applicable to Flight plan.
+			</value>
+			<value name="target_image_detection">
+				Target image detection is not working.
+				Not applicable to Flight plan.
+			</value>
+			<value name="drone_target_distance_min">
+				Drone is too close to target.
+				Not applicable to Flight plan.
+			</value>
+			<value name="drone_target_distance_max">
+				Drone is too far from target.
+				Not applicable to Flight plan.
+			</value>
+			<value name="target_horiz_speed">
+				Target horizontal speed is too high.
+				Not applicable to Flight plan.
+			</value>
+			<value name="target_vert_speed">
+				Target vertical speed is too high.
+				Not applicable to Flight plan.
+			</value>
+			<value name="target_altitude_accuracy">
+				Target altitude has a bad accuracy.
+				Not applicable to Flight plan.
+			</value>
+			<value name="drone_battery">
+				Drone battery is insufficient.
+			</value>
+			<value name="drone_state">
+				Drone is not in a valid state.
+			</value>
+		</enum>
+		<enum name="mavlink_type">
+			Type of flight plan file.
+			<value name="flightPlan">
+				Mavlink file for FlightPlan
+			</value>
+			<value name="mapMyHouse">
+				Mavlink file for MapMyHouse
+			</value>
+			<value name="flightPlanV2">
+				Mavlink file for FlightPlan V2 (better follow the standard)
+			</value>
+		</enum>
+		<enum name="supported_capabilities">
+			Supported capabilities.
+
+			<value name="start_at">
+				Support command to start a flight plan at a given item.
+			</value>
+			<value name="start_at_v2">
+				Support command to start a flight plan at a given item with disconnection behavior.
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<evt name="info" id="1">
+			<comment
+				title="Flight plan info"
+				support="091a"
+				triggered="During connection and when the list of missing requirements changes."/>
+			<arg name="missing_inputs" type="bitfield:u32:indicator">
+				List of missing requirements to start flight plan.
+				If at least one input is missing, drone won't be able to start a flight plan.
+			</arg>
+		</evt>
+		<evt name="waypoint_skipped" id="2">
+			<comment
+				title="Waypoint skipped"
+				support="091a"
+				triggered="During a flight plan, a waypoint could not be reached and was skipped."/>
+			<arg name="item" type="u32">
+				Index of the mission item corresponding to the skipped waypoint.
+			</arg>
+		</evt>
+		<cmd name="start_at" id="3">
+			<comment
+				title="Start a flight plan at a given mission item"
+				desc="Start a flight plan at a given mission item."
+				support="091a"
+				result="If the flight plan has been started, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to *playing*.\n
+				Otherwise, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to stopped and event [MavlinkPlayErrorStateChanged](#0-12-1) is triggered with an explanation of the error."/>
+			<expectations>
+				<immediate>
+					#0-12-0(state: playing, type: this.type)
+				</immediate>
+			</expectations>
+			<arg name="flightplan_id" type="string">
+				Unique identifier of the flight plan to execute.
+			</arg>
+			<arg name="custom_id" type="string">
+				Replaces the flightplan id in all the events returned by the drone.
+				If empty, the original id is used.
+			</arg>
+			<arg name="type" type="enum:mavlink_type">
+				Mavlink file type
+			</arg>
+			<arg name="item" type="u32">
+				Index of the mission item where the flight plan should start.
+				This is the place of the mission item in the mission's items list, starting from 0.
+			</arg>
+		</cmd>
+		<evt name="capabilities" id="4">
+			<comment
+				title="Capabilities"
+				comment="Describes supported capabilities."
+				support="091a"
+				triggered="At connection only."/>
+			<arg name="supported_capabilities" type="bitfield:u16:supported_capabilities">
+				Supported capabilities.
+			</arg>
+		</evt>
+		<evt name="recovery_info" id="5">
+			<comment
+				title="Information about the latest flight plan started before connection"
+				support="091a"
+				triggered="At connection, when a flight plan has stopped, or by [clear_recovery_info](#167-6)."/>
+			<arg name="flightplan_id" type="string">
+				Unique identifier of the flight plan to execute.
+			</arg>
+			<arg name="custom_id" type="string">
+				Custom identifier of the latest flight plan execution started before connection, or empty if none.
+			</arg>
+			<arg name="item" type="u32">
+				Index of the latest mission item executed.
+			</arg>
+			<arg name="running_time" type="u32">
+				Running time if the flightplan is currently being executed.
+			</arg>
+			<arg name="resource_id" type="string">
+				First resource id of the latest media capture requested by the flightplan.
+			</arg>
+		</evt>
+		<cmd name="clear_recovery_info" id="6">
+			<comment
+				title="Clears information about the latest flight plan started before connection"
+				desc="Clears information provided by event [recovery_info](#167-5)."
+				support="091a"
+				result="Information provided by event [recovery_info](#167-5) are cleared."/>
+			<expectations>
+				<immediate>
+					#167-5(flightplan_id: , custom_id: , item: 0)
+				</immediate>
+			</expectations>
+		</cmd>
+		<cmd name="start_at_v2" id="7">
+			<comment
+				title="Start a flight plan"
+				desc="Start a flight plan at a given mission item."
+				support="091a"
+				result="If the flight plan has been started, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to *playing*.\n
+				Otherwise, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to stopped and event [MavlinkPlayErrorStateChanged](#0-12-1) is triggered with an explanation of the error."/>
+			<expectations>
+				<immediate>
+					#0-12-0(state: playing, type: this.type)
+				</immediate>
+			</expectations>
+			<arg name="flightplan_id" type="string">
+				Unique identifier of the flight plan to execute.
+			</arg>
+			<arg name="custom_id" type="string">
+				Replaces the flightplan id in all the events returned by the drone.
+				If empty, the original id is used.
+			</arg>
+			<arg name="type" type="enum:mavlink_type">
+				Mavlink file type
+			</arg>
+			<arg name="item" type="u32">
+				Index of the mission item where the flight plan should start.
+				This is the index of the mission item in the mission's items list, starting from 0.
+			</arg>
+			<arg name="continue_on_disconnect" type="u8">
+				Boolean : 0 : RTH on Disconnection / 1 : Continue on Disconnection
+			</arg>
+		</cmd>
+		<cmd name="pre_config" id="9">
+			<comment
+				title="Configure flightplan"
+				desc="Start flightplan pre-configuration"
+				support="091a"
+				result="The drone will prepare the execution of a flightplan"/>
+		</cmd>
+	</msgs>
+</feature>

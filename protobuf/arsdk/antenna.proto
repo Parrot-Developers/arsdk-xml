@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package arsdk.antenna;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.antenna";
+option java_outer_classname = "Antenna";
+
+option (olympe_package) = "antenna";
+
+// This is the entry point to send messages to SkyController
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+     GetState get_state = 16;
+     SetAntennaType set_antenna_type = 17;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+    option (support) = "091c";
+  }
+
+  message SetAntennaType {
+    AntennaType type = 1;
+    option (support) = "091c";
+  }
+}
+
+// This is the entry point to receive messages from SkyController
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+
+    oneof optional_antenna_type {
+      AntennaType antenna_type = 2;
+    }
+    option (support) = "091c";
+  }
+}
+
+message Capabilities {
+  repeated AntennaType supported_antenna_types = 1;
+}
+
+enum AntennaType {
+  ANTENNA_TYPE_INTERNAL = 0;
+  ANTENNA_TYPE_EXTERNAL = 1;
+}

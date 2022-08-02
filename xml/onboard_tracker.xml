@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (C) 2019 Parrot SA
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	* Neither the name of Parrot nor the names
+	of its contributors may be used to endorse or promote products
+	derived from this software without specific prior written
+	permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+	OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+	OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+	SUCH DAMAGE.
+-->
+<feature id="157" name="onboard_tracker">
+	Onboard tracker feature
+	<enums>
+		<enum name="target_tracking_state">
+			State of tracking.
+			<value name="tracking">
+				A target has been selected and is currently visually tracked by the drone.
+			</value>
+			<value name="searching">
+				Target has been lost, but the drone is trying to find it again.
+			</value>
+			<value name="abandon">
+				After too much time in searching state, the drone abandons its target.
+				This is a terminal state for the target, which will remain in the
+				tracking state map until explicitely removed.
+			</value>
+		</enum>
+		<enum name="tracking_answer">
+			Tracking answer.
+			<value name="processed">
+				Command was processed.
+			</value>
+			<value name="target_limit_reached">
+				Command was not processed, tracker is at full capacity. The request is dropped.
+			</value>
+			<value name="not_found">
+				Target was not found. The request is dropped.
+			</value>
+			<value name="invalid">
+				Arguments are invalid. The request is dropped.
+			</value>
+		</enum>
+		<enum name="tracking_engine_state">
+			Tracking engine state.
+			<value name="drone_activated">
+				Activated by a drone's internal operation (like flying mission).
+			</value>
+			<value name="activated">
+				Activated by command [start_tracking_engine](#157-10).
+			</value>
+			<value name="available">
+				Tracking engine is available, and can be activated
+				by [start_tracking_engine](#157-10).
+			</value>
+		</enum>
+	</enums>
+	<msgs>
+		<cmd name="add_target_from_rect" id="1">
+			<comment
+				title="Add a target to track from a rectangle."
+				desc="Tells the drone to start tracking a target from a rectangle. The previous
+				trackings are not stopped."
+				support="091a"
+				result="The drone sends [tracking_answer](#157-8)"/>
+			<expectations>
+				<immediate>
+					#157-8
+				</immediate>
+			</expectations>
+			<arg name="timestamp" type="u64">
+				Acquisition time of processed picture in microseconds.
+			</arg>
+			<arg name="horizontal_position" type="float">
+				Horizontal position of the top left corner's target in the video (0 to 1).
+			</arg>
+			<arg name="vertical_position" type="float">
+				Vertical position of the top left corner's target in the video (0 to 1).
+			</arg>
+			<arg name="height" type="float">
+				Height of target in the video (0 to 1).
+			</arg>
+			<arg name="width" type="float">
+				Width of target in the video (0 to 1).
+			</arg>
+			<arg name="cookie" type="u32">
+				User cookie associated with the target.
+			</arg>
+		</cmd>
+		<cmd name="add_target_from_proposal" id="2">
+			<comment
+				title="Add a target to track from a target id."
+				desc="Tells the drone to start tracking from a target id. The previous trackings are not stopped."
+				support="091a"
+				result="The drone sends [tracking_answer](#157-8)"/>
+			<expectations>
+				<immediate>
+					#157-8
+				</immediate>
+			</expectations>
+			<arg name="timestamp" type="u64">
+				Acquisition time of processed picture in microseconds.
+			</arg>
+			<arg name="target_id" type="u32">
+				Id of the target coming from the metadata given by the drone.
+			</arg>
+			<arg name="cookie" type="u32">
+				User cookie associated with the target.
+			</arg>
+		</cmd>
+		<cmd name="remove_target" id="3">
+			<comment
+				title="Remove target id from tracking"
+				desc="Tells the drone to stop tracking by target id. It is more efficient to use
+				[replace_all_by_target_from_rect](#157-4) or [replace_all_by_target_from_proposal](#157-5)"
+				support="091a"
+				result="The drone sends [tracking_answer](#157-8)"/>
+			<expectations>
+				<immediate>
+					#157-8
+				</immediate>
+			</expectations>
+			<arg name="target_id" type="u32">
+				Id of the target coming from the metadata given by the drone.
+			</arg>
+		</cmd>
+		<cmd name="replace_all_by_target_from_rect" id="4">
+			<comment
+				title="Replace current target(s) tracked by a new target from a rectangle."
+				desc="Tells the drone to start tracking a target from a rectangle and
+				stop any previous trackings."
+				support="091a"
+				result="The drone sends [tracking_answer](#157-8)"/>
+			<expectations>
+				<immediate>
+					#157-8
+				</immediate>
+			</expectations>
+			<arg name="timestamp" type="u64">
+				Acquisition time of processed picture in microseconds.
+			</arg>
+			<arg name="horizontal_position" type="float">
+				Horizontal position of the top left corner's target in the video (0 to 1).
+			</arg>
+			<arg name="vertical_position" type="float">
+				Vertical position of the top left corner's target in the video (0 to 1).
+			</arg>
+			<arg name="height" type="float">
+				Height of target in the video (0 to 1).
+			</arg>
+			<arg name="width" type="float">
+				Width of target in the video (0 to 1).
+			</arg>
+			<arg name="cookie" type="u32">
+				User cookie associated with the target.
+			</arg>
+		</cmd>
+		<cmd name="replace_all_by_target_from_proposal" id="5">
+			<comment
+				title="Start tracking from a target id and stop the previous trackings."
+				desc="Tells the drone to start tracking from a target id and stop any previous trackings."
+				support="091a"
+				result="The drone sends [tracking_answer](#157-8)"/>
+			<expectations>
+				<immediate>
+					#157-8
+				</immediate>
+			</expectations>
+			<arg name="timestamp" type="u64">
+				Acquisition time of processed picture in microseconds.
+			</arg>
+			<arg name="target_id" type="u32">
+				Id of the target coming from the metadata given by the drone.
+			</arg>
+			<arg name="cookie" type="u32">
+				User cookie associated with the target.
+			</arg>
+		</cmd>
+		<cmd name="remove_all_targets" id="6">
+			<comment
+				title="Remove all targets from tracking."
+				desc="Tells the drone to stop all trackings."
+				support="091a"
+				result="The drone sends [target_tracking_state](#157-7)"/>
+			<expectations>
+				<immediate>
+					#157-8
+				</immediate>
+			</expectations>
+		</cmd>
+
+		<evt name="target_tracking_state" id="7" type="MAP_ITEM:target_id">
+			<comment
+				title="Tells the current tracking state of each target of the drone."
+				support="091a"
+				triggered="At connection and whenever there is a change in the target tracking state"/>
+			<arg name="target_id" type="u32">
+				Id of the target coming from the metadata given by the drone.
+			</arg>
+			<arg name="cookie" type="u32">
+				User cookie associated with the target.
+			</arg>
+			<arg name="state" type="enum:target_tracking_state">
+				State of tracking.
+			</arg>
+			<arg name="list_flags" type="bitfield:u8:list_flags"/>
+		</evt>
+		<evt name="tracking_answer" id="8">
+			<comment
+				title="Tells if last command was processed or if there was an issue with it."
+				support="091a"
+				triggered="By [add_target_from_rect](#157-1), [add_target_from_proposal](#157-2),
+				[remove_target](#157-3), [replace_all_by_target_from_rect](#157-4),
+				[replace_all_by_target_from_proposal](#157-5), [remove_all_targets](#157-6)"/>
+			<arg name="answer" type="enum:tracking_answer">
+				Tracking answer.
+			</arg>
+		</evt>
+		<evt name="tracking_feature_availability" id="9">
+			<comment
+				title="Tells if the tracking feature is available."
+				support="091a"
+				triggered="At connection and whenever there is a change in the tracking feature availability."/>
+			<arg name="availability" type="u8">
+				Availability of tracking feature.
+				Boolean: 0: not available / 1: available
+			</arg>
+		</evt>
+		<cmd name="start_tracking_engine" id="10">
+			<comment
+				title="Start tracking engine."
+				desc="Tells the drone to start the tracking engine if possible."
+				support="091a"
+				result="The drone sends [tracking_engine_state](#157-12)"/>
+			<arg name="box_proposals" type="u8">
+				Start tracking engine with or without box proposals.
+				Boolean: 0: start without box proposals / 1: start with box proposals
+			</arg>
+			<expectations>
+				<immediate>
+					#157-12
+				</immediate>
+			</expectations>
+		</cmd>
+		<cmd name="stop_tracking_engine" id="11">
+			<comment
+				title="Stop tracking engine."
+				desc="Tells the drone to stop the tracking engine."
+				support="091a"
+				result="The drone sends [tracking_engine_state](#157-12)"/>
+			<expectations>
+				<immediate>
+					#157-12
+				</immediate>
+			</expectations>
+		</cmd>
+		<evt name="tracking_engine_state" id="12">
+			<comment
+				title="Tells if tracking engine is running."
+				support="091a"
+				triggered="At connection and whenever there is a change in the tracking engine state."/>
+			<arg name="state" type="enum:tracking_engine_state">
+				State of tracking engine.
+			</arg>
+		</evt>
+	</msgs>
+</feature>
