@@ -213,5 +213,15 @@
 				clock)
 			</arg>
 		</cmd>
+		<cmd name="magneto_temperature" id="7" buffer="NON_ACK">
+			<comment
+				title="Magnetometer temperature"
+				desc="SkyController Magneto temperature in Kelvin."
+				support="0x091a"
+				triggered="Every 1 second"/>
+			<arg name="temp" type="float">
+				SkyController magnetometer temperature
+			</arg>
+		</cmd>
 	</msgs>
 </feature>

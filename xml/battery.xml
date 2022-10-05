@@ -50,6 +50,9 @@
 			<value name="authentication_failure">
 				Authentication has failed.
 			</value>
+			<value name="lost_comm">
+				Lost comm with battery.
+			</value>
 		</enum>
 
 		<enum name="alert_level">

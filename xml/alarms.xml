@@ -116,6 +116,9 @@
 			<value name="magneto_calibration">
 				Magneto calibration check.
 			</value>
+			<value name="battery_lost_comm">
+				Battery lost comm.
+			</value>
 		</enum>
 
 		<enum name="state">

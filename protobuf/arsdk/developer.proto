@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package arsdk.developer;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.developer";
+option java_outer_classname = "Developer";
+
+option (olympe_package) = "developer";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    EnableShell enable_shell = 17;
+    DisableShell disable_shell = 18;
+    AirSdkLog air_sdk_log = 19;
+  }
+
+  message GetState {
+    option (on_success) = "Event.State()";
+    option (support) = "091a";
+  }
+
+  message EnableShell {
+    string public_key = 1
+      [(field_doc) = "ADB public key, a base 64 encoded RSA key in the format"
+                     " expected by ADB" "(i.e the content of"
+                     " $HOME/.android/adbkey.pub)"
+      ];
+
+    option (on_success) = "Event.State()";
+    option (support) = "091a";
+  }
+
+  message DisableShell {
+    option (on_success) = "Event.State()";
+    option (support) = "091a";
+  }
+
+  message AirSdkLog {
+    bool enable = 1
+      [(field_doc) = "Enable Airsdk specific logging."
+                     "This will log all missions."];
+    option (on_success) = "Event.State()";
+    option (support) = "091a";
+  }
+
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Shell shell = 1;
+    AirSdkLog airsdklog = 2;
+    option (support) = "091a";
+  }
+
+  message AirSdkLog {
+    bool enabled = 1;
+  }
+
+  message Shell {
+    bool enabled = 1;
+    string public_key = 2
+      [(field_doc) = "ADB public key, a base 64 encoded RSA key in the format"
+                     " expected by ADB (i.e the content of"
+                     " $HOME/.android/adbkey.pub)"
+      ];
+  }
+}

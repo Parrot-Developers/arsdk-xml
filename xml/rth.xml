@@ -97,6 +97,9 @@
 			<value name="icing">
 				Return to home triggered by propeller icing event (available->in_progress)
 			</value>
+			<value name="battery_lost_comm">
+				Return to home triggered by battery lost comm event (available->in_progress)
+			</value>
 		</enum>
 		<enum name="home_reachability">
 			Home reachability
