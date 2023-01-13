@@ -61,6 +61,9 @@
 			<value name="fstcam_decalibrated">
 				Stereo camera is decalibrated.
 			</value>
+			<value name="dri_failing">
+				DRI is not functional.
+			</value>
 		</enum>
 
 		<enum name="takeoff_checklist_type">
@@ -118,6 +121,9 @@
 			</value>
 			<value name="battery_lost_comm">
 				Battery lost comm.
+			</value>
+			<value name="dri">
+				Drone Remote Identification check.
 			</value>
 		</enum>
 

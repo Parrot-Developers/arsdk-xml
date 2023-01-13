@@ -3,6 +3,7 @@ syntax = "proto3";
 package arsdk.camera;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 import "parrot/protobuf/extensions.proto";
 
 option java_package = "com.parrot.drone.arsdk.camera";
@@ -208,18 +209,20 @@ message Event {
 
     message Photo {
       PhotoState state = 1;
-      uint64 start_timestamp = 2;
+      uint64 start_timestamp = 2 [deprecated = true];
       uint32 photo_count = 3;
       StorageType storage = 4;
+      google.protobuf.UInt64Value duration = 5; // null if not supported; otherwise milliseconds
     }
 
     Photo photo = 7;
 
     message Recording {
       RecordingState state = 1;
-      uint64 start_timestamp = 2;
+      uint64 start_timestamp = 2 [deprecated = true];
       uint32 video_bitrate = 3;
       StorageType storage = 4;
+      google.protobuf.UInt64Value duration = 5; // null if not supported; otherwise milliseconds
     }
 
     Recording recording = 8;

@@ -1184,6 +1184,11 @@
 					State is 0 when the mavlink did not start because of a media action
 					which cannot be performed.
 				</enum>
+				<enum name="FirstWaypointTooFar">
+					Component for first waypoint too far away.
+					State is 0 when the first waypoint in the flight plan is too far
+					to be reached.
+				</enum>
 			</arg>
 			<arg name="State" type="u8">
 				State of the FlightPlan component (1 FlightPlan component OK, otherwise 0)

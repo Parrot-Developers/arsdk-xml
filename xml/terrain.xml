@@ -119,6 +119,21 @@
 				it indicates the reason of the failure.
 			</arg>
 		</evt>
+		<cmd name="set_amsl_reference" id="5">
+			<comment
+				title="Set Terrain Above Mean Sea Level Elevation Reference"
+				support="091a"/>
+			<arg name="elevation" type="float">
+				Terrain elevation(m) above mean sea level at the location
+				given by Latitude and Longitude.
+			</arg>
+			<arg name="latitude" type="double">
+				Latitude of the location (in degrees)
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the location (in degrees)
+			</arg>
+		</cmd>
 	</msgs>
 
 

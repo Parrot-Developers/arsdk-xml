@@ -56,7 +56,7 @@
 				**Please note that you should call setPilotingPCMD and not sendPilotingPCMD because the libARController is handling the periodicity and the buffer on which it is sent.**"
 				support="0901;090c;090e;0914;0919"
 				result="The drone moves! Yaaaaay!\n
-				Event [SpeedChanged](#1-4-5), [AttitudeChanged](#1-4-6) and [PositionChanged](#1-4-4) (only if gps of the drone has fixed) are triggered."/>
+				Event [SpeedChanged](#1-4-5), [AttitudeChanged](#1-4-6) and [GpsLocationChanged](#1-4-9) (only if gps of the drone has fixed) are triggered."/>
 			<arg name="flag" type="u8">
 				Boolean flag: 1 if the roll and pitch values should be taken in consideration. 0 otherwise
 			</arg>
@@ -374,6 +374,9 @@
 				POI mode
 				<enum name="locked_gimbal">
 					Gimbal is locked on the POI
+				</enum>
+				<enum name="locked_once_gimbal">
+					Gimbal is locked on the POI once, then it is freely controllable
 				</enum>
 				<enum name="free_gimbal">
 					Gimbal is freely controllable
@@ -894,7 +897,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="NavigateHomeStateChanged" id="3">
+		<cmd name="NavigateHomeStateChanged" id="3" deprecated="true">
 			<comment
 				title="Return home state"
 				desc="Return home state.\n
@@ -947,7 +950,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="PositionChanged" id="4" buffer="NON_ACK">
+		<cmd name="PositionChanged" id="4" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Drone's position changed"
 				desc="Drone's position changed."
@@ -1001,7 +1004,7 @@
 				title="Drone's altitude changed"
 				desc="Drone's altitude changed.\n
 				The altitude reported is the altitude above the take off point.\n
-				To get the altitude above sea level, see [PositionChanged](#1-4-4)."
+				To get the altitude above sea level, see [GpsLocationChanged](#1-4-9)."
 				support="0901;090c;090e;0914;0919"
 				triggered="regularly."/>
 			<arg name="altitude" type="double">
@@ -1011,8 +1014,7 @@
 		<cmd name="GpsLocationChanged" id="9" buffer="NON_ACK">
 			<comment
 				title="Drone's location changed"
-				desc="Drone's location changed.\n
-				This event is meant to replace [PositionChanged](#1-4-4)."
+				desc="Drone's location changed."
 				support="0901:4.0.0;090c:4.0.0;0914;0919"
 				triggered="regularly."/>
 			<arg name="latitude" type="double">
@@ -1197,6 +1199,9 @@
 				<enum name="locked_gimbal">
 					Gimbal is locked on the POI
 				</enum>
+				<enum name="locked_once_gimbal">
+					Gimbal is locked on the POI once, then it is freely controllable
+				</enum>
 				<enum name="free_gimbal">
 					Gimbal is freely controllable
 				</enum>
@@ -1329,6 +1334,9 @@
 				</enum>
 				<enum name="BATTERY_TOO_HOT">
 					Battery is too hot, so forced landing auto trigger is planned.
+				</enum>
+				<enum name="ESC_TOO_HOT">
+					ESC (motor) is too hot, so forced landing auto trigger is planned.
 				</enum>
 			</arg>
 			<arg name="delay" type="u32">

@@ -57,6 +57,9 @@
 	    <value name="en4709_002_regulation">
 		    EN 4709-002 DRI regulation is supported
 	    </value>
+	    <value name="astm_f3411_regulation">
+		    ASTM F341122 DRI regulation is supported
+	    </value>
         </enum>
 
         <enum name="id_type">
@@ -76,6 +79,9 @@
 	    </value>
 	    <value name="en4709_002">
 		    DRI wifi beacon respects the EN4709-002 european regulation
+	    </value>
+	    <value name="astm_f3411">
+		    DRI wifi beacon respects the ASTN F341122 US regulation
 	    </value>
 	</enum>
 
