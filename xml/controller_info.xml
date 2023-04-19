@@ -49,6 +49,9 @@
 			<value name="gps_v2">
 				Gps v2 command is supported.
 			</value>
+			<value name="barometer_v2">
+				Barometer v2 command is supported.
+			</value>
 		</enum>
 		<enum name="available_data">
 			Available data.
@@ -75,6 +78,15 @@
 			</value>
 			<value name="number_of_satellites">
 				Number of satellites is available.
+			</value>
+		</enum>
+		<enum name="barometer_available_data">
+			Available data for barometer.
+			<value name="pressure">
+				Atmospheric pressure in Pa.
+			</value>
+			<value name="temperature">
+				Barometer sensor temperature in Kelvin.
 			</value>
 		</enum>
 	</enums>
@@ -221,6 +233,39 @@
 				triggered="Every 1 second"/>
 			<arg name="temp" type="float">
 				SkyController magnetometer temperature
+			</arg>
+		</cmd>
+		<cmd name="barometer_v2_available_data" id="8">
+			<comment
+				title="Barometer available data"
+				support="0x091a"
+				desc="Barometer available data."
+				result="The drone will know which data are available in barometer_v2 command."/>
+			<arg name="source" type="enum:source">
+				Barometer data source.
+			</arg>
+			<arg name="available_data" type="bitfield:u16:barometer_available_data">
+				Available data.
+			</arg>
+		</cmd>
+		<cmd name="barometer_v2" id="9" buffer="NON_ACK">
+			<comment
+				title="Controller barometer info"
+				support="0x091a"
+				result="The altitude of the controller is known by the drone.\n
+				This command is not acknowledged by the drone."/>
+			<arg name="source" type="enum:source">
+				Barometer data source.
+			</arg>
+			<arg name="pressure" type="float">
+				Atmospheric pressure in Pa
+			</arg>
+			<arg name="temperature" type="float">
+				Barometer sensor temperature in Kelvin. This field is only used when source is "main" or "auxiliary"
+			</arg>
+			<arg name="timestamp" type="u64">
+				Timestamp of the barometer info (in milliseconds), from a monotonic clock (not necessarily linked to utc
+				clock)
 			</arg>
 		</cmd>
 	</msgs>

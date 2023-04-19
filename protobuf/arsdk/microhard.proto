@@ -80,6 +80,7 @@ message Capabilities {
   uint32 power_max = 4;
   repeated Bandwidth bandwidths = 5;
   repeated Encryption encryption_algorithms = 6;
+  Model model = 7;
 }
 
 message ConnectionParameters {
@@ -130,6 +131,10 @@ message PairingStatus {
   }
 }
 
+message BandwidthValue {
+  Bandwidth value = 1;
+}
+
 enum Bandwidth {
   BANDWIDTH_1MHZ = 0;
   BANDWIDTH_2MHZ = 1;
@@ -153,4 +158,13 @@ enum PairingFailureReason {
   PAIRING_FAILURE_REASON_DEVICE_NOT_REACHABLE = 2;
   PAIRING_FAILURE_REASON_INVALID_STATE = 3;
   PAIRING_FAILURE_REASON_INVALID_CONFIG = 4;
+}
+
+enum Model {
+  MODEL_P_DDL_900   = 0;
+  MODEL_P_MDDL_900  = 1;
+  MODEL_P_MDDL_1624 = 2;
+  MODEL_P_DDL_1800  = 3;
+  MODEL_P_DDL_2400  = 4;
+  MODEL_P_MDDL_2400 = 5;
 }

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package arsdk.sleepmode;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.sleepmode";
+option java_outer_classname = "SleepMode";
+
+option (olympe_package) = "sleepmode";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetSecureMessage set_secure_message = 17;
+    Activate activate = 18;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f";
+  }
+
+  /* Set the message that will trigger wake-up. */
+  message SetSecureMessage {
+    string message = 1;
+
+    option (support) = "091f";
+  }
+
+  /* Put the drone in sleep mode */
+  message Activate {
+
+    option (support) = "091f";
+  }
+
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    State state = 16;
+    Activation activation = 17;
+  }
+
+  /* Current state. */
+  message State {
+    reserved 1; // Capabilities default_capabilities = 1;
+
+    google.protobuf.StringValue secure_message = 2;
+  }
+
+  message Activation {
+    ActivationStatus status = 1;
+  }
+}
+
+enum ActivationStatus {
+  ACTIVATION_STATUS_SUCCESS = 0;
+  ACTIVATION_STATUS_FAILURE = 1;
+}

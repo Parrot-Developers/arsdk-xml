@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package arsdk.killswitch;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+option java_package = "com.parrot.drone.arsdk.killswitch";
+option java_outer_classname = "KillSwitch";
+
+option (olympe_package) = "killswitch";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetSecureMessage set_secure_message = 17;
+    SetMode set_mode = 18;
+    Activate activate = 19;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f";
+  }
+
+  /* Set the message that will activate the kill switch */
+  message SetSecureMessage {
+    string message = 1;
+
+    option (support) = "091f";
+  }
+
+  /* Set kill switch mode */
+  message SetMode {
+    Mode mode = 1;
+
+    option (support) = "091f";
+  }
+
+  /* Activate kill switch */
+  message Activate {
+
+    option (support) = "091f";
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    State state = 16;
+  }
+
+  /* Current state. */
+  message State {
+    Capabilities default_capabilities = 1;
+
+    /* When activated, describe how kill switch behave */
+    message Behavior {
+      Mode mode = 1;
+    }
+
+    Behavior behavior = 2;
+
+    google.protobuf.StringValue secure_message = 3;
+
+    /* Indicates if the kill switch has been activated */
+    oneof activation_state {
+      google.protobuf.Empty idle = 4;
+      ActivationSource activated_by = 5;
+    }
+  }
+}
+
+/* Capabilities. */
+message Capabilities {
+  repeated Mode supported_modes = 1;
+}
+
+/* KillSwitchMode */
+enum Mode {
+  /* Kill switch disabled */
+  MODE_DISABLED = 0;
+  /* Soft Kill switch - drone will try to land. */
+  MODE_SOFT = 1;
+  /* Hard Kill switch - motor cutoff. */
+  MODE_HARD = 2;
+}
+
+/* KillSwitchSource */
+enum ActivationSource {
+  /* Kill switch received from SDK */
+  ACTIVATION_SOURCE_SDK = 0;
+  /* Kill switch received by SMS */
+  ACTIVATION_SOURCE_SMS = 1;
+  /* Kill switch received from Lora */
+  ACTIVATION_SOURCE_LORA = 2;
+}

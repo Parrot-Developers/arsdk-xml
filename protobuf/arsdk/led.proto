@@ -29,7 +29,7 @@ message Command {
 }
 
 // This is the entry point to receive messages from SkyController
-// and could be extended to drones in the futur
+// and could be extended to drones in the future
 message Event {
   reserved 1 to 15; // reserved for non-acknowledged events
 

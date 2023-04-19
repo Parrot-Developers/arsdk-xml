@@ -12,28 +12,29 @@ option (olympe_package) = "controllerNetwork";
 
 /* This is the entry point to send messages to the drone. */
 message Command {
-	reserved 1 to 15; /* reserved for non-acknowledged commands */
+  reserved 1 to 15; /* reserved for non-acknowledged commands */
 
-	oneof id {
-		GetState get_state = 16;
-	}
+  oneof id {
+    GetState get_state = 16;
+  }
 
-	/* Get current state. */
-	message GetState {
-		option (support) = "091d";
-	}
+  /* Get current state. */
+  message GetState {
+    option (support) = "091d";
+    option (on_success) = "Event.State()";
+  }
 }
 
 /* This is the entry point to receive messages from the drone. */
 message Event {
-	reserved 1 to 15; /* reserved for non-acknowledged events */
+  reserved 1 to 15; /* reserved for non-acknowledged events */
 
-	oneof id {
-		State state = 16;
-	}
+  oneof id {
+    State state = 16;
+  }
 
-	/* Current state. */
-	message State {
-		arsdk.network.LinksStatus links_status = 4;
-	}
+  /* Current state. */
+  message State {
+    arsdk.network.LinksStatus links_status = 4;
+  }
 }

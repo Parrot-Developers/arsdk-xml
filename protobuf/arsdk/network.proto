@@ -34,7 +34,7 @@ message Command {
 		/* Routing policy. */
 		RoutingPolicy policy = 1;
 
-		option (on_success) = "Event.State()";
+		option (on_success) = "Event.State(routing_info=RoutingInfo(policy=this.policy))";
 		option (support) = "091a";
 	}
 
@@ -43,7 +43,7 @@ message Command {
 		/* Maximum bitrate in Kbps (0 for default value) */
 		int32 max_bitrate = 1;
 
-		option (on_success) = "Event.State()";
+		option (on_success) = "Event.State(cellular_max_bitrate=CellularMaxBitrate(max_bitrate=this.max_bitrate))";
 	}
 
 	/* Set direct connection mode
@@ -51,7 +51,7 @@ message Command {
 	message SetDirectConnection {
 		DirectConnectionMode mode = 1;
 		option (support) = "091a";
-		option (on_success) = "Event.State(mode=this.direct_connection_mode)";
+		option (on_success) = "Event.State(direct_connection_mode=this.mode)";
 	}
 }
 

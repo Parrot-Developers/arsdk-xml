@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package arsdk.pointnfly;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.pointnfly";
+option java_outer_classname = "PointAndFly";
+
+option (olympe_package) = "pointnfly";
+
+// This is the entry point to send messages to the drone.
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Deactivate deactivate = 17;
+    Execute execute = 18;
+  }
+
+  // Gets current state.
+  message GetState {
+    bool include_default_capabilities = 1;
+  }
+
+  // Aborts any current action: point or fly.
+  message Deactivate {
+  }
+
+  // Executes the given directive: point or fly.
+  message Execute {
+    oneof directive {
+      Point point = 1;
+      Fly fly = 2;
+    }
+  }
+}
+
+// A directive requesting the drone to point at a given location.
+// The drone will constantly point at the target as it moves, until the Point directive is deactivated or a Fly
+// directive is executed.
+message Point {
+  GimbalControlMode gimbal_control_mode = 1;
+
+  // Target point location.
+  double latitude = 2; // in degrees
+  double longitude = 3; // in degrees
+  double altitude = 4; // in meters
+}
+
+// A directive requesting the drone to move to a given location.
+message Fly {
+  GimbalControlMode gimbal_control_mode = 1;
+
+  // Target point location.
+  double latitude = 2; // in degrees
+  double longitude = 3; // in degrees
+  double altitude = 4; // in meters
+
+  // Drone heading.
+  oneof heading {
+    // The drone keeps its current heading.
+    google.protobuf.Empty current = 5;
+    // The drone rotates towards target before moving to said target.
+    google.protobuf.Empty to_target_before = 6;
+    // The drone rotates to given heading before moving to target.
+    // The value specifies the heading relative to the North in degrees (clockwise).
+    double custom_before = 7;
+    // The drone rotates to given heading while moving to target.
+    // The value specifies the heading relative to the North in degrees (clockwise).
+    double custom_during = 8;
+  }
+
+  // Requested (max) speed for move.
+  double max_horizontal_speed = 9; // in meters per second
+  double max_vertical_speed = 10; // in meters per second
+  double max_yaw_rotation_speed = 11; // in degrees per second
+}
+
+// This is the entry point to receive messages from the drone.
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+    Execution execution = 17;
+  }
+
+  message State {
+    reserved 1; // Capabilities default_capabilities = 1;
+
+    oneof state {
+      pointnfly.State.Unavailable unavailable = 2;
+      pointnfly.State.Idle idle = 3;
+      pointnfly.State.Active active = 4;
+    }
+  }
+
+  // Event relative to the execution of a point or fly directive.
+  message Execution {
+    ExecutionStatus status = 1;
+  }
+}
+
+// Point'n'fly piloting state.
+message State {
+
+  // Point'n'fly piloting is unavailable for the listed reasons.
+  message Unavailable {
+    repeated UnavailabilityReason reasons = 1;
+  }
+
+  // Point'n'fly piloting is available but not active yet.
+  message Idle {
+  }
+
+  // Point'n'fly is active: either a point or a fly is executing.
+  message Active {
+    oneof current_directive {
+      Point point = 1;
+      Fly fly = 2;
+    }
+  }
+}
+
+enum ExecutionStatus {
+  // Directive execution did complete successfully (fly only).
+  EXECUTION_STATUS_SUCCESS = 0;
+  // Directive failed to execute or to complete successfully.
+  EXECUTION_STATUS_FAILED = 1;
+  // Directive execution was interrupted, either by user (Deactivate, Execute request) or by the drone.
+  EXECUTION_STATUS_INTERRUPTED = 2;
+}
+
+enum GimbalControlMode {
+  GIMBAL_CONTROL_MODE_LOCKED = 0;
+  GIMBAL_CONTROL_MODE_LOCKED_ONCE = 1;
+  GIMBAL_CONTROL_MODE_FREE = 2;
+}
+
+enum UnavailabilityReason {
+  UNAVAILABILITY_REASON_DRONE_GPS_INFO_INACCURATE = 0;
+  UNAVAILABILITY_REASON_DRONE_NOT_CALIBRATED = 1;
+  UNAVAILABILITY_REASON_DRONE_OUT_GEOFENCE = 2;
+  UNAVAILABILITY_REASON_DRONE_TOO_CLOSE_TO_GROUND = 3;
+  UNAVAILABILITY_REASON_DRONE_ABOVE_MAX_ALTITUDE = 4;
+  UNAVAILABILITY_REASON_DRONE_INSUFFICIENT_BATTERY = 5;
+  UNAVAILABILITY_REASON_DRONE_NOT_FLYING = 6;
+}

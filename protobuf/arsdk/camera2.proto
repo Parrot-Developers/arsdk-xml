@@ -209,7 +209,7 @@ message Event {
 
     message Photo {
       PhotoState state = 1;
-      uint64 start_timestamp = 2 [deprecated = true];
+      reserved 2;
       uint32 photo_count = 3;
       StorageType storage = 4;
       google.protobuf.UInt64Value duration = 5; // null if not supported; otherwise milliseconds
@@ -219,7 +219,7 @@ message Event {
 
     message Recording {
       RecordingState state = 1;
-      uint64 start_timestamp = 2 [deprecated = true];
+      reserved 2;
       uint32 video_bitrate = 3;
       StorageType storage = 4;
       google.protobuf.UInt64Value duration = 5; // null if not supported; otherwise milliseconds

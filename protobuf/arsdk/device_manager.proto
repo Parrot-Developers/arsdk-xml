@@ -20,6 +20,7 @@ message Command {
     ConnectDevice connect_device = 17;
     ForgetDevice forget_device = 18;
     DiscoverDevices discover_devices = 19;
+    ChangeConnectionParameters change_connection_parameters = 20;
   }
 
   message GetState {
@@ -52,6 +53,36 @@ message Command {
   }
 
   message DiscoverDevices {
+  }
+
+  message ChangeConnectionParameters {
+    string uid = 1;
+
+    oneof transport {
+      Wifi wifi = 2;
+      Cellular cellular = 3;
+      Microhard microhard = 4;
+    }
+
+    message Wifi {
+    }
+
+    message Cellular {
+    }
+
+    message Microhard {
+      // This parameter can only be changed if currently connected to the device
+      // through Microhard
+      google.protobuf.UInt32Value power = 1; // leave empty to keep current value
+
+      // This parameter can only be changed if currently connected to the device
+      // through Microhard
+      google.protobuf.UInt32Value channel = 2; // leave empty to keep current value
+
+      // This parameter can only be changed if currently connected to the device
+      // through Microhard
+      arsdk.microhard.BandwidthValue bandwidth = 3; // leave empty to keep current value
+    }
   }
 }
 

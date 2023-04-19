@@ -64,6 +64,9 @@
 			<value name="dri_failing">
 				DRI is not functional.
 			</value>
+			<value name="video_dsp_fault">
+				Video Signal Processing is not available.
+			</value>
 		</enum>
 
 		<enum name="takeoff_checklist_type">

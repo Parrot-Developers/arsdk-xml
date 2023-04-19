@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package arsdk.sms;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.sms";
+option java_outer_classname = "Sms";
+
+option (olympe_package) = "sms";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SendSms send_sms = 17;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f";
+  }
+
+  /* Send SMS to a number - used to discover drone phone number */
+  message SendSms {
+    string recipient = 1;
+    string text = 2;
+
+    option (support) = "091f";
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    State state = 16;
+  }
+
+  /* Current state. */
+  message State {
+    reserved 1; // Capabilities default_capabilities = 1;
+
+    /* Tells whether the whole SMS feature is currently available. */
+    google.protobuf.BoolValue available = 2;
+  }
+}
