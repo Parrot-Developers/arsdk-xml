@@ -461,6 +461,7 @@ enum CameraMode {
 
 enum CameraModel {
   CAMERA_MODEL_MAIN = 0;
+  CAMERA_MODEL_THERMAL_BLENDED = 1;
 }
 
 enum DigitalSignature {
@@ -526,6 +527,7 @@ enum Framerate {
   FRAMERATE_96 = 6;
   FRAMERATE_100 = 7;
   FRAMERATE_120 = 8;
+  FRAMERATE_9 = 9;
 }
 
 enum ImageStyle {

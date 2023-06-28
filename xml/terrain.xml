@@ -134,6 +134,22 @@
 				Longitude of the location (in degrees)
 			</arg>
 		</cmd>
+		<cmd name="set_global_origin" id="6">
+			<comment
+				title="Set drone global origin"
+				desc="Set the drone position in GPS coordinates corresponding to the origin of its global coordinate system"
+				support="091a"
+				result="The drone will set the given coordinate as its origin for any operation performed in global coordinate system"/>
+			<arg name="latitude" type="double">
+				Origin latitude in decimal degrees
+			</arg>
+			<arg name="longitude" type="double">
+				Origin longitude in decimal degrees
+			</arg>
+			<arg name="altitude" type="float">
+				Origin altitude in meters as AMSL (height above mean sea level)
+			</arg>
+		</cmd>
 	</msgs>
 
 

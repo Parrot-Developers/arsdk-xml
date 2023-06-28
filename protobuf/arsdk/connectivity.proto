@@ -1,0 +1,279 @@
+syntax = "proto3";
+
+package arsdk.connectivity;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.connectivity";
+option java_outer_classname = "Connectivity";
+
+option (olympe_package) = "connectivity";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    ListRadios list_radios = 16;
+    GetState get_state = 17;
+    SetMode set_mode = 18;
+    Scan scan = 19;
+    Configure configure = 20;
+  }
+
+  message ListRadios {
+    repeated RadioType type_filter = 1;
+  }
+
+  message GetState {
+    uint32 radio_id = 1;
+    bool include_default_capabilities = 2;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  message SetMode {
+    uint32 radio_id = 1;
+    Mode mode = 2;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  // Scans the list of available networks
+  message Scan {
+    uint32 radio_id = 1;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  message Configure {
+    uint32 radio_id = 1;
+    oneof mode {
+      AccessPointConfig access_point_config = 2;
+      StationConfig station_config = 3;
+    }
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    RadioList radio_list = 16;
+    State state = 17;
+    CommandResponse command_response = 18;
+    Connection connection = 19;
+    ScanResult scan_result = 20;
+  }
+
+  message RadioList {
+    map<uint32, RadioType> radios = 1;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  // Current state
+  message State {
+    uint32 radio_id = 1;
+    Capabilities default_capabilities = 2;
+    AccessPointConfig access_point_config = 3;
+    StationConfig station_config = 4;
+    oneof mode {
+      IdleState idle = 5;
+      AccessPointState access_point = 6;
+      StationState station = 7;
+    }
+    Channel channel = 8;
+    // NOTE: the authorized channels are given for the _current mode_ country 
+    //       configuration only.
+    AuthorizedChannels authorized_channels = 9;
+    google.protobuf.Int32Value rssi = 10;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  message CommandResponse {
+    uint32 radio_id = 1;
+    CommandStatus status = 2;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  message Connection {
+    uint32 radio_id = 1;
+    ConnectionStatus status = 2;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+
+  message ScanResult {
+    uint32 radio_id = 1;
+    repeated Network networks = 2;
+
+    option (support) = "091a";
+    option (support) = "091f";
+  }
+}
+
+message Capabilities {
+  repeated Mode supported_modes = 2;
+  repeated EncryptionType supported_encryption_types = 3;
+  repeated string supported_countries = 4;
+}
+
+message AccessPointConfig {
+  NetworkSecurityMode security = 1;
+  google.protobuf.StringValue ssid = 2;
+  google.protobuf.BoolValue hidden = 3;
+  google.protobuf.BytesValue hw_addr = 4;
+  google.protobuf.StringValue country = 5;
+  EnvironmentValue environment = 6;
+  oneof channel_selection_type {
+    Channel manual_channel = 7;
+    AutomaticChannelSelection automatic_channel = 8;
+  }
+}
+
+message StationConfig {
+  NetworkSecurityMode security = 1;
+  google.protobuf.StringValue ssid = 2;
+  google.protobuf.BoolValue hidden = 3;
+  google.protobuf.BytesValue hw_addr = 4;
+  google.protobuf.StringValue country = 5;
+  EnvironmentValue environment = 6;
+}
+
+message IdleState {
+}
+
+message AccessPointState {
+  SystemState system_state = 1;
+}
+
+message StationState {
+  SystemState system_state = 1;
+  StationConnectionState connection_state = 2;
+}
+
+message Channel {
+  oneof type {
+    WifiChannel wifi_channel = 1;
+    // MicrohardChannel microhard_channel = 2;
+    // SimpulseChannel simpulse_channel = 3;
+  }
+}
+
+message WifiChannel {
+  WifiBand band = 1;
+  uint32 channel = 2;
+}
+
+message AuthorizedChannels {
+  repeated AuthorizedChannel channel = 1;
+}
+
+message AuthorizedChannel {
+  Channel channel = 1;
+  Environment environment = 2;
+}
+
+message NetworkSecurityMode {
+  // NOTE: some modes, for example STA, only support a single encryption type; 
+  //       in that case only the first listed value will be considered
+  repeated EncryptionType encryption = 1;
+  // NOTE: irrelevant for OPEN encryption type.
+  string passphrase = 2;
+}
+
+message Network {
+  Channel channel = 1;
+  repeated EncryptionType encryption = 2;
+  string ssid = 3;
+  repeated Bie bie = 4; // Beacon information elements
+}
+
+// Beacon Information Element
+message Bie {
+  bytes oui = 1; // Organizationally Unique Identifier
+  bytes data = 2;
+}
+
+message EnvironmentValue {
+  Environment value = 1;
+
+  option (support) = "091a";
+  option (support) = "091f";
+}
+
+message AutomaticChannelSelection {
+  repeated WifiBand allowed_bands = 1;
+}
+
+enum CommandStatus {
+  COMMAND_STATUS_OK = 0;
+  COMMAND_STATUS_BUSY = 1;
+  COMMAND_STATUS_NOT_ALLOWED = 2;
+  COMMAND_STATUS_ALREADY = 3;
+}
+
+enum ConnectionStatus {
+  CONNECTION_STATUS_DISCONNECTED = 0;
+  CONNECTION_STATUS_AUTH_FAILURE = 1;
+  CONNECTION_STATUS_FAILURE = 2;
+  CONNECTION_STATUS_CONNECTED = 3;
+}
+
+enum EncryptionType {
+  ENCRYPTION_TYPE_OPEN = 0;
+  ENCRYPTION_TYPE_WEP = 1;
+  ENCRYPTION_TYPE_WPA = 2;
+  ENCRYPTION_TYPE_WPA2 = 3;
+  ENCRYPTION_TYPE_WPA3 = 4;
+  // ENCRYPTION_TYPE_AES_128 = 3
+  // ENCRYPTION_TYPE_AES_256 = 4
+}
+
+enum Environment {
+  ENVIRONMENT_INDOOR = 0;
+  ENVIRONMENT_OUTDOOR = 1;
+}
+
+enum Mode {
+  MODE_AP = 0;
+  MODE_STA = 1;
+  MODE_IDLE = 2;
+}
+
+enum RadioType{
+  RADIO_TYPE_WIFI = 0;
+  // RADIO_TYPE_MICROHARD = 1;
+  // RADIO_TYPE_SIMPULSE = 2;
+}
+
+enum StationConnectionState {
+  STATION_CONNECTION_STATE_CONNECTING = 0;
+  STATION_CONNECTION_STATE_CONNECTED  = 1;
+}
+
+enum SystemState {
+  SYSTEM_STATE_STOPPING = 0;
+  SYSTEM_STATE_STARTING = 1;
+  SYSTEM_STATE_RUNNING  = 2;
+}
+
+enum WifiBand {
+  WIFI_BAND_2_4_GHZ = 0;
+  WIFI_BAND_5_GHZ = 1;
+}
