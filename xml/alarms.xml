@@ -128,6 +128,18 @@
 			<value name="dri">
 				Drone Remote Identification check.
 			</value>
+			<value name="motor_down">
+				Motor down control mode has been triggered.
+			</value>
+			<value name="no_smartbattery">
+				Smartbattery is needed.
+			</value>
+			<value name="takeoff_forbidden_by_battery">
+				Takeoff is forbidden by Battery.
+			</value>
+			<value name="autopilot_configuration">
+				Autopilot configuration failed.
+			</value>
 		</enum>
 
 		<enum name="state">

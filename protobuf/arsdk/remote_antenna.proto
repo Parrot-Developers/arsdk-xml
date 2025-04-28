@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package arsdk.remoteantenna;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.remoteantenna";
+option java_outer_classname = "RemoteAntenna";
+
+option (olympe_package) = "remoteantenna";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Enable enable = 17;
+    Disable disable = 18;
+    PowerOnAntenna power_on_antenna = 19;
+    ShutDownAntenna shut_down_antenna = 20;
+    CloudConnect cloud_connect = 21;
+    CloudDisconnect cloud_disconnect = 22;
+    GpsCoordinates set_antenna_coordinates = 23;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f";
+  }
+
+  message Enable {
+  }
+
+  message Disable {
+  }
+
+  message PowerOnAntenna {
+  }
+
+  message ShutDownAntenna {
+  }
+
+  message CloudConnect {
+    string serial = 1;
+  }
+
+  message CloudDisconnect {
+  }
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 2 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    Heading heading = 1; // non-ack
+
+    State state = 16;
+    DiscoveredCloudAntennas discovered_cloud_antennas= 17;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    google.protobuf.BoolValue enabled = 2;
+    AntennaStatusValue antenna_status = 3;
+    google.protobuf.UInt32Value antenna_battery_level = 4;
+    BatteryStateValue charging_state = 5;
+    google.protobuf.BoolValue charger_plugged = 6;
+    // This bitrate corresponds to the ascending speed in bits per second.
+    // It is the estimated bandwidth of the remote antenna->pilot link.
+    google.protobuf.UInt64Value available_bandwidth = 7;
+    DeviceInfo device_info = 8;
+    bool use_cloud_antenna = 9;
+    GpsCoordinates antenna_coordinates = 10;
+  }
+
+  message DiscoveredCloudAntennas {
+    repeated CloudAntenna antennas = 1;
+  }
+
+  message Heading {
+    // Remote Antenna heading, in radians relative to the north
+    float value = 1;
+  }
+}
+
+message GpsCoordinates {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message Capabilities {
+  bool cloud_antenna = 1;
+}
+
+message BatteryStateValue {
+  BatteryState value = 1;
+}
+
+message AntennaStatusValue {
+  AntennaStatus value = 1;
+}
+
+/* During connection, some fields can be left empty (0 or empty string). */
+message DeviceInfo {
+  uint32 model = 1;
+  string firmware_version = 2;
+  string serial = 3;
+  bool needs_gps_coordinates = 4;
+}
+
+message CloudAntenna {
+  DeviceInfo info = 1;
+}
+
+enum BatteryState {
+  DISCHARGING           = 0;
+  DISCHARGING_LOW       = 1;
+  DISCHARGING_CRITICAL  = 2;
+  CHARGING              = 3;
+  CHARGED               = 4;
+}
+
+enum AntennaStatus {
+  /* Remote Antenna feature is disabled */
+  ANTENNA_STATUS_INACTIVE   = 0;
+  /* Remote Antenna feature is enabled,
+   * SkyController is looking for remote antennas and pinging the cloud server.
+   */
+  ANTENNA_STATUS_ACTIVATING = 1;
+  /* Connected to Remote Antenna. */
+  ANTENNA_STATUS_ACTIVE     = 2;
+  /* SkyController is trying to connect to an antenna (cloud or local). */
+  ANTENNA_STATUS_CONNECTING = 3;
+}

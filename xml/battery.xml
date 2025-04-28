@@ -206,6 +206,17 @@
 				Battery USB Version
 			</arg>
 		</evt>
+
+		<evt name="reliability" id="11">
+			<comment
+				title="Battery reliability"
+				desc="Whether the [BatteryStateChanged](#0-5-1) is reliable or not."
+				support="091f;0920;0924;0925"
+				triggered="At connection."/>
+			<arg name="is_charge_level_reliable" type="u8">
+				1 if battery state is reliable, 0 if not.
+			</arg>
+		</evt>
 	</msgs>
 
 </feature>

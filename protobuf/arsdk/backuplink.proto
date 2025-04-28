@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package arsdk.backuplink;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.backuplink";
+option java_outer_classname = "BackupLink";
+
+option (olympe_package) = "backuplink";
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 2 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    Telemetry telemetry= 1; // non-ack
+    // Notify imminent disconnection to speed up switching to backup link
+    google.protobuf.Empty main_radio_disconnecting = 16;
+  }
+
+  message Telemetry {
+    // Simplified flying state
+    FlyingState flying_state = 1;
+
+    // Battery charge in percent
+    uint32 battery_charge = 2;
+
+    // Norm of the 3d speed vector in m/s
+    float speed = 3;
+
+    // Drone heading in radians relative to the north
+    float heading = 4;
+
+    // Altitude above takeoff in meters
+    float altitude_ato = 5;
+
+    // Latitude in degrees (500.0 if unknown)
+    double latitude = 6;
+
+    // Longitude in degrees (500.0 if unknown)
+    double longitude = 7;
+
+    // True if the location was computed from gnss-base values
+    // False if the location was only computed from other sources
+    bool location_uses_gnss = 8;
+
+    // True if the location is considered to be reliable by the drone
+    // False if the estimated error of the location is too large
+    bool location_is_reliable = 9;
+
+    // True if the location was computed with magnetometer informations
+    // False otherwise
+    bool location_uses_magnetometer = 10;
+  }
+}
+
+// A band of frequencies
+message Band {
+  // Band minimum frequency in kHz
+  uint32 min_frequency = 1;
+  // Band maximum frequency in kHz
+  uint32 max_frequency = 2;
+}
+
+// A list of frequency bands
+message Bands {
+  repeated Band bands = 1;
+}
+
+// Backup link info
+message LinkInfo {
+
+  // Link state
+  LinkState state = 1;
+  // RX (drone to controller) link activity.
+  // True when traffic is received by the controller in the last seconds.
+  bool rx_active = 2;
+  // TX (controller to drone) link activity.
+  // True when traffic is received by the drone in the last seconds.
+  bool tx_active = 3;
+}
+
+// A list of frequencies
+message Frequencies {
+  repeated uint32 frequencies = 1;
+}
+
+// Simplified drone flying state
+enum FlyingState {
+  FLYING_STATE_LANDED    = 0;
+  FLYING_STATE_HOVERING  = 1;
+  FLYING_STATE_FLYING    = 2;
+  FLYING_STATE_RTH       = 3;
+  FLYING_STATE_EMERGENCY = 4;
+  FLYING_STATE_FLIGHT_PLAN = 5;
+  FLYING_STATE_POINTNFLY = 6;
+}
+
+// Backup link state
+enum LinkState {
+  // Backup link absent or not configured
+  LINK_STATE_OFF = 0;
+  // Backup link properly configured; main link still active
+  LINK_STATE_ESTABLISHED = 1;
+  // Backup link only; main link inactive
+  LINK_STATE_ACTIVE = 2;
+}
+
+// Tells which links are enabled
+enum EnabledLinks {
+  // All links are enabled
+  ENABLED_LINKS_ALL = 0;
+  // Only Backup link is enable. Main link is off
+  ENABLED_LINKS_BACKUP_ONLY = 1;
+  // All links (main, backup) are off
+  // In this mode the drone does not send telemetry, only the controller can
+  // send commands.
+  ENABLED_LINKS_NONE = 2;
+}

@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package arsdk.internal.lora;
+
+message Config {
+  /* Encryption key, decided by the controller */
+  bytes encryption_key = 1;
+
+  reserved 2;
+
+  /* Frequency in kHz, decided by the controller */
+  uint32 frequency = 3;
+
+  /* Silent radio mode; in this mode the drone does not send telemetry,
+   * only the controller can send commands */
+  bool silent = 4;
+
+  /* Radio protocol version number; the drone and controller must agree
+   * on the protocol version */
+  uint32 protocol_version = 5;
+}
+
+/* This is the entry point to send messages to the device */
+message Command {
+  reserved 1 to 15; /* reserved for non-acknowledged commands */
+
+  oneof id {
+    Config set_config = 16;
+  }
+}
+
+/* This is the entry point to receive messages from the device */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    Config config_changed = 16;
+  }
+}

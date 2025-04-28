@@ -167,4 +167,7 @@ enum Model {
   MODEL_P_DDL_1800  = 3;
   MODEL_P_DDL_2400  = 4;
   MODEL_P_MDDL_2400 = 5;
+  MODEL_SL200       = 6; // mars radio
+  MODEL_SL300_1624  = 7; // mars radio
+  MODEL_SL300_2400  = 8; // mars radio
 }

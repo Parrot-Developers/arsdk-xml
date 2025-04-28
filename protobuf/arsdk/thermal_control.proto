@@ -1,0 +1,141 @@
+syntax = "proto3";
+
+package arsdk.thermalcontrol;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.thermalcontrol";
+option java_outer_classname = "ThermalControl";
+
+option (olympe_package) = "thermalcontrol";
+
+/* This is the entry point to send messages to the drone */
+message Command {
+  reserved 1 to 15; /* reserved for non-acknowledged commands */
+
+  oneof id {
+    GetState get_state = 16;
+    GetCapabilities get_capabilities = 17;
+    /* Uniformity calibration */
+    StartUniformityCalibration start_calibration = 18;
+    AbortUniformityCalibration abort_calibration = 19;
+    ConfirmUniformityCalibrationUserAction user_calibration = 20;
+    SetPowerSaving set_power_saving = 21;
+  }
+
+  message GetState {
+    /* Request the drone to send all *_state events */
+  }
+  message GetCapabilities {
+    /* Request the drone to send the default_capabilities event */
+  }
+  message StartUniformityCalibration {
+    /* Start a thermal uniformity calibration procedure
+     * The drone only handles this message while uniformity calibration state is
+     * `NOT_CALIBRATED' or `CALIBRATED' */
+  }
+  message AbortUniformityCalibration {
+    /* Abort a thermal uniformity calibration procedure
+     * The drone only handles this message while uniformity calibration state is
+     * neither `NOT_CALIBRATED' nor `CALIBRATED'. The drone might pass through
+     * states requiring a user action before getting back to either
+     * `NOT_CALIBRATED' or `CALIBRATED'
+     */
+  }
+  message ConfirmUniformityCalibrationUserAction {
+    /* Confirm to the drone that the user action required by the uniformity
+     * calibration procedure is done.
+     * When `UniformityCalibrationState.require_user_action' is set, the drone
+     * will wait for this command before continuing with the procedure */
+  }
+
+  message SetPowerSaving {
+    PowerSavingMode mode = 1;
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    Capabilities default_capabilities = 16;
+    UniformtiyCalibrationState calibration_state = 17;
+    PowerSavingMode power_saving = 18;
+  }
+
+  message Capabilities {
+    /* Capabilities of this feature */
+    repeated PowerSavingMode powersaving_modes = 1;
+  }
+
+  message UniformtiyCalibrationState {
+    /* State of the thermal uniformity calibration of the camera */
+    UniformityCalibrationStep step = 1;
+    bool require_user_action = 2;
+  }
+}
+
+/* Allows user to configure the startup behavior of the Thermal camera. */
+enum PowerSavingMode {
+  /* The thermal camera is always powered on even if not used.
+     Allows fast thermal mode startup. */
+  POWER_SAVING_ALWAYS_ON = 0;
+  /* The thermal camera is shut down after a period of time when not used.
+     Allows fast thermal mode startup if user performs thermal mode
+     back and forth. */
+  POWER_SAVING_HOLD = 1;
+  /* The thermal camera is shut down immediately after end of thermal mode.
+     This allows the maximum energy saving but increases the thermal mode
+     startup. */
+  POWER_SAVING_MAX = 2;
+}
+
+enum UniformityCalibrationStep {
+  /* Thermal camera is not calibrated, the drone awaits a `StartCalibration'
+   * command to start the calibration procedure */
+  NOT_CALIBRATED = 0;
+  /* Thermal camera calibration is starting */
+  CALIBRATION_STARTING = 1;
+  /* Awaiting the user to put on the gimbal cover. This state should set the
+   * `State.require_user_action' flag and wait for a `ConfirmUserAction'
+   * command */
+  WAIT_GIMBAL_COVER_ON = 2;
+  /* Thermal camera is heating up before calibration */
+  HEATING = 3;
+  /* Thermal camera is doing its calibration */
+  CALIBRATING = 4;
+  /* Awaiting the user to remove the gimbal cover. This state should set the
+   * `State.require_user_action' flag and wait for a `ConfirmUserAction'
+   * command. */
+  WAIT_GIMBAL_COVER_OFF = 5;
+  /* Thermal camera is properly calibrated. If the drone detects a
+   * decalibration, the state will go back to `NOT_CALIBRATED' */
+  CALIBRATED = 6;
+}
+
+
+/*
+ * For Anafi 3 Uniformity Calibration, the expected FSM is the following:
+ *
+ * Note: - `BACK' means going back to the state that was active before the last
+           `StartUniformityCalibration' message
+         - `END' means going to `CALIBRATED' if no `AbortUniformtyCalibration'
+           message was received after the last `StartUniformityCalibration',
+           otherwise `BACK'
+ *
+ * STATE                 | COMMAND                  | NEW_STATE
+ *
+ * NOT_CALIBRATED        | Start                    | CALIBRATION_STARTING
+ * CALIBRATION_STARTING  | Abort                    | BACK
+ * CALIBRATION_STARTING  | <no command>             | WAIT_GIMBAL_COVER_ON
+ * WAIT_GIMBAL_COVER_ON  | Abort                    | BACK
+ * WAIT_GIMBAL_COVER_ON  | ConfirmUserAction        | HEATING
+ * HEATING               | Abort                    | WAIT_GIMBAL_COVER_OFF
+ * HEATING               | <no command>             | CALIBRATING
+ * CALIBRATING           | Abort                    | WAIT_GIMBAL_COVER_OFF
+ * CALIBRATION           | <no command>             | WAIT_GIMBAL_COVER_OFF
+ * WAIT_GIMBAL_COVER_OFF | ConfirmUserAction        | END
+ * CALIBRATED            | Start                    | CALIBRATION_STARTING
+ * CALIBRATED            | <decalibration_detected> | NOT_CALIBRATED
+ */

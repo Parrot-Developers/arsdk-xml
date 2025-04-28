@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package arsdk.navigation;
+
+import "parrot/protobuf/extensions.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.navigation";
+option java_outer_classname = "Navigation";
+
+option (olympe_package) = "navigation";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    /* Set the drone position in GPS coordinates corresponding
+    to the 2D origin of its global coordinate system and its heading */
+    SetGlobalPose set_global_pose = 17;
+    /* Configure the navigation feature */
+    Configure configure = 18;
+    /* Set the drone takeoff hovering altitude above ground in meters */
+    SetTakeoffHoveringAltitude set_takeoff_hovering_altitude = 19;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+  }
+
+  message SetGlobalPose {
+    double latitude = 1; // [decimal degrees]
+    double longitude = 2; // [decimal degrees]
+    float heading = 3; // [radians]
+  }
+
+  message Configure {
+    Config config = 1;
+  }
+
+  message SetTakeoffHoveringAltitude {
+    float altitude = 1;
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    State state = 16;
+    Location location = 17;
+  }
+
+  message Location {
+    /* Lat/Lon/Alt values must be absent when unknown/invalid */
+    google.protobuf.DoubleValue latitude = 1; // [decimal degrees]
+    google.protobuf.DoubleValue longitude = 2; // [decimal degrees]
+    google.protobuf.DoubleValue altitude_wgs84 = 3; // WGS84 ellipsoid altitude [meters]
+    google.protobuf.DoubleValue altitude_amsl = 4; // EGM96 amsl altitude [meters]
+    google.protobuf.DoubleValue heading = 5; // [radians]
+
+    google.protobuf.DoubleValue horizontal_accuracy = 6; // Estimated accuracy for latitude/longitude [meters]
+    google.protobuf.DoubleValue vertical_accuracy = 7; // Estimated accuracy for altitude [meters]
+    google.protobuf.DoubleValue heading_accuracy = 8; // Estimated accuracy for heading [radians]
+
+    message Gnss {
+      int32 number_of_satellites = 1; // Number of satellites used in GNSS fix
+    }
+    /* The gnss message must be absent while no gnss fix is acquired, or when
+    no gnss constellation are used as a location source */
+    Gnss gnss = 9;
+
+    /* Reliability of the location. This value is computed by the drone based
+     on information that might not be available to the controller, and thus
+     should be the preferred over comparing the horizontal_accuracy to an
+     arbitrary value when checking whether the location is accurate or not. */
+    Reliability reliability = 10;
+
+    /* True if the location was computed from the magnetometer */
+    bool location_uses_magnetometer = 11;
+
+    // FUTURE : More details about sources used to compute a Location
+    //message Source {
+    //  /* This Source message contains info about the source used for the
+    //  computation of the location. It might be extended in future revisions in
+    //  order to add details about a source (e.g. the number of satellites used
+    //  by a given constellation) */
+    //  oneof id {
+    //    /* Using empty objects allows changing them to non-empty ones later if
+    //    adding more info to a particular source is needed */
+    //    google.protobuf.Empty gps = 1;
+    //    google.protobuf.Empty glonass = 2;
+    //    google.protobuf.Empty galileo = 3;
+    //    google.protobuf.Empty beidou = 4;
+    //    google.protobuf.Empty rtk = 5;
+    //    google.protobuf.Empty vision_map = 6;
+    //    google.protobuf.Empty odometry = 7;
+    //    google.protobuf.Empty barometer = 8;
+    //    google.protobuf.Empty magnetometer = 9;
+    //  }
+    //}
+    ///* List of sources used to generate this location */
+    //repeated Source sources = 12;
+  }
+
+  message State {
+    Capabilities default_capabilities = 2;
+    /* Informs about available navigation frames. */
+    Frames available_frames = 1;
+    Config config = 3;
+    Alarms raised_alarms = 4;
+    GnssSourceValue gnss_source = 5;
+    google.protobuf.FloatValue takeoff_hovering_altitude = 6;
+    /* List of sources that are supported but unused because they require
+    some configuration in the Command.Configure message
+    (e.g. RTK authentication) */
+    // FUTURE: repeated Source unavailable_sources = 7;
+
+  }
+}
+
+message Alarms {
+  repeated Alarm alarms = 1;
+}
+
+message Alarm {
+  AlarmType type = 1;
+}
+
+message Capabilities {
+  /* List of sources supported by the device */
+  repeated Source sources = 1;
+  repeated Feature supported_features = 2;
+}
+
+message Config {
+  /* List of sources enabled for location computation */
+  repeated Source sources = 1;
+}
+
+/* A list of navigation frames. */
+message Frames {
+  repeated Frame frames = 1;
+}
+
+message GnssSourceValue {
+  GnssSource value = 1;
+}
+
+message Source {
+  /* This Source message contains parameters and info about the possible
+  location sources. It might be extended in future revisions in order to add
+  parameters or error reasons to a source (e.g. RTK authentication) */
+  oneof id {
+    /* Using empty objects allows changing them to non-empty ones later if
+    adding more parameters/infos to a particular source is needed */
+    google.protobuf.Empty gps = 1;
+    google.protobuf.Empty glonass = 2;
+    google.protobuf.Empty galileo = 3;
+    google.protobuf.Empty beidou = 4;
+    google.protobuf.Empty rtk = 5;
+    google.protobuf.Empty vision_map = 6;
+    google.protobuf.Empty odometry = 7;
+    google.protobuf.Empty barometer = 8;
+    google.protobuf.Empty magnetometer = 9;
+  }
+}
+
+/* Alarm type */
+enum AlarmType {
+  VISION_MAP_MISSING_SECTOR = 0;
+  VISION_MAP_FAILED_TO_LOAD_DATA = 1;
+  GNSS_SPOOFING_DETECTED = 2;
+}
+
+/* Identifies a type of navigation frame. */
+enum Frame {
+  FRAME_LOCAL = 0;
+  FRAME_GLOBAL = 1;
+}
+
+/* GNSS source */
+enum GnssSource {
+    GNSS_INTERNAL = 0;
+    GNSS_EXTERNAL = 1;
+}
+
+/* Reliability of a location */
+enum Reliability {
+  UNRELIABLE = 0;
+  RELIABLE = 1;
+}
+
+enum Feature {
+  TAKEOFF_HOVERING_ALTITUDE = 0;
+}

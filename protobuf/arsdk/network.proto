@@ -150,6 +150,8 @@ enum RoutingLink {
 	ROUTING_LINK_WLAN = 1;
 	/* Cellular link. */
 	ROUTING_LINK_CELLULAR = 2;
+	/* Direct Cable Connection. */
+	ROUTING_LINK_DIRECT = 3;
 }
 
 /* Link status. */

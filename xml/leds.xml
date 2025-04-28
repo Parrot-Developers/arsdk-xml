@@ -49,6 +49,10 @@
 			<value name="on_off">
 				Possibility to activate or deactivate the switch
 			</value>
+
+			<value name="infrared">
+				Possibility to set the infrared led state
+			</value>
 		</enum>
 	</enums>
 
@@ -57,7 +61,7 @@
 			<comment
 				title="Capabilities"
 				comment="Describes supported capabilities."
-				support="0914:1.5.0;0919:1.5.0"
+				support="0914:1.5.0;0919:1.5.0;0920"
 				triggered="At connection only."/>
 			<arg name="supported_capabilities" type="bitfield:u16:supported_capabilities">
 				Supported capabilities.
@@ -98,6 +102,33 @@
 				triggered="At connection; on changes."/>
 			<arg name="switch_state" type="enum:switch_state">
 				Switch state.
+			</arg>
+		</evt>
+
+		<cmd name="set_ir_state" id="5">
+			<comment
+				title="Enable or disable infrared LED"
+				desc="Enable or disable infrared LED"
+				support="0920"
+				result="Infrared LED is on/off. Event [ir_state](#154-6) is triggered."/>
+			<expectations>
+				<immediate>
+					#154-6(led_state: this.led_state)
+				</immediate>
+			</expectations>
+			<arg name="led_state" type="enum:switch_state">
+				Desired infrared LED state.
+			</arg>
+		</cmd>
+
+		<evt name="ir_state" id="6">
+			<comment
+				title="Infrared LED state"
+				comment="Informs about infrared led state changes."
+				support="0920"
+				triggered="At connection; on changes."/>
+			<arg name="led_state" type="enum:switch_state">
+				Infrared LED state.
 			</arg>
 		</evt>
 	</msgs>

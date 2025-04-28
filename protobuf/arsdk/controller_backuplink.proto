@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package arsdk.controllerbackuplink;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+import "arsdk/backuplink.proto";
+
+option java_package = "com.parrot.drone.arsdk.controllerbackuplink";
+option java_outer_classname = "ControllerBackupLink";
+
+option (olympe_package) = "controllerbackuplink";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Configure configure = 17;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f";
+  }
+
+  message Configure {
+    Config config = 1;
+  }
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    arsdk.backuplink.LinkInfo link_info = 2;
+    Config config = 3;
+  }
+}
+
+message Capabilities {
+  oneof frequency_selection_mode {
+    // Allowed frequencies in kHz
+    arsdk.backuplink.Frequencies supported_frequencies = 1;
+    // Allowed bands
+    arsdk.backuplink.Bands supported_bands = 2;
+  }
+}
+
+message Config {
+  // Frequency in kHz.
+  // Must be chosen in one of the Capabilities message supported_frequencies
+  // or within one of the bands given by supported_bands, depending on which
+  // message is promoted by the device in the frequency_selection_mode oneof.
+  // 0 means auto-frequency selection by the device.
+  google.protobuf.UInt32Value frequency = 1;
+
+  // Enabled links configuration.
+  EnabledLinksValue enabled_links = 2;
+}
+
+message EnabledLinksValue {
+  arsdk.backuplink.EnabledLinks value = 1;
+}

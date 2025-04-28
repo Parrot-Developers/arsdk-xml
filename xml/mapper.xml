@@ -135,6 +135,12 @@
 			<value name="toggle_antenna">
 				toggle between internal and external antenna
 			</value>
+			<value name="change_spectrum">
+				Switch between thermal display modes
+			</value>
+			<value name="screenshot">
+				Take a screen capture on device
+			</value>
 		</enum>
 		<enum name="axis_action">
 			The action (mapped on an axis)

@@ -94,7 +94,7 @@
 				Obstacle avoidance is unavailable and state is inactive.
 			</value>
 			<value name="estimation_unreliable">
-				GPS and vertical camera do not provide reliable data.
+				Position sensors do not provide reliable data.
 				Obstacle avoidance is unavailable and state is inactive.
 			</value>
 			<value name="calibration_failure">
@@ -120,6 +120,10 @@
 			<value name="freeze">
 				The drone is frozen and does not respond to PCMD
 				Obstacle avoidance mode needs to be set to disabled for the drone to move again.
+				Obstacle avoidance is unavailable and state is inactive.
+			</value>
+			<value name="stereo_unavailable">
+				Stereo used for navigation.
 				Obstacle avoidance is unavailable and state is inactive.
 			</value>
 		</enum>

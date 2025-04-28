@@ -100,6 +100,12 @@
 			<value name="battery_lost_comm">
 				Return to home triggered by battery lost comm event (available->in_progress)
 			</value>
+			<value name="motor_down">
+				Return to home triggered by motor down event (available->in_progress)
+			</value>
+			<value name="battery_too_hot">
+				Return to home triggered by battery too hot event (available->in_progress)
+			</value>
 		</enum>
 		<enum name="home_reachability">
 			Home reachability
@@ -124,6 +130,9 @@
 			</value>
 			<value name="battery_critical_soon">
 				Battery will soon be critical.
+			</value>
+			<value name="motor_down">
+				Return home is triggered because of motor_down.
 			</value>
 		</enum>
 		<enum name="auto_trigger_mode">
@@ -605,6 +614,24 @@
 			<arg name="missing_inputs" type="bitfield:u32:indicator">
 				List of missing requirements to activate return home.
 				If at least one input is missing, drone won't be able to return home.
+			</arg>
+		</evt>
+		<evt name="pilot_location" id="26">
+			<comment
+				title="Pilot location"
+				comment="The pilot location used when [return_to_home](#146-11)
+				is received by the drone."
+				support="091f;0920;0924;0925"
+				triggered="During connection; by [return_to_home](#146-11)
+				is called."/>
+			<arg name="latitude" type="double">
+				Latitude of the pilot location.
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the pilot location.
+			</arg>
+			<arg name="altitude" type="float">
+				Altitude of the pilot location (ATO).
 			</arg>
 		</evt>
 	</msgs>

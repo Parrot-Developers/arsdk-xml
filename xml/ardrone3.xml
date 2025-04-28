@@ -381,6 +381,9 @@
 				<enum name="free_gimbal">
 					Gimbal is freely controllable
 				</enum>
+				<enum name="locked_once_gimbal_and_exit">
+					Gimbal is locked on the POI once, then the piloted POI is exited
+				</enum>
 			</arg>
 		</cmd>
 		<cmd name="StopPilotedPOI" id="13">
@@ -1205,6 +1208,9 @@
 				<enum name="free_gimbal">
 					Gimbal is freely controllable
 				</enum>
+				<enum name="locked_once_gimbal_and_exit">
+					Gimbal is locked on the POI once, then the piloted POI is exited
+				</enum>
 			</arg>
 			<arg name="status" type="enum">
 				Status of the Piloted POI
@@ -1620,10 +1626,10 @@
 				title="Set max pitch/roll"
 				desc="Set max pitch/roll.\n
 				This represent the max inclination allowed by the drone.\n
-				You can get the bounds with the commands [MaxPitchRoll](#1-6-1)."
+				You can get the bounds with the commands [MaxTiltChanged](#1-6-1)."
 				support="0901;090c;0914;0919"
 				result="The max pitch/roll is set.\n
-				Then, event [MaxPitchRoll](#1-6-1) is triggered."/>
+				Then, event [MaxTiltChanged](#1-6-1) is triggered."/>
 			<expectations>
 				<immediate>
 					#1-6-1(current: this.current)
@@ -1817,6 +1823,25 @@
 				1 to enable the motion detection, 0 to disable it.
 			</arg>
 		</cmd>
+		<cmd name="MaxHorizontalSpeed" id="17">
+			<comment
+				title="Set max horizontal speed"
+				desc="Set max horizontal speed.\n
+				This represent the max speed allowed by the drone.\n
+				You can get the bounds with the commands [MaxHorizontalSpeed](#1-6-17)."
+				support="091f;0920;0924"
+				result="The max horizontal speed is set.\n
+				Then, events [MaxHorizontalSpeedChanged](#1-6-17) and [MaxTiltChanged](#1-6-1)
+				are triggered."/>
+			<expectations>
+				<immediate>
+					#1-6-17(current: this.current)
+				</immediate>
+			</expectations>
+			<arg name="current" type="float">
+				Current horizontal max speed in meters/second
+			</arg>
+		</cmd>
 	</class>
 	<class name="PilotingSettingsState" id="6">
 		Piloting Settings state from product
@@ -1841,9 +1866,9 @@
 			<comment
 				title="Max pitch/roll"
 				desc="Max pitch/roll.\n
-				The drone will not fly higher than this altitude (above take off point)."
+				The drone will not angle itself more than this value."
 				support="0901;090c;0914;0919"
-				triggered="by [SetMaxAltitude](#1-2-0)."/>
+				triggered="by [MaxTilt](#1-2-1)."/>
 			<arg name="current" type="float">
 				Current max tilt
 			</arg>
@@ -1996,6 +2021,23 @@
 				triggered="by [SetMotionDetectionMode](#1-2-16)"/>
 			<arg name="enabled" type="u8">
 				1 if motion detection is enabled, 0 otherwise.
+			</arg>
+		</cmd>
+		<cmd name="MaxHorizontalSpeedChanged" id="17">
+			<comment
+				title="Max horizontal speed"
+				desc="Max horizontal speed.\n
+				The drone will not fly faster than this speed in manual flight."
+				support="091f;0920;0924"
+				triggered="by [MaxHorizontalSpeed](#1-2-17)."/>
+			<arg name="current" type="float">
+				Current max horizontal speed in meters/second
+			</arg>
+			<arg name="min" type="float">
+				Range min of horizontal speed in meters/second
+			</arg>
+			<arg name="max" type="float">
+				Range max of horizontal speed in meters/second
 			</arg>
 		</cmd>
 	</class>

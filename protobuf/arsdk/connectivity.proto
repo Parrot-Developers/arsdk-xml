@@ -29,6 +29,10 @@ message Command {
   message GetState {
     uint32 radio_id = 1;
     bool include_default_capabilities = 2;
+    // Set to `true' if the controller supports the new
+    // AuthorizedPackedChannels message instead of the legacy
+    // AuthorizedChannels.
+    bool supports_packed_channels = 3;
 
     option (support) = "091a";
     option (support) = "091f";
@@ -69,10 +73,10 @@ message Event {
   oneof id {
     RadioList radio_list = 16;
     State state = 17;
-    CommandResponse command_response = 18;
     Connection connection = 19;
     ScanResult scan_result = 20;
   }
+  reserved 18; // deprecated: CommandResponse command_response
 
   message RadioList {
     map<uint32, RadioType> radios = 1;
@@ -83,6 +87,8 @@ message Event {
 
   // Current state
   message State {
+    option (map_key) = "radio_id";
+
     uint32 radio_id = 1;
     Capabilities default_capabilities = 2;
     AccessPointConfig access_point_config = 3;
@@ -93,18 +99,18 @@ message Event {
       StationState station = 7;
     }
     Channel channel = 8;
-    // NOTE: the authorized channels are given for the _current mode_ country 
-    //       configuration only.
-    AuthorizedChannels authorized_channels = 9;
+    // NOTE: the authorized channels are given for the _current_ mode, country
+    //       & environment configuration only.
+    oneof authorized_channels_type {
+      // Kept for legacy support, should no longer be sent if
+      // `supports_packed_channels' is sent to true by the
+      // controller
+      AuthorizedChannels authorized_channels = 9;
+      // Newer version of the message allowing multiple channels in the same
+      // band to be packed together, resulting in a much shorter message
+      AuthorizedPackedChannels authorized_packed_channels = 11;
+    }
     google.protobuf.Int32Value rssi = 10;
-
-    option (support) = "091a";
-    option (support) = "091f";
-  }
-
-  message CommandResponse {
-    uint32 radio_id = 1;
-    CommandStatus status = 2;
 
     option (support) = "091a";
     option (support) = "091f";
@@ -128,6 +134,7 @@ message Event {
 }
 
 message Capabilities {
+  string model = 1;
   repeated Mode supported_modes = 2;
   repeated EncryptionType supported_encryption_types = 3;
   repeated string supported_countries = 4;
@@ -143,6 +150,7 @@ message AccessPointConfig {
   oneof channel_selection_type {
     Channel manual_channel = 7;
     AutomaticChannelSelection automatic_channel = 8;
+    FrequencyHoppingList frequency_hopping_list = 9;
   }
 }
 
@@ -153,6 +161,12 @@ message StationConfig {
   google.protobuf.BytesValue hw_addr = 4;
   google.protobuf.StringValue country = 5;
   EnvironmentValue environment = 6;
+  // only applicable for RADIO_TYPE_MARS
+  oneof channel_selection_type {
+    Channel manual_channel = 7;
+    AutomaticChannelSelection automatic_channel = 8;
+    FrequencyHoppingList frequency_hopping_list = 9;
+  }
 }
 
 message IdleState {
@@ -168,29 +182,55 @@ message StationState {
 }
 
 message Channel {
+  // This indirection exists for sad backward-compatibility reasons.
+  // Please, do not add any other case to the oneof below.
+  // Also, this oneof should never be empty when sent or received.
   oneof type {
-    WifiChannel wifi_channel = 1;
-    // MicrohardChannel microhard_channel = 2;
-    // SimpulseChannel simpulse_channel = 3;
+    RadioChannel radio_channel = 1;
   }
 }
 
-message WifiChannel {
-  WifiBand band = 1;
-  uint32 channel = 2;
+message RadioChannel {
+  Band band = 1;
+  uint32 id = 2;
 }
 
 message AuthorizedChannels {
-  repeated AuthorizedChannel channel = 1;
+  repeated ChannelDescriptor channel = 1;
 }
 
-message AuthorizedChannel {
+message AuthorizedPackedChannels {
+  repeated PackedChannelDescriptor channels = 1;
+}
+
+message ChannelDescriptor {
   Channel channel = 1;
-  Environment environment = 2;
+  reserved 2; // deprecated: Environment environment
+  // frequency associated to this channel
+  uint32 frequency = 3;
+}
+
+message PackedChannelDescriptor {
+  // Band of this channel list
+  Band band = 1;
+  // Number of channels in the list
+  uint32 number_of_channels = 2;
+  // Id of the first channel in the list
+  uint32 first_id = 3;
+  // Step between the identifier of channels in this list
+  // To improve network efficiency, a step value of 0 is interpreted as
+  // a step value of 1
+  uint32 id_step = 4;
+  // Frequency (in MHz) of the first channel in the list
+  uint32 first_frequency = 5;
+  // Step (in MHz) between the frequencies of channels in this list
+  // To improve network efficiency, a step value of 0 is interpreted as
+  // a step value of 1
+  uint32 frequency_step = 6;
 }
 
 message NetworkSecurityMode {
-  // NOTE: some modes, for example STA, only support a single encryption type; 
+  // NOTE: some modes, for example STA, only support a single encryption type;
   //       in that case only the first listed value will be considered
   repeated EncryptionType encryption = 1;
   // NOTE: irrelevant for OPEN encryption type.
@@ -218,14 +258,12 @@ message EnvironmentValue {
 }
 
 message AutomaticChannelSelection {
-  repeated WifiBand allowed_bands = 1;
+  repeated Band allowed_bands = 1;
 }
 
-enum CommandStatus {
-  COMMAND_STATUS_OK = 0;
-  COMMAND_STATUS_BUSY = 1;
-  COMMAND_STATUS_NOT_ALLOWED = 2;
-  COMMAND_STATUS_ALREADY = 3;
+message FrequencyHoppingList {
+  repeated Channel tx_channels = 1;
+  repeated Channel rx_channels = 2;
 }
 
 enum ConnectionStatus {
@@ -241,8 +279,8 @@ enum EncryptionType {
   ENCRYPTION_TYPE_WPA = 2;
   ENCRYPTION_TYPE_WPA2 = 3;
   ENCRYPTION_TYPE_WPA3 = 4;
-  // ENCRYPTION_TYPE_AES_128 = 3
-  // ENCRYPTION_TYPE_AES_256 = 4
+  ENCRYPTION_TYPE_AES_128 = 5;
+  ENCRYPTION_TYPE_AES_256 = 6;
 }
 
 enum Environment {
@@ -258,22 +296,29 @@ enum Mode {
 
 enum RadioType{
   RADIO_TYPE_WIFI = 0;
-  // RADIO_TYPE_MICROHARD = 1;
-  // RADIO_TYPE_SIMPULSE = 2;
+  RADIO_TYPE_MARS = 1;
 }
 
 enum StationConnectionState {
   STATION_CONNECTION_STATE_CONNECTING = 0;
-  STATION_CONNECTION_STATE_CONNECTED  = 1;
+  STATION_CONNECTION_STATE_CONNECTED = 1;
 }
 
 enum SystemState {
   SYSTEM_STATE_STOPPING = 0;
   SYSTEM_STATE_STARTING = 1;
-  SYSTEM_STATE_RUNNING  = 2;
+  SYSTEM_STATE_RUNNING = 2;
 }
 
-enum WifiBand {
-  WIFI_BAND_2_4_GHZ = 0;
-  WIFI_BAND_5_GHZ = 1;
+enum Band {
+  BAND_2_4_GHZ = 0;
+  BAND_5_0_GHZ = 1;
+  BAND_1_6_GHZ = 2;
+  BAND_1_8_GHZ = 3;
+  BAND_2_0_GHZ = 4;
+  BAND_2_2_GHZ = 5;
+  BAND_2_3_GHZ = 6;
+  BAND_2_5_GHZ = 7;
+  BAND_3_5_GHZ = 8;
+  BAND_4_5_GHZ = 9;
 }

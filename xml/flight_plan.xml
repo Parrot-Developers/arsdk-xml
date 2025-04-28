@@ -85,10 +85,13 @@
 				Not applicable to Flight plan.
 			</value>
 			<value name="drone_battery">
-				Drone battery is insufficient.
+				Drone battery power level is insufficient.
 			</value>
 			<value name="drone_state">
 				Drone is not in a valid state.
+			</value>
+			<value name="drone_battery_too_hot">
+				Drone battery temperature is too high.
 			</value>
 		</enum>
 		<enum name="mavlink_type">

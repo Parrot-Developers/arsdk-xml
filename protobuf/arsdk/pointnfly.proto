@@ -4,6 +4,7 @@ package arsdk.pointnfly;
 
 import "google/protobuf/empty.proto";
 import "parrot/protobuf/extensions.proto";
+import "arsdk/backuplink.proto";
 
 option java_package = "com.parrot.drone.arsdk.pointnfly";
 option java_outer_classname = "PointAndFly";
@@ -74,9 +75,12 @@ message Fly {
   }
 
   // Requested (max) speed for move.
-  double max_horizontal_speed = 9; // in meters per second
-  double max_vertical_speed = 10; // in meters per second
-  double max_yaw_rotation_speed = 11; // in degrees per second
+  double max_horizontal_speed = 9; // in meters per second, 0 for autoselection
+  double max_vertical_speed = 10; // in meters per second, 0 for autoselection
+  double max_yaw_rotation_speed = 11; // in degrees per second, 0 for autoselection
+
+  // Enabled radio links for the fly action
+  arsdk.backuplink.EnabledLinks enabled_links = 12;
 }
 
 // This is the entry point to receive messages from the drone.
@@ -96,6 +100,8 @@ message Event {
       pointnfly.State.Idle idle = 3;
       pointnfly.State.Active active = 4;
     }
+
+    Capabilities capabilities = 5;
   }
 
   // Event relative to the execution of a point or fly directive.
@@ -123,6 +129,11 @@ message State {
       Fly fly = 2;
     }
   }
+}
+
+// Capabilities
+message Capabilities {
+  repeated arsdk.backuplink.EnabledLinks allowed_links = 1;
 }
 
 enum ExecutionStatus {

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package arsdk.piloting;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/empty.proto";
+
+option java_package = "com.parrot.drone.arsdk.piloting";
+option java_outer_classname = "Piloting";
+
+option (olympe_package) = "piloting";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    google.protobuf.Empty get_state = 16;
+    google.protobuf.Empty get_capabilities = 17;
+    SetSpeedMode set_speed_mode = 18;
+  }
+
+  /* Set the drone speed mode */
+  message SetSpeedMode {
+    SpeedMode speed_mode = 1;
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    State state = 16;
+    Capabilities capabilities = 17;
+  }
+
+  /* Current state. */
+  message State {
+    SpeedModeValue speed_mode = 1;
+  }
+
+  message Capabilities {
+    /* Capabilities of this feature */
+    repeated SpeedMode speed_modes = 1;
+    repeated Feature supported_features = 2;
+  }
+}
+
+message SpeedModeValue {
+  SpeedMode value = 1;
+}
+
+enum SpeedMode {
+  NORMAL_SPEED_MODE = 0;
+  LOW_SPEED_MODE = 1;
+}
+
+enum Feature {
+  HAND_LAUNCH = 0;
+}

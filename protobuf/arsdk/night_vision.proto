@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package arsdk.nightvision;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.nightvision";
+option java_outer_classname = "NightVision";
+
+option (olympe_package) = "arsdk.nightvision";
+
+// This is the entry point to send messages to the drone
+message Command {
+    reserved 1 to 15; // reserved for non-acknowledged commands
+
+    oneof id {
+        GetState get_state = 16;
+        Activate activate = 17;
+    }
+
+    message GetState {
+        bool include_default_capabilities = 1;
+    }
+
+    message Activate {
+        string product_id = 1;
+        bool value = 2;
+    }
+}
+
+// This is the entry point to receive messages from the drone.
+message Event {
+    reserved 1 to 15; // reserved for non-acknowledged events
+
+    oneof id {
+        State state = 16;
+    }
+
+    // Current state.
+    message State {
+        reserved 1; // Capabilities default_capabilities = 1;
+        Module module = 2;
+    }
+}
+
+message Module {
+    ModuleInfo info = 1;
+    google.protobuf.BoolValue is_activated = 2;
+}
+
+message ModuleInfo {
+    string product_id = 1;
+    string version = 2;
+}

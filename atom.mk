@@ -117,6 +117,27 @@ $(foreach __f,$(libarsdk_proto_files), \
 include $(BUILD_LIBRARY)
 
 ###############################################################################
+# libarsdk-msghub-py
+###############################################################################
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libarsdk-msghub-py
+
+LOCAL_DESCRIPTION := Msghub integration of protobuf types for AR-SDK
+LOCAL_LIBRARIES := libulog-py protobuf libarsdk-pbpy libmsghub libmsghub-py
+LOCAL_EXPORT_C_INCLUDES := $(call local-get-build-dir)/gen
+
+libarsdk_proto_path := protobuf
+libarsdk_proto_files := $(call all-files-under,$(libarsdk_proto_path),.proto)
+
+$(foreach __f,$(libarsdk_proto_files), \
+	$(eval LOCAL_CUSTOM_MACROS += msghub-macro:python,$(TARGET_OUT_STAGING)/usr/lib/python/site-packages,$(LOCAL_PATH)/$(__f),$(LOCAL_PATH)/$(libarsdk_proto_path)) \
+)
+
+include $(BUILD_LIBRARY)
+
+###############################################################################
 # libarsdk-pbc
 ###############################################################################
 

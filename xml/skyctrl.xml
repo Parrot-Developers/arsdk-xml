@@ -637,6 +637,41 @@
 				SkyController Attitude q3 (quaternion vector part)
 			</arg>
 		</cmd>
+		<cmd name="ChargerType" id="5">
+			<comment
+				title="Charger Type"
+				desc="The type of charger connected to the controller"
+				support="0923"
+				triggered="when the controller charger type has changed."/>
+			<arg name="type" type="enum">
+				Current battery state
+				<enum name="disconnected">
+					No charger connected
+				</enum>
+				<enum name="sdp">
+					Standard Downstream Port charger (Slow speed)
+				</enum>
+				<enum name="cdp">
+					Charging Downstream Port charger (Slow speed)
+				</enum>
+				<enum name="dcp">
+					Dedicated Charging Port charger (Normal speed)
+				</enum>
+				<enum name="power_delivery">
+					Power Delivery charger (Fast speed)
+				</enum>
+			</arg>
+		</cmd>
+		<cmd name="ChargeTimeLeft" id="6">
+			<comment
+				title="Charge Time Left"
+				desc="Time left in minute until the controller is fully charged"
+				support="0923"
+				triggered="Every minute when the controller is charging"/>
+			<arg name="time" type="u16">
+				Time left (in minutes) until controller is fully charged
+			</arg>
+		</cmd>
 	</class>
 	<class name="AccessPointSettings" id="9">
 		AccessPoint settings commands

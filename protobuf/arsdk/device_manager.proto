@@ -5,6 +5,7 @@ package arsdk.devicemanager;
 import "google/protobuf/wrappers.proto";
 import "parrot/protobuf/extensions.proto";
 import "arsdk/microhard.proto";
+import "arsdk/backuplink.proto";
 
 option java_package = "com.parrot.drone.arsdk.devicemanager";
 option java_outer_classname = "DeviceManager";
@@ -21,10 +22,20 @@ message Command {
     ForgetDevice forget_device = 18;
     DiscoverDevices discover_devices = 19;
     ChangeConnectionParameters change_connection_parameters = 20;
+    StopDiscovery stop_discovery = 21;
   }
 
   message GetState {
     bool include_default_capabilities = 1;
+    // If a client supporting the fast connection is connected when the
+    // SkyController connects to a drone, it will pause its connection process
+    // after sending the Connecting{sdk_ready=true} state. In this case, the
+    // client is expected to send the other commands required to finish the
+    // connection.
+    // If the client does not support this, the legacy connection process will
+    // be used, and the client is expected to wait for the Connected state
+    // before sending any command.
+    bool supports_fast_connection = 2;
   }
 
   message ConnectDevice {
@@ -34,7 +45,11 @@ message Command {
       Wifi wifi = 2;
       Cellular cellular = 3;
       Microhard microhard = 4;
+      Mars mars = 5;
     }
+
+    /* For waking up remote devices via backup radio */
+    bool wake_idle = 6;
 
     message Wifi {
       string security_key = 1;
@@ -46,6 +61,9 @@ message Command {
     message Microhard {
       google.protobuf.UInt32Value power = 1; // leave empty to use default
     }
+
+    message Mars {
+    }
   }
 
   message ForgetDevice {
@@ -53,6 +71,15 @@ message Command {
   }
 
   message DiscoverDevices {
+    /* Look for idle devices, ie. powered off devices with the backup radio
+     * active, which we can wake up remotely.
+     * This will cause a disconnect if already connected to a drone.
+     * This discovery will keep running until a connect or stop discovery cmd.
+     */
+    bool use_backup_radio = 1;
+  }
+
+  message StopDiscovery {
   }
 
   message ChangeConnectionParameters {
@@ -62,6 +89,7 @@ message Command {
       Wifi wifi = 2;
       Cellular cellular = 3;
       Microhard microhard = 4;
+      Mars mars = 5;
     }
 
     message Wifi {
@@ -83,6 +111,9 @@ message Command {
       // through Microhard
       arsdk.microhard.BandwidthValue bandwidth = 3; // leave empty to keep current value
     }
+
+    message Mars {
+    }
   }
 }
 
@@ -94,6 +125,8 @@ message Event {
     State state = 16;
     ConnectionFailure connection_failure = 17;
     DiscoveredDevices discovered_devices = 18;
+    PairingDone pairing_done = 19;
+    PairingFailed pairing_failed = 20;
   }
 
   message State {
@@ -122,6 +155,15 @@ message Event {
 
   message DiscoveredDevices {
     repeated DiscoveredDevice devices = 1;
+    DiscoveryStatus status = 2;
+  }
+
+  message PairingDone {
+    KnownDevice paired_device = 1;
+  }
+
+  message PairingFailed {
+    PairingFailureReason reason = 1;
   }
 }
 
@@ -142,16 +184,21 @@ message ConnectionState {
   }
 
   message Searching {
+    /* Scanning for idle devices using backup radio */
+    bool scanning_idle_devices = 1;
   }
 
   message Connecting {
     DeviceInfo device = 1;
     Transport transport = 2;
- }
+    bool sdk_ready = 3;
+    arsdk.backuplink.LinkState backup_link = 4;
+  }
 
   message Connected {
     DeviceInfo device = 1;
     Transport transport = 2;
+    arsdk.backuplink.LinkState backup_link = 3;
   }
 
   message Disconnecting {
@@ -181,11 +228,19 @@ message MicrohardInfo {
   arsdk.microhard.Encryption encryption_algorithm = 4;
 }
 
+message MarsInfo {
+}
+
+message BackupLinkInfo {
+}
+
 message KnownDevice {
   DeviceInfo info = 1;
   WifiInfo wifi = 2;
   CellularInfo cellular = 3;
   MicrohardInfo microhard = 4;
+  MarsInfo mars = 5;
+  BackupLinkInfo backup_link = 6;
 }
 
 message DiscoveredDevice {
@@ -204,20 +259,45 @@ message DiscoveredDevice {
   }
 
   CellularVisibility cellular_visibility = 4;
+
+  message BackupLinkVisibility {
+    /* Whether the drone is booted, or idle and wake-able. */
+    bool drone_started = 1;
+  }
+
+  BackupLinkVisibility backup_link_visibility = 5;
 }
 
 enum ConnectionFailureReason {
   CONNECTION_FAILURE_REASON_PEER_LIMIT = 0;
   CONNECTION_FAILURE_REASON_AUTHENTICATION_FAILED = 1;
+  CONNECTION_FAILURE_REASON_RADIO_NOT_READY = 2;
 }
 
 enum Transport {
   TRANSPORT_WIFI = 0;
   TRANSPORT_CELLULAR = 1;
   TRANSPORT_MICROHARD = 2;
+  TRANSPORT_MARS = 3;
 }
 
 enum WifiSecurity {
   WIFI_SECURITY_NONE = 0;
   WIFI_SECURITY_WPA2 = 1;
+}
+
+enum DiscoveryStatus {
+  /* Successful scan */
+  DISCOVERY_STATUS_SUCCESS = 0;
+  /* Radio is not ready or available. */
+  DISCOVERY_STATUS_ERROR_RADIO_NOT_READY = 1;
+  /* Controller knows zero discoverable drone and cannot scan them. */
+  DISCOVERY_STATUS_ERROR_NO_DISCOVERABLE_DRONE = 2;
+}
+
+enum PairingFailureReason {
+  /* Trying to pair but the controller radio is not ready */
+  PAIRING_FAILURE_REASON_RADIO_NOT_READY = 0;
+  /* Controller is in remote antenna mode without a remote antenna connected. */
+  PAIRING_FAILURE_REASON_NO_REMOTE_ANTENNA = 1;
 }

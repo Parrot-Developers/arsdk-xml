@@ -45,6 +45,10 @@
 				This is a terminal state for the target, which will remain in the
 				tracking state map until explicitely removed.
 			</value>
+			<value name="pause">
+				The tracking is temporarily inactive on user request, by using yaw or pitch for example.
+				It'll resume in searching mode.
+			</value>
 		</enum>
 		<enum name="tracking_answer">
 			Tracking answer.

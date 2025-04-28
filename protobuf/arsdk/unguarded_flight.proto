@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package arsdk.unguardedflight;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.unguardedflight";
+option java_outer_classname = "UnguardedFlight";
+
+option (olympe_package) = "unguardedflight";
+
+/* This is the entry point to send messages to the drone */
+message Command {
+  reserved 1 to 15; /* reserved for non-acknowledged commands */
+
+  oneof id {
+    google.protobuf.Empty get_config = 16;
+    google.protobuf.Empty get_capabilities = 17;
+    Config set_config = 18;
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 1 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    Config capabilities = 16;
+    Config current_config = 17;
+  }
+}
+
+enum UnguardedFlightElement {
+  /* The drone will always try to takeoff, even if something in the takeoff
+   * checklist should block the takeoff */
+  TAKEOFF_READY = 0;
+  /* The drone will never land automatically, even when low on battery */
+  AUTOLAND = 1;
+  /* Disable automatic Return To Home, even upon disconnection or emergency */
+  AUTORTH = 2;
+}
+
+message Config {
+  repeated UnguardedFlightElement unguarded_flight_elements = 1;
+}

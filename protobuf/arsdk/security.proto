@@ -16,6 +16,7 @@ message Command {
   oneof id {
     RegisterApcToken register_apc_token = 16;
     RegisterApcDroneList register_apc_drone_list = 17;
+    RegisterApcCloudAntennaList register_apc_cloud_antenna_list = 18;
   }
 
   message RegisterApcToken {
@@ -28,5 +29,9 @@ message Command {
     string list = 1;
 
     option (support) = "091a";
+  }
+
+  message RegisterApcCloudAntennaList {
+    string list = 1;
   }
 }

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package arsdk.mobiledevice;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.mobiledevice";
+option java_outer_classname = "MobileDevice";
+
+option (olympe_package) = "mobiledevice";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 2 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    BatteryState battery_state = 1; // non-ack
+  }
+
+  message BatteryState {
+    // Percentage of full charge
+    uint32 charge_level = 1;
+  }
+}

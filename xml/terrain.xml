@@ -58,6 +58,31 @@
 			<value name="too_low">
 				Drone is too low to perform accurate calibration
 			</value>
+			<value name="invalid_controller_coords">
+				Controller coordinates are invalid
+			</value>
+			<value name="bad_pitch">
+				Drone gimbal pitch is not adequate
+			</value>
+		</enum>
+		<enum name="calibrate_result_reason">
+			<value name="unmet_position_requirements">
+				At least one calibration_issue is still declared at the command reception
+			</value>
+			<value name="imprecise_location">
+				Drone's and/or pilot's locations are not precise enough for calibration
+			</value>
+			<value name="too_large_pitch_offset">
+				Gimbal pitch is incoherent with the expected range
+			</value>
+		</enum>
+		<enum name="calibrate_result">
+			<value name="success">
+				calibrate procedure is a success.
+			</value>
+			<value name="failure">
+				calibrate procedure has failed.
+			</value>
 		</enum>
 	</enums>
 	<msgs>
@@ -90,6 +115,7 @@
 				<immediate>
 					#176-4(state: ok)
 					|#176-4(issue:too_low|too_close)
+					#176-6(result: success,failure_reason: unmet_position_requirements|imprecise_location|too_large_pitch_offset)
 				</immediate>
 			</expectations>
 		</cmd>
@@ -134,22 +160,18 @@
 				Longitude of the location (in degrees)
 			</arg>
 		</cmd>
-		<cmd name="set_global_origin" id="6">
+		<evt name="calibrate_result" id="6">
 			<comment
-				title="Set drone global origin"
-				desc="Set the drone position in GPS coordinates corresponding to the origin of its global coordinate system"
-				support="091a"
-				result="The drone will set the given coordinate as its origin for any operation performed in global coordinate system"/>
-			<arg name="latitude" type="double">
-				Origin latitude in decimal degrees
+				title="Result of calibrate command"
+				triggered="On calibrate command reception"
+				support="0920"/>
+			<arg name="result" type="enum:calibrate_result">
+				The success (or failure) of the calibrate command.
 			</arg>
-			<arg name="longitude" type="double">
-				Origin longitude in decimal degrees
+			<arg name="failure_reason" type="bitfield:u8:calibrate_result_reason">
+				Reported reason for drone calibration failure. 0 if success.
 			</arg>
-			<arg name="altitude" type="float">
-				Origin altitude in meters as AMSL (height above mean sea level)
-			</arg>
-		</cmd>
+		</evt>
 	</msgs>
 
 

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package arsdk.flightdata;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.flightdata";
+option java_outer_classname = "FlightData";
+
+option (olympe_package) = "flight_data";
+
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+  }
+
+  message GetState {
+      bool include_default_capabilities = 1;
+  }
+}
+
+/* This is the entry point to receive messages from the drone. */
+message Event {
+  reserved 2 to 15; /* reserved for non-acknowledged events */
+
+  oneof id {
+    WindSpeed wind_speed = 1; // non-ack
+    State state = 16;
+  }
+
+  message State {
+      Capabilities default_capabilities = 1;
+      bool is_wind_speed_available = 2;
+  }
+}
+
+message Capabilities {
+  repeated Features supported_features = 1;
+}
+
+message WindSpeed {
+  float north = 1; // north speed in meters/second
+  float east = 2; // east speed in meters/second
+}
+
+enum Features {
+  WIND_SPEED_ESTIMATION = 0;
+}

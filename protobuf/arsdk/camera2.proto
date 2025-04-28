@@ -29,6 +29,8 @@ message Command {
     LockWhiteBalance lock_white_balance = 24;
     SetMediaMetadata set_media_metadata = 25;
     ResetZoom reset_zoom = 26;
+    ZoomGotoPreset zoom_goto_preset = 27;
+    SetUserLfic set_user_lfic = 28;
   }
 
   message ListCameras {
@@ -79,6 +81,22 @@ message Command {
     uint64 camera_id = 1;
 
     option (support) = "091a";
+  }
+
+  message ZoomGotoPreset {
+    uint64 camera_id = 1;
+    ZoomGotoPresetEnum goto_preset = 2;
+
+    option (support) = "0920";
+    option (support) = "0924";
+    option (support) = "0925";
+  }
+
+  message SetUserLfic {
+    uint64 camera_id = 1;
+
+    /* Coordinates [0; 1] in the picture (null to clear) */
+    Vec2 coords = 2;
   }
 
   message StartPhoto {
@@ -178,12 +196,13 @@ message Command {
 
 // This is the entry point to receive messages from the drone
 message Event {
-  reserved 4 to 15; // reserved for non-acknowledged events
+  reserved 5 to 15; // reserved for non-acknowledged events
 
   oneof id {
     Exposure camera_exposure = 1; // non-ack
     ZoomLevel zoom_level = 2; // non-ack
     NextPhotoInterval next_photo_interval = 3; // non-ack
+    WhiteBalance camera_white_balance = 4; // non-ack
 
     CameraList camera_list = 16;
     State state = 17;
@@ -198,6 +217,8 @@ message Event {
   }
 
   message State {
+    option (map_key) = "camera_id";
+
     uint64 camera_id = 1;
 
     map<uint32, google.protobuf.Empty> selected_fields = 2;
@@ -244,11 +265,38 @@ message Event {
     message Zoom {
       double zoom_level_max = 1;
       double zoom_high_quality_level_max = 2;
+
+      message Preset {
+        ZoomPresetEnum preset = 1;
+        float value = 2;
+      }
+      repeated Preset presets = 3;
+
+      message CameraRange {
+        CameraSubtype phys_cam = 1;
+        float level_min = 2;
+        float level_max = 3;
+        float high_quality_level_max = 4;
+      }
+      repeated CameraRange cam_ranges = 4;
     }
 
     Zoom zoom = 11;
 
     MediaMetadata media_metadata = 12;
+
+    message EffectiveFramerate {
+      Framerate effective_framerate = 1;
+    }
+
+    EffectiveFramerate effective_framerate = 13;
+
+    message UserLfic {
+      /* Coordinates [0; 1] in the picture (null if no coordinates) */
+      Vec2 coords = 1;
+    }
+
+    UserLfic user_lfic = 14;
 
     option (support) = "091a";
   }
@@ -275,6 +323,13 @@ message Event {
     double interval = 3;
 
     option (support) = "091a";
+  }
+
+  message WhiteBalance {
+    uint64 camera_id = 1;
+    WhiteBalanceTemperature temperature = 2;
+
+    option (support) = "0920";
   }
 
   message Photo {
@@ -343,6 +398,7 @@ message Capabilities {
     repeated ExposureMetering exposure_meterings = 41;
     repeated StoragePolicy storage_policies = 42;
     repeated uint32 video_recording_bitrates = 43;
+    repeated Spectrum spectrums = 44;
   }
 
   repeated Rule rules = 1;
@@ -391,11 +447,17 @@ message Config {
   ExposureMetering exposure_metering = 40;
   StoragePolicy storage_policy = 41;
   uint32 video_recording_bitrate = 42;
+  Spectrum spectrum = 43;
 }
 
 message DoubleRange {
   double min = 1;
   double max = 2;
+}
+
+message Vec2 {
+  float x = 1;
+  float y = 2;
 }
 
 message ExposureRoi {
@@ -410,6 +472,17 @@ message ExposureRoi {
 }
 
 message MediaMetadata {
+  option (message_doc) =
+    "All string fields in this message must match the following regex: "
+    "^[^\\x00-\\x1F\"*:<>?\\\\|]{0,91}$ "
+    "(up to 91 bytes). "
+    "All UTF-8 characters are valid except exFAT invalid characters: "
+    "All control codes from 0x00 to 0x1F, Quotation mark (\"), Asterisk (*), "
+    "Forward Slash (/), Colon (:), Less-than sign (<), Greater-than sign (>), "
+    "Question mark (?), Back slash (\\) and Vertical bar (|). "
+    "These fields will be sanitized by the drone, truncated "
+    "and invalid characters will be replaced by '_'.";
+
   map<uint32, google.protobuf.Empty> selected_fields = 1;
   string copyright = 2;
   string custom_id = 3;
@@ -439,7 +512,7 @@ enum BracketingPreset {
   BRACKETING_PRESET_1EV_2EV = 3;
   BRACKETING_PRESET_1EV_3EV = 4;
   BRACKETING_PRESET_2EV_3EV = 5;
-    BRACKETING_PRESET_1EV_2EV_3EV = 6;
+  BRACKETING_PRESET_1EV_2EV_3EV = 6;
 }
 
 enum BurstValue {
@@ -609,8 +682,9 @@ enum PhotoMode {
 
 enum PhotoResolution {
   PHOTO_RESOLUTION_48_MEGA_PIXELS = 0;
-  reserved 1;
+  PHOTO_RESOLUTION_21_MEGA_PIXELS = 1;
   PHOTO_RESOLUTION_12_MEGA_PIXELS = 2;
+  PHOTO_RESOLUTION_50_MEGA_PIXELS = 3;
 }
 
 enum PhotoStopReason {
@@ -619,6 +693,10 @@ enum PhotoStopReason {
   PHOTO_STOP_REASON_CONFIGURATION_CHANGE = 2;
   PHOTO_STOP_REASON_INTERNAL_ERROR = 3;
   PHOTO_STOP_REASON_INSUFFICIENT_STORAGE_SPACE = 4;
+  PHOTO_STOP_REASON_INACTIVE_CAMERA = 5;
+  PHOTO_STOP_REASON_ARBITRATION = 6;
+  PHOTO_STOP_REASON_ALREADY = 7;
+  PHOTO_STOP_REASON_STORAGE_UNAVAILABLE = 8;
 }
 
 enum PhotoStreamingMode {
@@ -643,7 +721,12 @@ enum RecordingStopReason {
   RECORDING_STOP_REASON_CONFIGURATION_CHANGE = 2;
   RECORDING_STOP_REASON_INTERNAL_ERROR = 3;
   RECORDING_STOP_REASON_INSUFFICIENT_STORAGE_SPACE = 4;
+  RECORDING_STOP_REASON_INSUFFICIENT_STORAGE_SPACE_FALLBACK = 10;
   RECORDING_STOP_REASON_INSUFFICIENT_STORAGE_SPEED = 5;
+  RECORDING_STOP_REASON_INACTIVE_CAMERA = 6;
+  RECORDING_STOP_REASON_ARBITRATION = 7;
+  RECORDING_STOP_REASON_ALREADY = 8;
+  RECORDING_STOP_REASON_STORAGE_UNAVAILABLE = 9;
 }
 
 enum VideoRecordingMode {
@@ -689,6 +772,13 @@ enum ShutterSpeed {
   SHUTTER_SPEED_1 = 35;
 }
 
+/* Spectrum allows user enable/disable thermal functionality
+   of the drone if available  */
+enum Spectrum {
+  SPECTRUM_VISIBLE = 0;
+  SPECTRUM_THERMAL = 1;
+}
+
 enum StoragePolicy {
   STORAGE_POLICY_AUTO = 0;
   STORAGE_POLICY_INTERNAL = 1;
@@ -698,6 +788,7 @@ enum StoragePolicy {
 enum StorageType {
   STORAGE_TYPE_INTERNAL = 0;
   STORAGE_TYPE_REMOVABLE = 1;
+  STORAGE_TYPE_NONE = 2;
 }
 
 enum VideoCodec {
@@ -710,6 +801,7 @@ enum VideoResolution {
   VIDEO_RESOLUTION_2160P = 1;
   reserved 2;
   VIDEO_RESOLUTION_1080P = 3;
+  VIDEO_RESOLUTION_720P = 4;
 }
 
 enum WhiteBalanceLockMode {
@@ -799,6 +891,25 @@ enum WhiteBalanceTemperature {
 enum ZoomControlMode {
   ZOOM_CONTROL_MODE_LEVEL = 0;
   ZOOM_CONTROL_MODE_VELOCITY = 1;
+}
+
+enum ZoomPresetEnum {
+  ZOOM_PRESET_WIDE = 0;
+  ZOOM_PRESET_THERMAL = 1;
+  ZOOM_PRESET_TELE = 2;
+  ZOOM_PRESET_MAX = 3;
+}
+
+enum ZoomGotoPresetEnum {
+  ZOOM_GOTO_PRESET_FIRST = 0;
+  ZOOM_GOTO_PRESET_LAST = 1;
+  ZOOM_GOTO_PRESET_PREV = 2;
+  ZOOM_GOTO_PRESET_NEXT = 3;
+}
+
+enum CameraSubtype {
+  CAMERA_SUBTYPE_WIDE = 0;
+  CAMERA_SUBTYPE_TELE = 1;
 }
 
 enum ZoomVelocityControlQualityMode {
