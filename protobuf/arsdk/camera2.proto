@@ -31,6 +31,8 @@ message Command {
     ResetZoom reset_zoom = 26;
     ZoomGotoPreset zoom_goto_preset = 27;
     SetUserLfic set_user_lfic = 28;
+    StreamCamera notify_stream_camera = 29;
+    SetAlignmentOffsets set_thermal_alignment_offsets = 30;
   }
 
   message ListCameras {
@@ -192,6 +194,13 @@ message Command {
       ")";
     option (support) = "091a";
   }
+
+  message SetAlignmentOffsets {
+    uint64 camera_id = 1;
+    AlignmentOffsets alignment_offsets = 2;
+
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
 }
 
 // This is the entry point to receive messages from the drone
@@ -208,6 +217,7 @@ message Event {
     State state = 17;
     Photo photo = 18;
     Recording recording = 19;
+    StreamCamera request_stream_camera = 20;
   }
 
   message CameraList {
@@ -277,6 +287,8 @@ message Event {
         float level_min = 2;
         float level_max = 3;
         float high_quality_level_max = 4;
+        google.protobuf.FloatValue hfov_min = 5;
+        google.protobuf.FloatValue hfov_max = 6;
       }
       repeated CameraRange cam_ranges = 4;
     }
@@ -298,6 +310,8 @@ message Event {
 
     UserLfic user_lfic = 14;
 
+    AlignmentOffsets thermal_alignment_offsets = 15;
+
     option (support) = "091a";
   }
 
@@ -313,6 +327,7 @@ message Event {
   message ZoomLevel {
     uint64 camera_id = 1;
     double level = 2;
+    google.protobuf.DoubleValue hfov = 3;
 
     option (support) = "091a";
   }
@@ -391,9 +406,9 @@ message Capabilities {
     DoubleRange zoom_max_speed_range = 34;
     repeated ZoomVelocityControlQualityMode zoom_velocity_control_quality_modes = 35;
     repeated AutoRecordMode auto_record_modes = 36;
-    DoubleRange alignment_offset_pitch_range = 37;
-    DoubleRange alignment_offset_roll_range = 38;
-    DoubleRange alignment_offset_yaw_range = 39;
+    reserved 37; // deprecated: DoubleRange alignment_offset_pitch_range
+    reserved 38; // deprecated: DoubleRange alignment_offset_roll_range
+    reserved 39; // deprecated: DoubleRange alignment_offset_yaw_range
     repeated DigitalSignature photo_signatures = 40;
     repeated ExposureMetering exposure_meterings = 41;
     repeated StoragePolicy storage_policies = 42;
@@ -402,6 +417,24 @@ message Capabilities {
   }
 
   repeated Rule rules = 1;
+
+  message AlignmentOffsetRanges {
+    DoubleRange pitch = 1;
+    DoubleRange roll = 2;
+    DoubleRange yaw = 3;
+
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
+
+  AlignmentOffsetRanges thermal_alignment_offset_ranges = 2;
+}
+
+message AlignmentOffsets {
+  google.protobuf.DoubleValue pitch = 1;
+  google.protobuf.DoubleValue roll = 2;
+  google.protobuf.DoubleValue yaw = 3;
+
+  option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
 }
 
 message Config {
@@ -440,9 +473,9 @@ message Config {
   double zoom_max_speed = 33;
   ZoomVelocityControlQualityMode zoom_velocity_control_quality_mode = 34;
   AutoRecordMode auto_record_mode = 35;
-  double alignment_offset_pitch = 36;
-  double alignment_offset_roll = 37;
-  double alignment_offset_yaw = 38;
+  reserved 36; // deprecated: double alignment_offset_pitch
+  reserved 37; // deprecated: double alignment_offset_roll
+  reserved 38; // deprecated: double alignment_offset_yaw
   DigitalSignature photo_signature = 39;
   ExposureMetering exposure_metering = 40;
   StoragePolicy storage_policy = 41;
@@ -487,6 +520,12 @@ message MediaMetadata {
   string copyright = 2;
   string custom_id = 3;
   string custom_title = 4;
+}
+
+message StreamCamera {
+  StreamReceiver receiver = 1;
+  CameraType type = 2;
+  string requester = 3;
 }
 
 enum AudioRecordingMode {
@@ -535,6 +574,25 @@ enum CameraMode {
 enum CameraModel {
   CAMERA_MODEL_MAIN = 0;
   CAMERA_MODEL_THERMAL_BLENDED = 1;
+}
+
+enum StreamReceiver {
+  STREAM_RECEIVER_DEFAULT = 0;
+  STREAM_RECEIVER_SKYCONTROLLER = 1;
+}
+
+enum CameraType {
+  CAMERA_TYPE_DEFAULT = 0;
+  CAMERA_TYPE_FRONT = 1;
+  CAMERA_TYPE_STEREO_LEFT = 2;
+  CAMERA_TYPE_STEREO_RIGHT = 3;
+  CAMERA_TYPE_VERTICAL = 4;
+  CAMERA_TYPE_DISPARITY = 5;
+  CAMERA_TYPE_HORIZONTAL_STEREO_LEFT = 6;
+  CAMERA_TYPE_HORIZONTAL_STEREO_RIGHT = 7;
+  CAMERA_TYPE_DOWN_STEREO_LEFT = 8;
+  CAMERA_TYPE_DOWN_STEREO_RIGHT = 9;
+  CAMERA_TYPE_EXTERNAL = 10;
 }
 
 enum DigitalSignature {
@@ -658,6 +716,7 @@ enum PhotoEvent {
   PHOTO_EVENT_TAKING_PHOTO = 1;
   reserved 2, 3;
   PHOTO_EVENT_STOP = 4;
+  PHOTO_EVENT_NONE = 5;
 }
 
 enum PhotoFileFormat {
@@ -708,6 +767,7 @@ enum RecordingEvent {
   RECORDING_EVENT_START = 0;
   RECORDING_EVENT_STOP = 1;
   RECORDING_EVENT_STOPPING = 2;
+  RECORDING_EVENT_NONE = 3;
 }
 
 enum RecordingState {
@@ -780,9 +840,10 @@ enum Spectrum {
 }
 
 enum StoragePolicy {
-  STORAGE_POLICY_AUTO = 0;
+  STORAGE_POLICY_PRIORITY_REMOVABLE = 0;
   STORAGE_POLICY_INTERNAL = 1;
   STORAGE_POLICY_REMOVABLE = 2;
+  STORAGE_POLICY_PRIORITY_INTERNAL = 3;
 }
 
 enum StorageType {
@@ -891,6 +952,7 @@ enum WhiteBalanceTemperature {
 enum ZoomControlMode {
   ZOOM_CONTROL_MODE_LEVEL = 0;
   ZOOM_CONTROL_MODE_VELOCITY = 1;
+  ZOOM_CONTROL_MODE_HFOV = 2;
 }
 
 enum ZoomPresetEnum {

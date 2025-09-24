@@ -23,8 +23,6 @@ message Command {
     SetGlobalPose set_global_pose = 17;
     /* Configure the navigation feature */
     Configure configure = 18;
-    /* Set the drone takeoff hovering altitude above ground in meters */
-    SetTakeoffHoveringAltitude set_takeoff_hovering_altitude = 19;
   }
 
   message GetState {
@@ -40,19 +38,17 @@ message Command {
   message Configure {
     Config config = 1;
   }
-
-  message SetTakeoffHoveringAltitude {
-    float altitude = 1;
-  }
 }
 
 /* This is the entry point to receive messages from the drone. */
 message Event {
-  reserved 1 to 15; /* reserved for non-acknowledged events */
+  reserved 2 to 15; // reserved for non-acknowledged events
+  reserved 17; // deprecated: location (ack)
 
   oneof id {
+    Location location = 1; // non-ack
+
     State state = 16;
-    Location location = 17;
   }
 
   message Location {
@@ -114,7 +110,6 @@ message Event {
     Config config = 3;
     Alarms raised_alarms = 4;
     GnssSourceValue gnss_source = 5;
-    google.protobuf.FloatValue takeoff_hovering_altitude = 6;
     /* List of sources that are supported but unused because they require
     some configuration in the Command.Configure message
     (e.g. RTK authentication) */
@@ -134,7 +129,6 @@ message Alarm {
 message Capabilities {
   /* List of sources supported by the device */
   repeated Source sources = 1;
-  repeated Feature supported_features = 2;
 }
 
 message Config {
@@ -175,6 +169,9 @@ enum AlarmType {
   VISION_MAP_MISSING_SECTOR = 0;
   VISION_MAP_FAILED_TO_LOAD_DATA = 1;
   GNSS_SPOOFING_DETECTED = 2;
+  VISION_MAP_FRONTIER_AREA = 3;
+  VISION_MAP_LOW_ALTITUDE = 4;
+  OPTICAL_NAVIGATION_TOO_DARK = 5;
 }
 
 /* Identifies a type of navigation frame. */
@@ -193,8 +190,4 @@ enum GnssSource {
 enum Reliability {
   UNRELIABLE = 0;
   RELIABLE = 1;
-}
-
-enum Feature {
-  TAKEOFF_HOVERING_ALTITUDE = 0;
 }

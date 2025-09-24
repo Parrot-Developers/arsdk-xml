@@ -217,6 +217,22 @@
 				1 if battery state is reliable, 0 if not.
 			</arg>
 		</evt>
+
+		<evt name="cell_config" id="12">
+			<comment
+				title="Number of cells in series and parallel"
+				support="091f;0920;0924;0925"
+				triggered="at connection."/>
+			<arg name="config" type="string">
+				Battery cell config
+			</arg>
+			<arg name="series" type="u8">
+				Battery cells in series
+			</arg>
+			<arg name="parallel" type="u8">
+				Battery cells in parallel
+			</arg>
+		</evt>
 	</msgs>
 
 </feature>

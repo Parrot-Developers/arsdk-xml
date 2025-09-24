@@ -152,6 +152,9 @@ message AccessPointConfig {
     AutomaticChannelSelection automatic_channel = 8;
     FrequencyHoppingList frequency_hopping_list = 9;
   }
+  // only applicable for RADIO_TYPE_MARS
+  BackupFreqs backup_freqs = 10;
+  ExtraInfos extra_infos = 11;
 }
 
 message StationConfig {
@@ -167,6 +170,9 @@ message StationConfig {
     AutomaticChannelSelection automatic_channel = 8;
     FrequencyHoppingList frequency_hopping_list = 9;
   }
+  // only applicable for RADIO_TYPE_MARS
+  BackupFreqs backup_freqs = 10;
+  ExtraInfos extra_infos = 11;
 }
 
 message IdleState {
@@ -266,6 +272,16 @@ message FrequencyHoppingList {
   repeated Channel rx_channels = 2;
 }
 
+message BackupFreqs {
+  repeated uint32 rx_freqs = 1;
+  repeated uint32 tx_freqs = 2;
+}
+
+message ExtraInfos {
+  string real_country = 1;
+  bool active_cellular = 2;
+}
+
 enum ConnectionStatus {
   CONNECTION_STATUS_DISCONNECTED = 0;
   CONNECTION_STATUS_AUTH_FAILURE = 1;
@@ -321,4 +337,9 @@ enum Band {
   BAND_2_5_GHZ = 7;
   BAND_3_5_GHZ = 8;
   BAND_4_5_GHZ = 9;
+  BAND_1_85_GHZ = 10;
+  BAND_2_1_GHZ = 11;
+  BAND_2_7_GHZ = 12;
+  BAND_3_8_GHZ = 13;
+  BAND_5_0_LOW_GHZ = 14;
 }

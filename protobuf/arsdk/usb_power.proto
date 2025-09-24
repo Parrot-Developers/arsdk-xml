@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package arsdk.usbpower;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.usbpower";
+option java_outer_classname = "UsbPower";
+
+option (olympe_package) = "usbpower";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Power power = 17;
+  }
+
+  // Get state.
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
+}
+
+// This is the entry point to receive messages from the drone.
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  // Current state.
+  message State {
+    Capabilities default_capabilities = 1;
+    Powers usb_powers = 2;
+
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
+}
+
+// Capabilities.
+message Capabilities {
+  repeated ConnectorType supported_types = 1;
+
+  option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+}
+
+// Powers.
+message Powers {
+  repeated Power powers = 1;
+
+  option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+}
+
+// USB power
+message Power {
+  // The USB type
+  ConnectorType connector_type = 1;
+
+  // Indicates if the USB power is on
+  bool enabled = 2;
+
+  option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+}
+
+// Connector Type
+enum ConnectorType {
+  // The battery USB-C connector
+  BATTERY = 0;
+  // The body USB-C connector
+  BODY = 1;
+}

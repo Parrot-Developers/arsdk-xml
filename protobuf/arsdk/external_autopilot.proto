@@ -36,6 +36,7 @@ message Event {
         Configuration config = 17;
         ConnectionState connection_state = 18;
         Capabilities capabilities = 19;
+        Log log = 20;
     }
 
     // Drone capabilities.
@@ -47,6 +48,12 @@ message Event {
     message ConnectionState {
         bool connected = 1;
         bool ahrs_connected = 2; // Attitude and Heading Reference System
+    }
+
+    // Log message.
+    message Log {
+        MessageType type = 1;
+        string msg = 2;
     }
 
     // Drone state.
@@ -65,8 +72,10 @@ message Event {
 }
 
 enum VehicleType {
-    VEHICLE_TYPE_COPTER = 0;
+    VEHICLE_TYPE_MULTICOPTER = 0;
     VEHICLE_TYPE_VTOL = 1;
+    VEHICLE_TYPE_HELICOPTER = 2;
+    VEHICLE_TYPE_PLANE = 3;
 }
 
 enum VehicleMode {
@@ -86,4 +95,10 @@ enum AutopilotFlightMode {
     AUTOPILOT_FLIGHT_MODE_MANUAL = 4;
     AUTOPILOT_FLIGHT_MODE_PLANE = 5;
     AUTOPILOT_FLIGHT_MODE_HOVER = 6;
+}
+
+enum MessageType {
+    SUCCESS = 0;
+    WARNING = 1;
+    ERROR = 2;
 }

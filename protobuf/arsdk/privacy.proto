@@ -15,6 +15,8 @@ message Command {
   oneof id {
     GetState get_state = 16;
     SetLogMode set_log_mode = 17;
+    EnableLogEncryption enable_log_encryption = 18;
+    DisableLogEncryption disable_log_encryption = 19;
   }
 
   /* Get Current State.
@@ -30,6 +32,21 @@ message Command {
     LogStorage log_storage = 1;
     LogConfigPersistence log_config_persistence = 2;
     option (support) = "091a";
+  }
+
+  /* Enable encryption. */
+  message EnableLogEncryption {
+    string public_key = 1
+      [(field_doc) = "A base 64 encoded RSA key used for log encryption"];
+
+    option (on_success) = "Event.State()";
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
+
+  /* Disable encryption. */
+  message DisableLogEncryption {
+    option (on_success) = "Event.State()";
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
   }
 }
 
@@ -47,8 +64,14 @@ message Event {
 
     LogStorage log_storage = 2;
     LogConfigPersistence log_config_persistence = 3;
+    LogEncryption log_encryption = 4;
 
     option (support) = "091a";
+  }
+
+  message LogEncryption {
+    bool enabled = 1;
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
   }
 }
 

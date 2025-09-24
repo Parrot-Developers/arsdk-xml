@@ -634,5 +634,21 @@
 				Altitude of the pilot location (ATO).
 			</arg>
 		</evt>
+		<evt name="home_location" id="27">
+			<comment
+				title="The current home location"
+				comment="The current home location."
+				support="091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0;"
+				triggered="At connection; on changes."/>
+			<arg name="latitude" type="double">
+				Latitude of the home location
+			</arg>
+			<arg name="longitude" type="double">
+				Longitude of the home location
+			</arg>
+			<arg name="altitude" type="float">
+				Altitude of the home location above takeoff (ATO).
+			</arg>
+		</evt>
 	</msgs>
 </feature>

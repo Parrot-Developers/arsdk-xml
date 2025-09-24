@@ -4,6 +4,7 @@ package arsdk.piloting;
 
 import "parrot/protobuf/extensions.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 option java_package = "com.parrot.drone.arsdk.piloting";
 option java_outer_classname = "Piloting";
@@ -18,11 +19,19 @@ message Command {
     google.protobuf.Empty get_state = 16;
     google.protobuf.Empty get_capabilities = 17;
     SetSpeedMode set_speed_mode = 18;
+    /* Set the drone takeoff hovering altitude above ground in meters */
+    SetTakeoffHoveringAltitude set_takeoff_hovering_altitude = 19;
+    /* Set preferred the ATTI mode. Only used in manual piloting mode. */
+    AttiMode set_preferred_atti_mode = 20;
   }
 
   /* Set the drone speed mode */
   message SetSpeedMode {
     SpeedMode speed_mode = 1;
+  }
+
+  message SetTakeoffHoveringAltitude {
+    float altitude = 1;
   }
 }
 
@@ -38,13 +47,21 @@ message Event {
   /* Current state. */
   message State {
     SpeedModeValue speed_mode = 1;
+    google.protobuf.FloatValue takeoff_hovering_altitude = 2;
+    AttiMode preferred_atti_mode = 3;
+    AttiMode current_atti_mode = 4;
   }
 
   message Capabilities {
     /* Capabilities of this feature */
     repeated SpeedMode speed_modes = 1;
     repeated Feature supported_features = 2;
+    FloatRange takeoff_hovering_altitude_range = 3;
   }
+}
+
+message AttiMode {
+  bool enabled = 1;
 }
 
 message SpeedModeValue {
@@ -56,6 +73,12 @@ enum SpeedMode {
   LOW_SPEED_MODE = 1;
 }
 
+message FloatRange {
+  float min = 1;
+  float max = 2;
+}
+
 enum Feature {
   HAND_LAUNCH = 0;
+  ATTI_MODE = 1;
 }

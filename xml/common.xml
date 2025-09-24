@@ -327,6 +327,14 @@
 				DateTime with the ISO-8601 complete short format: "%Y%m%dT%H%M%S%z"
 			</arg>
 		</cmd>
+		<cmd name="PowerOff" id="5">
+			<comment
+				title="PowerOff"
+				desc="Shutdown and power off the product.\n
+				The product will accept this command only if is not flying."
+				support="091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0;"
+				result="The product will shutdown and power off if it can."/>
+		</cmd>
 	</class>
 	<class name="CommonState" id="5">
 		Common state from product

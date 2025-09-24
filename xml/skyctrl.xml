@@ -419,20 +419,29 @@
 		<cmd name="ProductVariantChanged" id="3">
 			<comment
 				title="Variant of the SkyController"
-				desc="This event allow differentiation between original
-				(red/blue/yellow) SkyControllers, and the Black Edition
-				SkyControllers."
-				support="0903;0913"
+				desc="This event allow differentiation between
+				SkyController variants of a same model."
+				support="0903;0913;0923"
 				triggered="during the [AllSettings](#4-4-0) phase."/>
 			<arg name="variant" type="enum">
 				Variant of the product
 				<enum name="bebop">
-					SkyController of the bebop generation.
+					SkyController 1 of the Bebop drone generation.
 					(Bebop battery, original key layout, red/blue/yellow)
 				</enum>
 				<enum name="bebop2">
-					SkyController of the bebop2 generation.
+					SkyController 1 of the Bebop2 generation.
 					(Bebop2 battery, updated key layout, black)
+				</enum>
+				<enum name="standard">
+					SkyController standard variant (with either MARS
+					or Wifi radio).
+				</enum>
+				<enum name="mission">
+					SkyController mission variant (without radio).
+				</enum>
+				<enum name="mee">
+					SkyController MEE variant (for remote antenna usage).
 				</enum>
 			</arg>
 		</cmd>

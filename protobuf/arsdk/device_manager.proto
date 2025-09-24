@@ -176,6 +176,9 @@ message Capabilities {
   }
 
   Microhard microhard = 2; // null if no microhard support
+
+  /* Currently supported radios */
+  repeated Transport available_transports = 3;
 }
 
 message ConnectionState {
