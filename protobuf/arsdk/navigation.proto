@@ -3,7 +3,6 @@ syntax = "proto3";
 package arsdk.navigation;
 
 import "parrot/protobuf/extensions.proto";
-
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
@@ -42,11 +41,12 @@ message Command {
 
 /* This is the entry point to receive messages from the drone. */
 message Event {
-  reserved 2 to 15; // reserved for non-acknowledged events
+  reserved 3 to 15; // reserved for non-acknowledged events
   reserved 17; // deprecated: location (ack)
 
   oneof id {
     Location location = 1; // non-ack
+    RawGnssLocation raw_gnss_location = 2; // non-ack
 
     State state = 16;
   }
@@ -65,9 +65,11 @@ message Event {
 
     message Gnss {
       int32 number_of_satellites = 1; // Number of satellites used in GNSS fix
+
+      /* Whether the GNSS is fixed or not */
+      google.protobuf.BoolValue is_fixed = 2 [(field_doc) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
     }
-    /* The gnss message must be absent while no gnss fix is acquired, or when
-    no gnss constellation are used as a location source */
+    /* The gnss message must be absent when  no gnss constellation are used as a location source */
     Gnss gnss = 9;
 
     /* Reliability of the location. This value is computed by the drone based
@@ -78,6 +80,12 @@ message Event {
 
     /* True if the location was computed from the magnetometer */
     bool location_uses_magnetometer = 11;
+
+    /* Altitude above take off [meters] */
+    google.protobuf.DoubleValue altitude_ato = 12 [(field_doc) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
+
+    /* Above ground level altitude [meters] */
+    google.protobuf.DoubleValue altitude_agl = 13 [(field_doc) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
 
     // FUTURE : More details about sources used to compute a Location
     //message Source {
@@ -100,7 +108,17 @@ message Event {
     //  }
     //}
     ///* List of sources used to generate this location */
-    //repeated Source sources = 12;
+    //repeated Source sources = 14;
+
+    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
+
+  message RawGnssLocation {
+    double latitude = 1; // [decimal degrees]
+    double longitude = 2; // [decimal degrees]
+    float altitude_amsl = 3; // EGM96 amsl altitude [meters]
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
   }
 
   message State {
@@ -110,6 +128,7 @@ message Event {
     Config config = 3;
     Alarms raised_alarms = 4;
     GnssSourceValue gnss_source = 5;
+    FirstFix first_fix = 6;
     /* List of sources that are supported but unused because they require
     some configuration in the Command.Configure message
     (e.g. RTK authentication) */
@@ -143,6 +162,14 @@ message Frames {
 
 message GnssSourceValue {
   GnssSource value = 1;
+}
+
+message FirstFix {
+   double latitude = 1;
+   double longitude = 2;
+   double altitude = 3; // EGM96 amsl altitude [meters]
+
+   option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
 }
 
 message Source {

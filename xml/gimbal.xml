@@ -53,6 +53,9 @@
 			<value name="active">
 				Feature is currently active.
 			</value>
+			<value name="partial">
+				Feature is partially active.
+			</value>
 		</enum>
 
 		<enum name="error">

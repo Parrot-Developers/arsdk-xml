@@ -23,6 +23,8 @@ message Command {
     SetTakeoffHoveringAltitude set_takeoff_hovering_altitude = 19;
     /* Set preferred the ATTI mode. Only used in manual piloting mode. */
     AttiMode set_preferred_atti_mode = 20;
+    StartFlightMode start_flight_mode = 21;
+    SetAssistanceMode set_assistance_mode = 22;
   }
 
   /* Set the drone speed mode */
@@ -32,6 +34,18 @@ message Command {
 
   message SetTakeoffHoveringAltitude {
     float altitude = 1;
+  }
+
+  message StartFlightMode {
+     FlightMode value = 1;
+
+     option (support) = "0925:8.4";
+  }
+
+  message SetAssistanceMode {
+     AssistanceMode value = 1;
+
+     option (support) = "0925:8.4";
   }
 }
 
@@ -50,6 +64,10 @@ message Event {
     google.protobuf.FloatValue takeoff_hovering_altitude = 2;
     AttiMode preferred_atti_mode = 3;
     AttiMode current_atti_mode = 4;
+    AssistanceModeValue assistance_mode = 5;
+    TakeoffStateValue takeoff_state = 6;
+    VehicleTypeValue vehicle_type = 7;
+    VehicleModeValue vehicle_mode = 8;
   }
 
   message Capabilities {
@@ -57,6 +75,9 @@ message Event {
     repeated SpeedMode speed_modes = 1;
     repeated Feature supported_features = 2;
     FloatRange takeoff_hovering_altitude_range = 3;
+    repeated FlightMode flight_modes = 4;
+    repeated AssistanceMode assistance_modes = 5;
+    repeated VehicleMode supported_vehicle_modes = 6;
   }
 }
 
@@ -68,9 +89,28 @@ message SpeedModeValue {
   SpeedMode value = 1;
 }
 
-enum SpeedMode {
-  NORMAL_SPEED_MODE = 0;
-  LOW_SPEED_MODE = 1;
+message TakeoffStateValue {
+  TakeoffState value = 1;
+
+  option (support) = "0925:8.4";
+}
+
+message AssistanceModeValue {
+  AssistanceMode value = 1;
+
+  option (support) = "0925:8.4";
+}
+
+message VehicleModeValue {
+  VehicleMode value = 1;
+
+  option (support) = "0925:8.4";
+}
+
+message VehicleTypeValue {
+  VehicleType value = 1;
+
+  option (support) = "0925:8.4";
 }
 
 message FloatRange {
@@ -78,7 +118,64 @@ message FloatRange {
   float max = 2;
 }
 
+enum SpeedMode {
+  NORMAL_SPEED_MODE = 0;
+  LOW_SPEED_MODE = 1;
+}
+
 enum Feature {
   HAND_LAUNCH = 0;
   ATTI_MODE = 1;
+}
+
+// Flight mode
+enum FlightMode {
+  LOITER = 0;
+  MANUAL_COPTER = 1;
+  MANUAL_PLANE = 2;
+}
+
+// Assistance mode for manual piloting
+enum AssistanceMode {
+  // Plane will hold the roll and pitch specified.
+  ASSISTED_ATTITUDE = 0;
+
+  // Plane will hold the roll, pitch specified, as well as the altitude.
+  ASSISTED_ALTITUDE = 1;
+}
+
+// Take-off state.
+enum TakeoffState {
+  // On the ground, waiting to take off.
+  IDLE = 0;
+
+  // Arming motors.
+  ARMING = 1;
+
+  // Ready to be launched (hand, catapult...).
+  READY = 2;
+
+  // Detecting the throw to increase the throttle and validate the takeoff.
+  RESCUE = 3;
+
+  // Motors unlocked.
+  UNLOCK = 4;
+
+  // Motors in ramping phase.
+  RAMPING = 5;
+
+  // Drone is ascending.
+  ASCENT = 6;
+}
+
+enum VehicleMode {
+    VEHICLE_MODE_COPTER = 0;
+    VEHICLE_MODE_PLANE = 1;
+}
+
+enum VehicleType {
+    VEHICLE_TYPE_MULTICOPTER = 0;
+    VEHICLE_TYPE_VTOL = 1;
+    VEHICLE_TYPE_HELICOPTER = 2;
+    VEHICLE_TYPE_PLANE = 3;
 }

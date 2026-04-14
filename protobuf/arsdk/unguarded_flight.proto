@@ -39,6 +39,8 @@ enum UnguardedFlightElement {
   AUTOLAND = 1;
   /* Disable automatic Return To Home, even upon disconnection or emergency */
   AUTORTH = 2;
+  /* Disable LED onboard the Time of Flight sensor */ 
+  TOF_LED = 3;
 }
 
 message Config {

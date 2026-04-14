@@ -25,16 +25,18 @@ message Command {
 
 /* This is the entry point to receive messages from the drone. */
 message Event {
-  reserved 2 to 15; /* reserved for non-acknowledged events */
+  reserved 3 to 15; /* reserved for non-acknowledged events */
 
   oneof id {
     WindSpeed wind_speed = 1; // non-ack
+    AirSpeed air_speed = 2; // non-ack
     State state = 16;
   }
 
   message State {
       Capabilities default_capabilities = 1;
       bool is_wind_speed_available = 2;
+      bool is_air_speed_available = 3;
   }
 }
 
@@ -47,6 +49,13 @@ message WindSpeed {
   float east = 2; // east speed in meters/second
 }
 
+message AirSpeed {
+  float value = 1; // in meters/second
+
+  option (support) = "0925:8.4.0";
+}
+
 enum Features {
   WIND_SPEED_ESTIMATION = 0;
+  AIR_SPEED = 1;
 }

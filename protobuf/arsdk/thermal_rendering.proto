@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package arsdk.thermalrendering;
+
+import "google/protobuf/wrappers.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.thermalrendering";
+option java_outer_classname = "ThermalRendering";
+
+option (olympe_package) = "thermalrendering";
+
+// Palette for thermal rendering
+message Palette {
+  repeated PaletteElement palette_elements = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// Palette element
+message PaletteElement {
+  // Coefficient of Red color. Normalized between 0 and 1.
+  float red = 1;
+  // Coefficient of Green color. Normalized between 0 and 1.
+  float green = 2;
+  // Coefficient of Blue color. Normalized between 0 and 1.
+  float blue = 3;
+  // Position in the palette where given red, green and blue should be applied.
+  // Normalized between 0 and 1.
+  float position = 4;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// Rendering parameters
+message Rendering {
+  // Mixing mode.
+  MixingModeValue mixing_mode = 1;
+  // Coefficient of visible edges. Normalized between 0 and 1.
+  google.protobuf.FloatValue edge_coef = 2;
+  // Thermal visibility minimum threshold. Normalized between 0 and 1.
+  google.protobuf.FloatValue min_visibility_threshold = 3;
+  // Thermal visibility maximum threshold. Normalized between 0 and 1.
+  google.protobuf.FloatValue max_visibility_threshold = 4;
+  // Whether thermal dynamic is locked in its current state.
+  google.protobuf.BoolValue range_locked = 5;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// Wrapper message for `MixingMode`
+message MixingModeValue {
+  MixingMode value = 1;
+}
+
+// Mixing mode for rendering
+enum MixingMode {
+  MIXING_MODE_FULL_THERMAL = 0;
+  MIXING_MODE_BLENDED = 1;
+}

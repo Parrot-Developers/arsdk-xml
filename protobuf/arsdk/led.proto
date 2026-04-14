@@ -10,14 +10,15 @@ option java_outer_classname = "Led";
 
 option (olympe_package) = "led";
 
-// This is the entry point to send messages to SkyController
-// or drones in the futur
+// This is the entry point to send messages to the device
 message Command {
   reserved 1 to 15; // reserved for non-acknowledged commands
 
   oneof id {
     google.protobuf.Empty get_luminosity = 16;
     SetLuminosity set_luminosity = 17;
+    GetState get_state = 18;
+    Activate activate = 19;
   }
 
   message SetLuminosity {
@@ -26,15 +27,28 @@ message Command {
     option (support) = "091c";
     option (support) = "091d";
   }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message Activate {
+    LedType led_type = 1;
+    bool enabled = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
 }
 
-// This is the entry point to receive messages from SkyController
-// and could be extended to drones in the future
+// This is the entry point to receive messages from the device
 message Event {
   reserved 1 to 15; // reserved for non-acknowledged events
 
   oneof id {
     Luminosity luminosity = 16;
+    State state = 17;
   }
 
   message Luminosity {
@@ -43,5 +57,33 @@ message Event {
     option (support) = "091c";
     option (support) = "091d";
   }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    repeated ActivationState activation_state = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
 }
 
+message Capabilities {
+    repeated LedType supported_led_types = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message ActivationState {
+  LedType led_type = 1;
+  bool enabled = 2;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+enum LedType {
+  // Standard led
+  LED_TYPE_STANDARD = 0;
+  // Infrared led
+  LED_TYPE_INFRARED = 1;
+  // Led onboard the time of flight sensor
+  LED_TYPE_TOF = 2;
+}

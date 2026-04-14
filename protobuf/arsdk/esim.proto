@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+package arsdk.esim;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.esim";
+option java_outer_classname = "ESim";
+
+option (olympe_package) = "esim";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    DownloadProfile download_profile = 17;
+    EnableProfile enable_profile = 18;
+    DeleteProfile delete_profile = 19;
+    HttpResponse http_response = 20;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message DownloadProfile {
+     string activation_code = 1; // activation code (SGP.22), from QR code or user input
+     google.protobuf.StringValue confirmation_code = 2; // optional confirmation code, from user input
+
+     option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message EnableProfile {
+     string iccid = 1;
+     bool enable = 2;
+
+     option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message DeleteProfile {
+     string iccid = 1;
+
+     option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message HttpResponse {
+    uint32 id = 1; // match the request id
+    int32 code = 2; // http response code
+    ErrorCode error_code = 3; // error code
+    string message = 4; // http response message
+    bytes data = 5; // response data
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+    HttpRequest http_request = 20;
+  }
+
+  message State {
+    reserved 1; // Capabilities default_capabilities = 1;
+    SimStatusValue sim_status_value = 2;
+    google.protobuf.StringValue eid = 3;
+    ProfileList profile_list = 4;
+    ProfileOperationStatus profile_operation_status = 5;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message HttpRequest {
+    uint32 id = 1; // opaque id of the request
+    string url = 2; // url of the request
+    repeated string headers = 3; // list of request headers
+    bytes data = 4; // request data
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+message Profile {
+  string iccid = 1;
+  string provider = 2;
+  bool enabled = 3;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message ProfileOperationStatus {
+  ErrorCode error_code = 1;
+  oneof type {
+    DownloadProfileStatus download_profile_status = 2;
+    EnableProfileStatus enable_profile_status = 3;
+    DeleteProfileStatus delete_profile_status = 4;
+  }
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message DownloadProfileStatus {
+  Profile profile = 1; // created profile
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message EnableProfileStatus {
+  string iccid = 1;
+  bool enabled = 2;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message DeleteProfileStatus {
+  string iccid = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message ProfileList {
+  repeated Profile profiles = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message SimStatusValue {
+  SimStatus value = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+enum SimStatus {
+  SIM_STATUS_NOT_PRESENT = 0;
+  SIM_STATUS_EUICC_NOT_SUPPORTED = 1;
+  SIM_STATUS_READY = 2;
+}
+
+enum ErrorCode {
+  ERROR_CODE_OK = 0;
+  ERROR_CODE_INTERNAL = 1;
+  ERROR_CODE_INVALID_SIM = 2;
+  ERROR_CODE_INVALID_ICCID = 3;
+  ERROR_CODE_INVALID_PROFILE_STATE = 4;
+  ERROR_CODE_DISALLOWED_BY_POLICY = 5;
+  ERROR_CODE_WRONG_PROFILE_REENABLING = 6;
+  ERROR_CODE_HTTP_CONNECT_FAILURE = 7;
+  ERROR_CODE_HTTP_REQUEST_FAILURE = 8;
+  ERROR_CODE_INVALID_ACTIVATION_CODE = 9;
+  ERROR_CODE_CONFIRMATION_CODE_REQUIRED = 10;
+  ERROR_CODE_SERVER_AUTHENTICATION_FAILURE = 11;
+  ERROR_CODE_CLIENT_AUTHENTICATION_FAILURE = 12;
+}

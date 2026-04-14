@@ -5,6 +5,7 @@ package arsdk.camera;
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "parrot/protobuf/extensions.proto";
+import "arsdk/thermal_rendering.proto";
 
 option java_package = "com.parrot.drone.arsdk.camera";
 option java_outer_classname = "Camera";
@@ -33,6 +34,8 @@ message Command {
     SetUserLfic set_user_lfic = 28;
     StreamCamera notify_stream_camera = 29;
     SetAlignmentOffsets set_thermal_alignment_offsets = 30;
+    SetThermalPalette set_thermal_palette = 31;
+    SetThermalRendering set_thermal_rendering = 32;
   }
 
   message ListCameras {
@@ -187,7 +190,6 @@ message Command {
     uint64 camera_id = 1;
     MediaMetadata metadata = 2;
 
-
     option (on_success) =
       "Event.State("
         "camera_id=this.camera_id, media_metadata=this.metadata"
@@ -200,6 +202,22 @@ message Command {
     AlignmentOffsets alignment_offsets = 2;
 
     option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+  }
+
+  // Set palette for thermal rendering
+  message SetThermalPalette {
+    uint64 camera_id = 1;
+    arsdk.thermalrendering.Palette palette = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  // Set thermal rendering
+  message SetThermalRendering {
+    uint64 camera_id = 1;
+    arsdk.thermalrendering.Rendering rendering = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
   }
 }
 
@@ -295,6 +313,8 @@ message Event {
 
     Zoom zoom = 11;
 
+    google.protobuf.BoolValue zoom_is_locked = 18; // whether the zoom is currently locked by the flying mode
+
     MediaMetadata media_metadata = 12;
 
     message EffectiveFramerate {
@@ -311,6 +331,9 @@ message Event {
     UserLfic user_lfic = 14;
 
     AlignmentOffsets thermal_alignment_offsets = 15;
+
+    arsdk.thermalrendering.Palette thermal_palette = 16;
+    arsdk.thermalrendering.Rendering thermal_rendering = 17;
 
     option (support) = "091a";
   }
@@ -414,6 +437,8 @@ message Capabilities {
     repeated StoragePolicy storage_policies = 42;
     repeated uint32 video_recording_bitrates = 43;
     repeated Spectrum spectrums = 44;
+    repeated LowLightModeSelection low_light_mode_selections = 45;
+    repeated LowLightMode low_light_modes = 46;
   }
 
   repeated Rule rules = 1;
@@ -427,6 +452,9 @@ message Capabilities {
   }
 
   AlignmentOffsetRanges thermal_alignment_offset_ranges = 2;
+
+  // option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  repeated arsdk.thermalrendering.MixingMode thermal_mixing_modes = 3;
 }
 
 message AlignmentOffsets {
@@ -481,6 +509,8 @@ message Config {
   StoragePolicy storage_policy = 41;
   uint32 video_recording_bitrate = 42;
   Spectrum spectrum = 43;
+  LowLightModeSelection low_light_mode_selection = 44;
+  LowLightMode low_light_mode = 45;
 }
 
 message DoubleRange {
@@ -756,6 +786,7 @@ enum PhotoStopReason {
   PHOTO_STOP_REASON_ARBITRATION = 6;
   PHOTO_STOP_REASON_ALREADY = 7;
   PHOTO_STOP_REASON_STORAGE_UNAVAILABLE = 8;
+  PHOTO_STOP_REASON_STORAGE_ENCRYPTED = 9;
 }
 
 enum PhotoStreamingMode {
@@ -787,6 +818,7 @@ enum RecordingStopReason {
   RECORDING_STOP_REASON_ARBITRATION = 7;
   RECORDING_STOP_REASON_ALREADY = 8;
   RECORDING_STOP_REASON_STORAGE_UNAVAILABLE = 9;
+  RECORDING_STOP_REASON_STORAGE_ENCRYPTED = 11;
 }
 
 enum VideoRecordingMode {
@@ -977,4 +1009,14 @@ enum CameraSubtype {
 enum ZoomVelocityControlQualityMode {
   ZOOM_VELOCITY_CONTROL_QUALITY_MODE_ALLOW_DEGRADATION = 0;
   ZOOM_VELOCITY_CONTROL_QUALITY_MODE_STOP_BEFORE_DEGRADATION = 1;
+}
+
+enum LowLightModeSelection {
+  LOW_LIGHT_MODE_SELECTION_MANUAL = 0;
+  LOW_LIGHT_MODE_SELECTION_AUTOMATIC = 1;
+}
+
+enum LowLightMode {
+  LOW_LIGHT_MODE_DISABLED = 0;
+  LOW_LIGHT_MODE_ENABLED = 1;
 }

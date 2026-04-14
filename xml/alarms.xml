@@ -67,6 +67,15 @@
 			<value name="video_dsp_fault">
 				Video Signal Processing is not available.
 			</value>
+			<value name="pitot_defective">
+				Pitot tube is defective.
+			</value>
+			<value name="autopilot_internal_error">
+				Autopilot internal error.
+			</value>
+			<value name="external_autopilot_error">
+				Error from the external autopilot.
+			</value>
 		</enum>
 
 		<enum name="takeoff_checklist_type">
@@ -139,6 +148,12 @@
 			</value>
 			<value name="autopilot_configuration">
 				Autopilot configuration failed.
+			</value>
+			<value name="pitot">
+				Pitot tube check.
+			</value>
+			<value name="autopilot_unavailable">
+				Autopilot not available.
 			</value>
 		</enum>
 

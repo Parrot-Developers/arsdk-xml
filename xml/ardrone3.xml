@@ -1002,19 +1002,21 @@
 				Yaw value (in radian)
 			</arg>
 		</cmd>
-		<cmd name="AltitudeChanged" id="8" buffer="NON_ACK">
+		<cmd name="AltitudeChanged" id="8" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Drone's altitude changed"
 				desc="Drone's altitude changed.\n
 				The altitude reported is the altitude above the take off point.\n
 				To get the altitude above sea level, see [GpsLocationChanged](#1-4-9)."
-				support="0901;090c;090e;0914;0919"
-				triggered="regularly."/>
+				support="0901;090c;090e;0914;0919;091f;0920;0924;0925"
+				triggered="regularly."
+				deprecatedVersion="8.4.0"
+				replacedBy="../protobuf/arsdk/navigation.proto;Event;location;altitude_ato"/>
 			<arg name="altitude" type="double">
 				Altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="GpsLocationChanged" id="9" buffer="NON_ACK">
+		<cmd name="GpsLocationChanged" id="9" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Drone's location changed"
 				desc="Drone's location changed."
@@ -1344,6 +1346,15 @@
 				<enum name="ESC_TOO_HOT">
 					ESC (motor) is too hot, so forced landing auto trigger is planned.
 				</enum>
+				<enum name="CELL_VOLTAGE_TOO_LOW">
+					Battery cell voltage is too low, so forced landing auto trigger is planned.
+				</enum>
+				<enum name="DEFECTIVE_SENSOR">
+					A defective sensor has been detected, so forced landing auto trigger is planned.
+				</enum>
+				<enum name="FLYAWAY_DETECTED">
+					A flyaway has been detected, so forced landing auto trigger is planned.
+				</enum>
 			</arg>
 			<arg name="delay" type="u32">
 				Delay until the landing is automatically triggered by the drone, in seconds.
@@ -1388,7 +1399,7 @@
 				</enum>
 			</arg>
 		</cmd>
-		<cmd name="AltitudeAboveGroundChanged" id="21" buffer="NON_ACK">
+		<cmd name="AltitudeAboveGroundChanged" id="21" buffer="NON_ACK" deprecated="true">
 			<comment
 				title="Drone's altitude above ground changed"
 				desc="Drone's altitude above ground changed."
@@ -1602,7 +1613,7 @@
 	</class>
 	<class name="PilotingSettings" id="2">
 		Piloting Settings commands
-		<cmd name="MaxAltitude" id="0">
+		<cmd name="MaxAltitude" id="0" deprecated="true">
 			<comment
 				title="Set max altitude"
 				desc="Set max altitude.\n
@@ -1647,7 +1658,7 @@
 				1 to enable, 0 to disable
 			</arg>
 		</cmd>
-		<cmd name="MaxDistance" id="3">
+		<cmd name="MaxDistance" id="3" deprecated="true">
 			<comment
 				title="Set max distance"
 				desc="Set max distance.\n
@@ -1665,7 +1676,7 @@
 				Current max distance in meter
 			</arg>
 		</cmd>
-		<cmd name="NoFlyOverMaxDistance" id="4">
+		<cmd name="NoFlyOverMaxDistance" id="4" deprecated="true">
 			<comment
 				title="Enable geofence"
 				desc="Enable geofence.\n
@@ -1845,7 +1856,7 @@
 	</class>
 	<class name="PilotingSettingsState" id="6">
 		Piloting Settings state from product
-		<cmd name="MaxAltitudeChanged" id="0">
+		<cmd name="MaxAltitudeChanged" id="0" deprecated="true">
 			<comment
 				title="Max altitude"
 				desc="Max altitude.\n
@@ -1887,7 +1898,7 @@
 				1 if enabled, 0 if disabled
 			</arg>
 		</cmd>
-		<cmd name="MaxDistanceChanged" id="3">
+		<cmd name="MaxDistanceChanged" id="3" deprecated="true">
 			<comment
 				title="Max distance"
 				desc="Max distance."
@@ -1903,7 +1914,7 @@
 				Maximal possible max distance
 			</arg>
 		</cmd>
-		<cmd name="NoFlyOverMaxDistanceChanged" id="4">
+		<cmd name="NoFlyOverMaxDistanceChanged" id="4" deprecated="true">
 			<comment
 				title="Geofencing"
 				desc="Geofencing.\n
@@ -3186,7 +3197,7 @@
 				Home altitude in meters
 			</arg>
 		</cmd>
-		<cmd name="GPSFixStateChanged" id="2">
+		<cmd name="GPSFixStateChanged" id="2" deprecated="true">
 			<comment
 				title="Gps fix info"
 				desc="Gps fix info."
@@ -3245,7 +3256,7 @@
 				Delay in second
 			</arg>
 		</cmd>
-		<cmd name="GeofenceCenterChanged" id="6">
+		<cmd name="GeofenceCenterChanged" id="6" deprecated="true">
 			<comment
 				title="Geofence center"
 				desc="Geofence center location. This location represents the center of the geofence zone.
@@ -3440,7 +3451,7 @@
 	</class>
 	<class name="GPSState" id="31">
 		GPS related States
-		<cmd name="NumberOfSatelliteChanged" id="0">
+		<cmd name="NumberOfSatelliteChanged" id="0" deprecated="true">
 			<comment
 				title="Number of GPS satellites"
 				desc="Number of GPS satellites."

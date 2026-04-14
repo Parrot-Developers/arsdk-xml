@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package arsdk.system;
+
+import "google/protobuf/wrappers.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.system";
+option java_outer_classname = "System";
+
+option (olympe_package) = "system";
+
+// This is the entry point to send messages to the drone
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetProductName set_product_name = 17;
+  }
+
+  // Get current state
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  // Set product name.
+  // It also sets the name of the SSID for Wifi products.
+  message SetProductName {
+    string value = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  // Current system state
+  message State {
+    reserved 1; // Capabilities default_capabilities = 1;
+    google.protobuf.StringValue product_name = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}

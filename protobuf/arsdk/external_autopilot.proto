@@ -3,7 +3,6 @@ syntax = "proto3";
 package arsdk.externalautopilot;
 
 import "parrot/protobuf/extensions.proto";
-import "google/protobuf/empty.proto";
 
 option java_package = "com.parrot.drone.arsdk.externalautopilot";
 option java_outer_classname = "ExternalAutopilot";
@@ -15,15 +14,13 @@ message Command {
     reserved 1 to 15; // reserved for non-acknowledged commands
 
     oneof id {
-        google.protobuf.Empty get_state = 16;
-        google.protobuf.Empty get_config = 17;
-        google.protobuf.Empty get_connection_state = 18;
-        google.protobuf.Empty get_capabilities = 19;
-        SetVehicleMode set_vehicle_mode = 20;
+        GetState get_state = 16;
     }
 
-    message SetVehicleMode {
-        VehicleMode vehicle_mode = 1;
+    message GetState {
+        bool include_default_capabilities = 1;
+
+        option (support) = "0925:8.4";
     }
 }
 
@@ -33,72 +30,52 @@ message Event {
 
     oneof id {
         State state = 16;
-        Configuration config = 17;
-        ConnectionState connection_state = 18;
-        Capabilities capabilities = 19;
-        Log log = 20;
+        Log log = 17;
     }
 
     // Drone capabilities.
     message Capabilities {
-        repeated VehicleMode supported_vehicle_modes = 1;
-    }
 
-    // Connection of the external autopilot
-    message ConnectionState {
-        bool connected = 1;
-        bool ahrs_connected = 2; // Attitude and Heading Reference System
+        option (support) = "0925:8.4";
     }
 
     // Log message.
     message Log {
-        MessageType type = 1;
-        string msg = 2;
+        LogLevel level = 1;
+        LogSource source = 2;
+        string msg = 3;
+
+        option (support) = "0925:8.4";
     }
 
     // Drone state.
     message State {
-        AutopilotAlert alert = 1;
-        bool takeoff_ready = 2;
-        AutopilotFlightMode flight_mode = 3;
-        VehicleMode vehicle_mode = 4;
+        Capabilities default_capabilities = 1;
+        AutopilotFlightMode flight_mode = 2; // Current external flight mode
+        bool connected = 3;
     }
-
-    // Drone configuration and parameters.
-    message Configuration {
-        map<string, string> flight_parameters = 1; // key/value pair of parameters for sensor and estimation
-        VehicleType vehicle_type = 2;
-    }
-}
-
-enum VehicleType {
-    VEHICLE_TYPE_MULTICOPTER = 0;
-    VEHICLE_TYPE_VTOL = 1;
-    VEHICLE_TYPE_HELICOPTER = 2;
-    VEHICLE_TYPE_PLANE = 3;
-}
-
-enum VehicleMode {
-    VEHICLE_MODE_COPTER = 0;
-    VEHICLE_MODE_PLANE = 1;
-}
-
-enum AutopilotAlert {
-    AUTOPILOT_ALERT_OK = 0;
 }
 
 enum AutopilotFlightMode {
-    AUTOPILOT_FLIGHT_MODE_UNKNOWN = 0;
-    AUTOPILOT_FLIGHT_MODE_STABILIZE = 1;
-    AUTOPILOT_FLIGHT_MODE_GUIDED = 2;
-    AUTOPILOT_FLIGHT_MODE_LANDING = 3;
-    AUTOPILOT_FLIGHT_MODE_MANUAL = 4;
-    AUTOPILOT_FLIGHT_MODE_PLANE = 5;
-    AUTOPILOT_FLIGHT_MODE_HOVER = 6;
+    AUTOPILOT_FLIGHT_MODE_UNKNOWN = 0; // In an unknown mode
+    AUTOPILOT_FLIGHT_MODE_STABILIZE = 1; // Self-leveling
+    AUTOPILOT_FLIGHT_MODE_TAKEOFF = 2; // In auto-takeoff mode
+    AUTOPILOT_FLIGHT_MODE_GUIDED = 3; // Flying towards a target waypoint (may be taking off)
+    AUTOPILOT_FLIGHT_MODE_LOITER = 4; // Loitering
+    AUTOPILOT_FLIGHT_MODE_MANUAL = 5; // Manual piloting as a copter, receives raw piloting commands
+    AUTOPILOT_FLIGHT_MODE_MANUAL_PLANE = 6; // Manual piloting as a plane, receives raw piloting commands
+    AUTOPILOT_FLIGHT_MODE_MISSION = 7; // Executing a mission
+    AUTOPILOT_FLIGHT_MODE_RTH = 8; // Returning to its home location
+    AUTOPILOT_FLIGHT_MODE_LANDING = 9; // Landing
 }
 
-enum MessageType {
-    SUCCESS = 0;
+enum LogLevel {
+    INFO = 0;
     WARNING = 1;
     ERROR = 2;
+}
+
+enum LogSource {
+    CONFIGURATION = 0;
+    AUTOPILOT = 1;
 }

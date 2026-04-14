@@ -57,7 +57,7 @@
 	</enums>
 
 	<msgs>
-		<evt name="capabilities" id="1">
+		<evt name="capabilities" id="1" deprecated="true">
 			<comment
 				title="Capabilities"
 				comment="Describes supported capabilities."
@@ -68,7 +68,7 @@
 			</arg>
 		</evt>
 
-		<cmd name="activate" id="2">
+		<cmd name="activate" id="2" deprecated="true">
 			<comment
 				title="Activate switch"
 				desc="Activate switch"
@@ -81,7 +81,7 @@
 			</expectations>
 		</cmd>
 
-		<cmd name="deactivate" id="3">
+		<cmd name="deactivate" id="3" deprecated="true">
 			<comment
 				title="Deactivate switch"
 				desc="Deactivate switch"
@@ -94,7 +94,7 @@
 			</expectations>
 		</cmd>
 
-		<evt name="switch_state" id="4">
+		<evt name="switch_state" id="4" deprecated="true">
 			<comment
 				title="Switch state"
 				comment="Informs about switch state changes."
@@ -105,7 +105,7 @@
 			</arg>
 		</evt>
 
-		<cmd name="set_ir_state" id="5">
+		<cmd name="set_ir_state" id="5" deprecated="true">
 			<comment
 				title="Enable or disable infrared LED"
 				desc="Enable or disable infrared LED"
@@ -121,7 +121,7 @@
 			</arg>
 		</cmd>
 
-		<evt name="ir_state" id="6">
+		<evt name="ir_state" id="6" deprecated="true">
 			<comment
 				title="Infrared LED state"
 				comment="Informs about infrared led state changes."

@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package arsdk.loiter;
+
+import "google/protobuf/wrappers.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.loiter";
+option java_outer_classname = "Loiter";
+
+option (olympe_package) = "loiter";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetRadius set_radius = 17;
+    SetShape set_shape = 18;
+    SetDirection set_direction = 19;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "0925:8.4";
+  }
+
+  message SetRadius {
+    double value = 1;
+
+    option (support) = "0925:8.4";
+  }
+
+  message SetShape {
+    Shape value = 1;
+
+    option (support) = "0925:8.4";
+  }
+
+  message SetDirection {
+    Direction value = 1;
+
+    option (support) = "0925:8.4";
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    google.protobuf.DoubleValue radius = 2;
+    ShapeValue shape = 3;
+    DirectionValue direction = 4;
+
+    option (support) = "0925:8.4";
+  }
+}
+
+message Capabilities {
+  DoubleRange radius_range = 1;
+  repeated Shape shapes = 2;
+  repeated Direction directions = 3;
+
+  option (support) = "0925:8.4";
+}
+
+message ShapeValue {
+  Shape value = 1;
+
+  option (support) = "0925:8.4";
+}
+
+message DirectionValue {
+  Direction value = 1;
+
+  option (support) = "0925:8.4";
+}
+
+message DoubleRange {
+  double min = 1;
+  double max = 2;
+}
+
+// Loiter shape
+enum Shape {
+  CIRCLE = 0;
+  EIGHT = 1;
+}
+
+// Loiter direction
+enum Direction {
+  CLOCKWISE = 0;
+  COUNTER_CLOCKWISE = 1;
+}

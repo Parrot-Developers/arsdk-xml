@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package arsdk.geofence;
+
+import "google/protobuf/wrappers.proto";
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.geofence";
+option java_outer_classname = "Geofence";
+
+option (olympe_package) = "geofence";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    SetMode set_mode = 17;
+    SetMaxDistance set_max_distance = 18;
+    SetMaxAltitude set_max_altitude = 19;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message SetMode {
+    Mode value = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message SetMaxDistance {
+    float value = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  message SetMaxAltitude {
+    float value = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    google.protobuf.BoolValue is_available = 2;
+    ModeValue mode = 3;
+    google.protobuf.FloatValue max_distance = 4; // in meters
+    google.protobuf.FloatValue max_altitude = 5; // in meters
+    Center center = 6;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+message Capabilities {
+  repeated Mode modes = 1;
+  FloatRange max_distance_range = 2;
+  FloatRange max_altitude_range = 3;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message Center {
+  Coordinates coordinates = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message Coordinates {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message ModeValue {
+  Mode value = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+message FloatRange {
+  float min = 1;
+  float max = 2;
+}
+
+// Geofence mode
+enum Mode {
+  // The drone flying zone is only bounded by the maximum altitude setting.
+  ALTITUDE = 0;
+  // The drone flying zone is bounded by the cylinder defined by the maximum altitude and distance settings.
+  CYLINDER = 1;
+}

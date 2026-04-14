@@ -141,6 +141,12 @@
 			<value name="screenshot">
 				Take a screen capture on device
 			</value>
+			<value name="piloting_mode">
+				Switch between piloting modes: loitering, manual
+			</value>
+			<value name="assistance_mode">
+				Switch between assistance modes: attitude, altitude
+			</value>
 		</enum>
 		<enum name="axis_action">
 			The action (mapped on an axis)

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package arsdk.tracking;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.tracking";
+option java_outer_classname = "Tracking";
+
+option (olympe_package) = "tracking";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+  }
+
+  // Get state.
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// This is the entry point to receive messages from the drone.
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  // Current state.
+  message State {
+    Capabilities default_capabilities = 1;
+    Margins margins = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// Capabilities.
+message Capabilities {
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// Margins defining bounds for target decentering.
+message Margins {
+
+  // Values are in range [0; 1]
+  float left = 1;
+  float right = 2;
+  float top = 3;
+  float bottom = 4;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}

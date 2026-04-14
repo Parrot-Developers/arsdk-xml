@@ -2,7 +2,10 @@ syntax = "proto3";
 
 package arsdk.mobiledevice;
 
+import "google/protobuf/empty.proto";
 import "parrot/protobuf/extensions.proto";
+
+import "google/protobuf/wrappers.proto";
 
 option java_package = "com.parrot.drone.arsdk.mobiledevice";
 option java_outer_classname = "MobileDevice";
@@ -11,14 +14,71 @@ option (olympe_package) = "mobiledevice";
 
 // This is the entry point to send messages to the device
 message Command {
-  reserved 2 to 15; // reserved for non-acknowledged commands
+  reserved 3 to 15; // reserved for non-acknowledged commands
 
   oneof id {
     BatteryState battery_state = 1; // non-ack
+    Location location = 2; // non-ack
+
+    google.protobuf.Empty get_capabilities = 16;
   }
 
+  // Device battery state
   message BatteryState {
-    // Percentage of full charge
-    uint32 charge_level = 1;
+    uint32 charge_level = 1; // Percentage of full charge
+
+    option (support) = "0923:8.1.0";
   }
+
+  // Device location
+  message Location {
+    LocationSource source = 1; // Location data source
+    google.protobuf.UInt64Value timestamp = 2; // Timestamp of the location, from a monotonic clock [milliseconds]
+    google.protobuf.UInt32Value number_of_satellites = 3; // Number of satellites
+
+    google.protobuf.DoubleValue latitude = 4; // [decimal degrees]
+    google.protobuf.DoubleValue longitude = 5; // [decimal degrees]
+    google.protobuf.FloatValue wgs84_altitude = 6; // WGS84 ellipsoid altitude [meters]
+    google.protobuf.FloatValue amsl_altitude = 7; // EGM96 AMSL altitude [meters]
+
+    google.protobuf.FloatValue latitude_accuracy = 8; // Estimated accuracy for latitude [meters]
+    google.protobuf.FloatValue longitude_accuracy = 9; // Estimated accuracy for longitude [meters]
+    google.protobuf.FloatValue wgs84_altitude_accuracy = 10; // Estimated accuracy for WGS84 altitude [meters]
+    google.protobuf.FloatValue amsl_altitude_accuracy = 11; // Estimated accuracy for AMSL altitude [meters]
+
+    google.protobuf.FloatValue north_velocity = 12; // North velocity [meters per second]
+    google.protobuf.FloatValue east_velocity = 13; // East velocity [meters per second]
+    google.protobuf.FloatValue up_velocity = 14; // Vertical velocity (positive when moving up) [meters per second]
+
+    google.protobuf.FloatValue velocity_accuracy = 15; // Velocity accuracy [meters per second]
+
+    option (support) = "0923:8.4.0";
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    Capabilities capabilities = 16;
+  }
+
+  // Capabilities of this feature
+  message Capabilities {
+    repeated Feature supported_features = 1;
+
+    option (support) = "0923:8.4.0";
+  }
+}
+
+// Location data source
+enum LocationSource {
+  SOURCE_MAIN = 0; // Location data are coming from main device
+  SOURCE_AUXILIARY = 1; // Location data are coming from an auxiliary GNSS device
+}
+
+// Mobile device capability
+enum Feature {
+  FEATURE_LOCATION = 0;
 }

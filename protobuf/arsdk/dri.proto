@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package arsdk.dri;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.dri";
+option java_outer_classname = "Dri";
+option (olympe_package) = "dri2";
+
+// All messages related to the Drone Remote Identification (DRI)
+// DRI is an identification broadcasted by the drone, which includes some of
+// its characteristics such as its manufacturer, Part Number and dynamic data
+// such as its GPS position.
+
+// This is the entry point to send messages to the drone
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Enable enable = 17;
+    Configure configure = 18;
+  }
+
+  // Get current state
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  // Enable/Disable DRI broadcast
+  message Enable {
+    bool value = 1;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+
+  // DRI configuration
+  message Configure {
+    // DRI type
+    Type type = 1;
+
+    // Complete operator ID related to the DRI type. It can be empty if not required.
+    // For EN4709 type, it should include the 3 secure characters (and the hyphen).
+    google.protobuf.StringValue operator_id = 2;
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// This is the entry point to receive messages from the drone
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  // DRI current state
+  message State {
+    Capabilities default_capabilities = 1;
+    google.protobuf.BoolValue enabled = 2;
+    DroneId drone_id = 3;
+    Config config = 4;
+    oneof external_module_status {
+      ExternalModuleDisconnected disconnected = 5;
+      ExternalModuleConnected connected = 6;
+    }
+
+    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  }
+}
+
+// Drone supported DRI capabilities
+message Capabilities {
+  repeated Feature supported_features = 1;
+  repeated Type supported_types = 2;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// Drone DRI identifier
+message DroneId {
+  IdType type = 1; // Format of the drone's DRI ID (regulation type)
+  string value = 2; // Drone DRI serial number
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// DRI current configuration
+message Config {
+  // The DRI type the DRI system is configured with
+  Type type = 1;
+
+  // The operator ID related to the DRI type as stored by the drone.
+  // For EN4709-002 type, it will not include the hyphen and
+  // the 3 secure characters which are only used to verify the ID consistency.
+  string operator_id = 2;
+
+  // The current status of the DRI configuration
+  Status status = 3;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// DRI module disconnection status
+message ExternalModuleDisconnected {
+  bool hasBeenConnected = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// DRI module connection status
+message ExternalModuleConnected {
+  // External module serial
+  string serial = 1;
+
+  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+}
+
+// DRI feature capability
+enum Feature {
+  FEATURE_ACTIVATION = 0;
+  FEATURE_EXTERNAL_MODULE = 1;
+}
+
+// Drone ID Type
+enum IdType {
+  // French 30 bytes format
+  ID_FR_30_OCTETS = 0;
+  // ANSI CTA 2063 format on 40 bytes
+  ID_ANSI_CTA_2063 = 1;
+}
+
+// DRI type with which the DRI system is configured
+enum Type {
+  // DRI beacon respects the french regulation
+  TYPE_FRENCH = 0;
+  // DRI beacon respects the EN4709-002 european regulation
+  TYPE_EN4709_002 = 1;
+  // DRI beacon respects the ASTN F341122 US regulation
+  TYPE_ASTM_F3411 = 2;
+}
+
+// Status of the DRI configuration
+enum Status {
+  // A failure happened during the command execution
+  STATUS_FAILURE = 0;
+  // The related command successfully completed
+  STATUS_SUCCESS = 1;
+  // DRI id is missing or was malformed
+  STATUS_INVALID_ID = 2;
+}

@@ -310,21 +310,25 @@ class ArEvt(ArMsg):
 #===============================================================================
 #===============================================================================
 class ArComment(object):
-    def __init__(self, title, desc, support, triggered, result):
+    def __init__(self, title, desc, support, triggered, result, deprecatedVersion, replacedBy):
         self.title = title
         self.desc = desc
         self.support = support
         self.triggered = triggered
         self.result = result
+        self.deprecatedVersion = deprecatedVersion
+        self.replacedBy = replacedBy
 
     def __repr__(self):
         return ("{title='%s', desc=%s, support='%s', triggered='%s', "
-                "result='%s'}" % (
+                "result='%s', deprecatedVersion='%s', replacedBy='%s'}" % (
                 self.title,
                 self.desc,
                 self.support,
                 self.triggered,
-                self.result))
+                self.result,
+                self.deprecatedVersion,
+                self.replacedBy))
 
 #===============================================================================
 #===============================================================================
@@ -527,11 +531,6 @@ def _check_list_flags(ctx, msgObj):
         'common.FlightPlanState.ComponentStateListChanged',
         'common.AnimationsState.List',
         'common.AccessoryState.SupportedAccessoriesListChanged',
-        'jpsumo.NetworkState.WifiScanListChanged',
-        'jpsumo.NetworkState.WifiAuthChannelListChanged',
-        'jpsumo.RoadPlanState.ScriptMetadataListChanged',
-        'powerup.NetworkState.WifiScanListChanged',
-        'powerup.NetworkState.WifiAuthChannelListChanged',
         'skyctrl.WifiState.WifiList',
         'skyctrl.WifiState.WifiAuthChannelListChanged',
         'skyctrl.GamepadInfosState.gamepadControl',
@@ -801,13 +800,23 @@ def _get_cmt_node(msgNode):
         else:
             cmtResult = None
 
+        if commentNode.hasAttribute("deprecatedVersion"):
+            cmtDeprecatedVersion = _fmt_cmt_node(commentNode.getAttribute("deprecatedVersion"))
+        else:
+            cmtDeprecatedVersion = None
+
+        if commentNode.hasAttribute("replacedBy"):
+            cmtReplacedBy = _fmt_cmt_node(commentNode.getAttribute("replacedBy"))
+        else:
+            cmtReplacedBy = None
+
         # Create comment object
         return ArComment(cmtTitle, cmtDesc, cmtSupport,
-                cmtTriggered, cmtResult)
+                cmtTriggered, cmtResult, cmtDeprecatedVersion, cmtReplacedBy)
     else:
         oldComment = _get_node_content(msgNode)
         return ArComment(oldComment.splitlines()[0], oldComment, None,
-                None, None)
+                None, None, None, None)
 
 #===============================================================================
 #===============================================================================
@@ -877,16 +886,26 @@ def _parse_msg_node(ctx, filePath, ftr, msgNode, msgObj):
         else:
             cmtResult = None
 
+        if commentNode.hasAttribute("deprecatedVersion"):
+            cmtDeprecatedVersion = _fmt_cmt_node(commentNode.getAttribute("deprecatedVersion"))
+        else:
+            cmtDeprecatedVersion = None
+
+        if commentNode.hasAttribute("replacedBy"):
+            cmtReplacedBy = _fmt_cmt_node(commentNode.getAttribute("replacedBy"))
+        else:
+            cmtReplacedBy = None
+
         # Create comment object
         msgObj.doc = ArComment(cmtTitle, cmtDesc, cmtSupport,
-                cmtTriggered, cmtResult)
+                cmtTriggered, cmtResult, cmtDeprecatedVersion, cmtReplacedBy)
     else:
         oldComment = _get_node_content(msgNode)
         if not len(oldComment):
             raise ArParserError("%s: Missing comment for '%s'" %
                     (filePath, msgNode.getAttribute("name")))
         msgObj.doc = ArComment(oldComment.splitlines()[0], oldComment, None,
-                None, None)
+                None, None, None, None)
 
     _parse_msg_node_args(ctx, filePath, ftr, msgNode, msgObj)
 

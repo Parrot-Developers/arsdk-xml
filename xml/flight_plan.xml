@@ -244,5 +244,15 @@
 				support="091a"
 				result="The drone will prepare the execution of a flightplan"/>
 		</cmd>
+		<evt name="supported_feature" id="10">
+			<comment
+				title="Supported feature"
+				desc="Whether the flight plan feature is supported or not."
+				triggered="During connection."
+				support="091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"/>
+			<arg name="value" type="u8">
+				Boolean: 1 if flight plan is supported, 0 otherwise
+			</arg>
+		</evt>
 	</msgs>
 </feature>

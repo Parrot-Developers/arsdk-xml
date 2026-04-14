@@ -202,6 +202,12 @@ enum LinkError {
 	LINK_ERROR_TIMEOUT = 6;
 	/* Failed to invite drone. */
 	LINK_ERROR_INVITE = 7;
+	/* Failed to setup control link. */
+	LINK_ERROR_SETUP = 8;
+	/* Peer offline. */
+	LINK_ERROR_PEER_OFFLINE = 9;
+	/* Peer not subscribed. */
+	LINK_ERROR_PEER_MISMATCH = 10;
 }
 
 /* Direct connection mode */
