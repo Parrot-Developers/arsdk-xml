@@ -346,7 +346,7 @@
 				support="drones"
 				triggered="when all states values have been sent."/>
 		</cmd>
-		<cmd name="BatteryStateChanged" id="1" buffer="NON_ACK">
+		<cmd name="BatteryStateChanged" id="1">
 			<comment
 				title="Battery state"
 				desc="Battery state."

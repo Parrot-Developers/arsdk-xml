@@ -17,37 +17,54 @@ message Command {
     SetLogMode set_log_mode = 17;
     EnableLogEncryption enable_log_encryption = 18;
     DisableLogEncryption disable_log_encryption = 19;
+    AuthorizePairing authorize_pairing = 20;
   }
 
-  /* Get Current State.
-     A State event is expected afterwards. */
   message GetState {
-    bool include_default_capabilities = 1;
-    option (support) = "091a";
+    bool include_default_capabilities = 1 [(field_doc) = "`true` to request default capabilities."];
+
+    option (support) = "091a;0920;0925;0926";
+    option (on_success) = "Event.State()";
+    option (message_doc) = "Gets privacy state.";
   }
 
-  /* Set log mode.
-     A State event is expected afterwards. */
   message SetLogMode {
     LogStorage log_storage = 1;
     LogConfigPersistence log_config_persistence = 2;
-    option (support) = "091a";
+
+    option (support) = "091a;0920;0925;0926";
+    option (on_success) = "Event.State()";
+    option (message_doc) = "Sets log mode.";
   }
 
-  /* Enable encryption. */
   message EnableLogEncryption {
-    string public_key = 1
-      [(field_doc) = "A base 64 encoded RSA key used for log encryption"];
+    string public_key = 1 [(field_doc) = "A base 64 encoded RSA key used for log encryption"];
 
     option (on_success) = "Event.State()";
-    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+    option (support) = "0920:8.3.0;0925:8.3.0;0926:8.3.0";
+    option (message_doc) = "Enables log encryption.";
   }
 
-  /* Disable encryption. */
   message DisableLogEncryption {
     option (on_success) = "Event.State()";
-    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+    option (support) = "0920:8.3.0;0925:8.3.0;0926:8.3.0";
+    option (message_doc) = "Disables log encryption.";
   }
+
+  message AuthorizePairing {
+    Authorization value = 1 [(field_doc) = "Authorization value."];
+
+    option (support) = "0920:8.5.0;0923:8.5.0;0925:8.5.0;0926:8.5.0";
+    /*
+    Olympe issue.
+    should be "Event.State(pairing_authorization=PairingAuthorization(value=this.value))";
+    */
+    option (on_success) = "Event.State()";
+    option (on_failure) = "Event.State(pairing_authorization=PairingAuthorization(value=NotEqual(this.value)))";
+    option (message_doc) = "Changes pairing authorization.";
+  }
+
+  option (message_doc) = "This is the entry point to send messages to the device.";
 }
 
 message Event {
@@ -57,43 +74,63 @@ message Event {
     State state = 16;
   }
 
-  /* Sent after GetState or SetLogMode is received, or on changes. */
   message State {
-    /* Only present if triggered from a GetState with include_default_capabilities == true. */
     Capabilities default_capabilities = 1;
-
     LogStorage log_storage = 2;
     LogConfigPersistence log_config_persistence = 3;
     LogEncryption log_encryption = 4;
+    PairingAuthorization pairing_authorization = 5;
 
-    option (support) = "091a";
+    option (support) = "091a;0920;0925;0926";
+    option (triggered_by) = "Command.GetState();Command.SetLogMode();Command.EnableLogEncryption();"
+        "Command.DisableLogEncryption();Command.AuthorizePairing()";
+    option (message_doc) = "Current privacy state.";
   }
 
   message LogEncryption {
     bool enabled = 1;
-    option (support) = "091f:8.3.0;0920:8.3.0;0924:8.3.0;0925:8.3.0";
+    option (support) = "0920:8.3.0;0925:8.3.0;0926:8.3.0";
+    option (message_doc) = "Log encryption state.";
   }
+
+  option (message_doc) = "This is the entry point to receive messages from the device.";
 }
 
 message Capabilities {
   repeated LogStorage supported_log_storage = 1;
   repeated LogConfigPersistence supported_log_config_persistence = 2;
+  repeated Authorization supported_authorizations = 3;
+
+  option (support) = "091a;0920;0925;0926";
+  option (triggered_by) = "Command.GetState()";
+  option (message_doc) = "Capabilities.";
+}
+
+message PairingAuthorization {
+  Authorization value = 1 [(field_doc) = "Authorization value."];
+
+  option (support) = "0920:8.5.0;0923:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.AuthorizePairing()";
+  option (message_doc) = "Current pairing authorization.";
 }
 
 enum LogConfigPersistence {
-  /* Persistent configuration. */
-  LOG_CONFIG_PERSISTENCE_PERSISTENT = 0;
-  /* Configuration will only be valid for the current device boot.
-     Configuration will revert to the default factory configuration after the device reboots (and not the previous persistent one). */
-  LOG_CONFIG_PERSISTENCE_ONESHOT = 1;
+  LOG_CONFIG_PERSISTENCE_PERSISTENT = 0 [(enum_value_doc) = "Persistent configuration."];
+  LOG_CONFIG_PERSISTENCE_ONESHOT = 1 [(enum_value_doc) = "Configuration will only be valid for the current device boot."
+      " Configuration will revert to the default factory configuration after the device reboots (and not the previous"
+      " persistent one)."];
 }
 
 enum LogStorage {
-  /* Logs are written to persistent storage. */
-  LOG_STORAGE_PERSISTENT = 0;
-  /* Logs are written to volatile storage, non persistent across reboots.
-     Some logs will be disabled in this mode. */
-  LOG_STORAGE_VOLATILE = 1;
-  /* Logs are not written. */
-  LOG_STORAGE_NONE = 2;
+  LOG_STORAGE_PERSISTENT = 0 [(enum_value_doc) = "Logs are written to persistent storage."];
+  LOG_STORAGE_VOLATILE = 1 [(enum_value_doc) = "Logs are written to volatile storage, non persistent across reboots."
+      " Some logs will be disabled in this mode."];
+  LOG_STORAGE_NONE = 2 [(enum_value_doc) = "Logs are not written."];
+}
+
+enum Authorization {
+  AUTHORIZATION_NEVER = 0 [(enum_value_doc) = "Pairing is not authorized."];
+  AUTHORIZATION_ALWAYS = 1 [(enum_value_doc) = "Pairing is authorized until next setting change."];
+  AUTHORIZATION_ONCE = 2 [(enum_value_doc) = "Pairing is temporarily authorized; value will be reset to "
+      "AUTHORIZATION_NEVER upon next pairing or device reboot."];
 }

@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package arsdk.calibration;
+
+import "parrot/protobuf/extensions.proto";
+
+option java_package = "com.parrot.drone.arsdk.calibration";
+option java_outer_classname = "Calibration";
+
+option (olympe_package) = "calibration";
+
+// This is the entry point to send messages to the device
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Calibrate calibrate = 17;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "0925:8.5.0";
+    option (on_success) = "Event.State()";
+  }
+
+  message Calibrate {
+    Sensor sensor = 1 [(field_doc) = "Sensor to calibrate."];
+    bool value = 2 [(field_doc) = "Whether to start (true) or stop (false) calibration."];
+
+    option (support) = "0925:8.5.0";
+    option (on_success) = "Event.State()";
+    option (on_failure) = "Event.State()";
+  }
+}
+
+// This is the entry point to receive messages from the device
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    CalibrationStateList calibration_state_list = 2 [(field_doc) = "Calibration state list."];
+
+    option (support) = "0925:8.5.0";
+    option (triggered_by) = "Command.GetState(), Command.Calibrate()";
+  }
+
+  message Capabilities {
+    repeated Sensor supported_sensors = 1 [(field_doc) = "Supported calibration sensors."];
+
+    option (support) = "0925:8.5.0";
+    option (triggered_by) = "Command.GetState()";
+  }
+
+  message CalibrationStateList {
+    repeated CalibrationState calibration_state = 1 [(field_doc) = "Calibration state list."];
+
+    option (support) = "0925:8.5.0";
+  }
+}
+
+message CalibrationState {
+  Sensor sensor = 1 [(field_doc) = "Calibration sensor."];
+  Status status = 2 [(field_doc) = "Calibration status."];
+  bool is_required = 3 [(field_doc) = "Whether or not calibration is required."];
+
+  option (support) = "0925:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.Calibrate()";
+}
+
+enum Sensor {
+  SENSOR_PITOT = 0;
+}
+
+enum Status {
+  STATUS_IDLE = 0;
+  STATUS_IN_PROGRESS = 1;
+  STATUS_DONE = 2;
+  STATUS_FAILED = 3;
+  STATUS_ABORTED = 4;
+}

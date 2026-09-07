@@ -16,7 +16,10 @@ message Command {
   oneof id {
     arsdk.privacy.Command.GetState get_state = 16;
     arsdk.privacy.Command.SetLogMode set_log_mode = 17;
+    arsdk.privacy.Command.AuthorizePairing authorize_pairing = 18;
   }
+
+  option (message_doc) = "This is the entry point to send messages to the device.";
 }
 
 message Event {
@@ -25,4 +28,6 @@ message Event {
   oneof id {
     arsdk.privacy.Event.State state = 16;
   }
+
+  option (message_doc) = "This is the entry point to receive messages from the device.";
 }

@@ -1,0 +1,353 @@
+syntax = "proto3";
+
+package arsdk.storage;
+
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.storage";
+option java_outer_classname = "Storage";
+
+option (olympe_package) = "storage";
+
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    ListStorages list_storages = 16;
+    GetState get_state = 17;
+    Format format = 18;
+    StartMonitoring start_monitoring = 19;
+    StopMonitoring stop_monitoring = 20;
+    Unlock unlock = 21;
+    SetPassphrase set_passphrase = 22;
+  }
+
+  message ListStorages {
+      option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+      option (on_success) = "Event.StorageList()";
+  }
+
+  message GetState {
+    uint32 id = 1;
+    bool include_default_capabilities = 2;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State()";
+  }
+
+  message Format {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    string label = 2 [(field_doc) = "Label to set to the file system. If empty, label is set to the product name."];
+    ErasingType type = 3 [(field_doc) = "Erasing type."];
+    google.protobuf.StringValue passphrase = 4 [(field_doc) = "The passphrase to set."];
+    bool encryption = 5 [(field_doc) = "`true` to enable encryption. If set to `true` and passphrase is empty, "
+      "automatic encryption (without a passphrase) will be used."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.FormattingResult()&Event.FormattingProgress()";
+    option (on_failure) = "Event.FormattingResult()&Event.FormattingProgress()";
+    option (message_doc) = "Start format operation on the media, Event progress is triggered once the operation"
+        "has been started if capabilities of the medias contains FEATURE_FORMAT_PROGRESS_EVENT_SUPPORTED";
+  }
+
+  message StartMonitoring {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    uint32 period = 2 [(field_doc) = "Period in seconds to send monitor events. If set to 0, period is set to default "
+      "value (one second)."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.Monitor()&Event.State(storage_state=StorageState())";
+    option (on_failure) = "Event.Monitor()&Event.State(storage_state=StorageState())";
+    option (message_doc) = "Start monitoring operation of the media.";
+  }
+
+  message StopMonitoring {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State(storage_state=StorageState())";
+    option (on_failure) = "Event.State(storage_state=StorageState())";
+    option (message_doc) = "Stop monitoring operation of the media";
+  }
+
+  message Unlock {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    string passphrase = 2 [(field_doc) = "The passphrase."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (message_doc) = "Transmit the passphrase to unlock file system.";
+    option (on_success) = "Event.UnlockResult()&Event.State("
+      "storage_state=StorageState(encryption_state=EncryptionState()))";
+    option (on_failure) = "Event.UnlockResult()";
+  }
+
+  message SetPassphrase {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    string new_passphrase = 2 [(field_doc) = "The new passphrase, empty to remove passphrase."];
+    string current_passphrase = 3 [(field_doc) = "The current passphrase."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.PassphraseResult()&"
+      "Event.State(storage_state=StorageState(encryption_state=EncryptionState()))";
+    option (on_failure) = "Event.PassphraseResult()";
+    option (message_doc) = "Set passphrase for a storage type.";
+  }
+
+  option (message_doc) = "This is the entry point to send messages to the device.";
+}
+
+message Event {
+  reserved 2 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    Monitor monitor = 1; // non-ack
+
+    StorageList storage_list = 16;
+    State state = 17;
+    FormattingProgress formatting_progress = 18;
+    FormattingResult formatting_result = 19;
+    UnlockResult unlock_result = 20;
+    PassphraseResult passphrase_result = 21;
+  }
+
+  message Monitor {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    uint64 available_space = 3 [(field_doc) = "The free space in Bytes on the media."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.GetState();Command.StartMonitoring();on changes";
+    option (message_doc) = "Monitoring event advertising available space.";
+  }
+
+  message StorageList {
+    repeated Storage storages = 1 [(field_doc) = "List of storage ids with their storage type."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.ListStorage()";
+  }
+
+  message State {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    Capabilities default_capabilities = 2;
+    StorageInfo storage_info = 3;
+    StorageState storage_state = 4;
+    StorageUUID storage_uuid = 5;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.GetState();Command.StartMonitoring();Command.StopMonitoring();"
+      "on changes";
+  }
+
+  message FormattingProgress {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    FormattingStep step = 2 [(field_doc) = "The formatting step the format process is in."];
+    uint32 percentage = 3 [(field_doc) = "The progress of the current step expressed in percent."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.Format()";
+    option (message_doc) = "Progress of the formatting for a given storage ID.";
+  }
+
+  message FormattingResult {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    FormattingStatus status = 2 [(field_doc) = "Status of the last formatting command."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.Format()";
+    option (message_doc) = "Result of the formatting command.";
+  }
+
+  message UnlockResult {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    UnlockStatus status = 2 [(field_doc) = "Status of the last transmitted passphrase."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.Unlock()";
+    option (message_doc) = "Result of the transmitted passphrase for a given storage ID.";
+  }
+
+  message PassphraseResult {
+    uint32 id = 1 [(field_doc) = "Id of the storage."];
+    PassphraseErrorCode error = 2 [(field_doc) = "The passphrase error result."];
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.SetPassphrase()";
+    option (message_doc) = "The passphrase result.";
+  }
+
+  option (message_doc) = "This is the entry point to receive messages from the device.";
+}
+
+message Storage {
+  uint32 id = 1 [(field_doc) = "Id of the storage."];
+  StorageType type = 2 [(field_doc) = "The storage type."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.ListStorage()";
+  option (message_doc) = "The storage description.";
+}
+
+message Capabilities {
+  repeated Feature supported_features = 1 [(field_doc) = "List of supported features."];
+  repeated ErasingType supported_erasing_types = 2 [(field_doc) = "User storage supported erasing types."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState(include_default_capabilities=true)";
+  option (message_doc) = "User storage capabilities.";
+}
+
+message StorageInfo {
+  string name = 1 [(field_doc) = "The name of the media."];
+  uint64 capacity = 2 [(field_doc) = "The capacity of the media in Bytes."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.Format(); on ready state or if storage is not available";
+  option (message_doc) = "Information on user-storage.";
+}
+
+message StorageState {
+  PhysicalState physical_state = 1 [(field_doc) = "The state of the physical media."];
+  FileSystemState file_system_state = 2 [(field_doc) = "The state of the data stored on media."];
+  string file_system_type = 3 [(field_doc) = "Details about file system type."];
+  repeated Attribute attributes = 4 [(field_doc) = "Details about storage."];
+  bool is_monitoring_enabled = 5 [(field_doc) = "Whether or not monitoring is enabled."];
+  uint32 monitoring_period = 6 [(field_doc) =  "Current period of monitoring if monitoring is enabled, 0 if not "
+    "enabled [seconds]"];
+  EncryptionState encryption_state = 7;
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.StartMonitoring();Command.StopMonitoring();"
+    "Command.Unlock();on changes";
+  option (message_doc) = "State of user-storage.";
+}
+
+message StorageUUID {
+  string uuid = 1 [(field_doc) = "Storage UUID."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.Format();"
+    "UserStorageState(file_system_state=FILE_SYSTEM_STATE_PASSPHRASE_NEEDED)";
+  option (message_doc) = "Storage encryption UUID.";
+}
+
+message EncryptionState {
+  EncryptionType encryption_type = 1 [(field_doc) = "The encryption type."];
+  bool is_locked = 2 [(field_doc) = "Whether the device is currently locked."];
+  bool has_passphrase = 3 [(field_doc) = "Whether the the device is currently configured to require a passphrase to "
+    "unlock."];
+  bool can_add_passphrase = 4 [(field_doc) = "Whether a passphrase can be added (i.e. when has_passphrase is false)."];
+  bool can_change_passphrase = 5 [(field_doc) = "Whether passphrase can be changed for another passphrase (i.e. when "
+    "has_passphrase is true)."];
+  bool can_remove_passphrase = 6 [(field_doc) = "Whether the passphrase can be removed (i.e. when has_passphrase is "
+    "true)."];
+
+  option (support) = "091f:8.5.0;0920:8.5.0;0924:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.SetPassphrase();Command.Unlock()";
+  option (message_doc) = " The encryption state.";
+}
+
+enum ErasingType {
+  ERASING_TYPE_FULL = 0 [(enum_value_doc) = "Executes a deep format operation that is time consuming "
+    "but optimizes performance."];
+  ERASING_TYPE_QUICK = 1 [(enum_value_doc) = "Removes content of the media."];
+
+  option(enum_doc) = "Erasing type.";
+}
+
+enum Feature {
+  FEATURE_FORMAT_WHEN_READY_ALLOWED = 0 [(enum_value_doc) = "Format is available when state is `ready` (and also, as "
+    "usual when state is `format_needed`)."];
+  FEATURE_FORMAT_RESULT_EVENT_SUPPORTED = 1 [(enum_value_doc) = "The format result event is supported and will be sent "
+    "after a format has been asked."];
+  FEATURE_FORMAT_PROGRESS_EVENT_SUPPORTED = 2 [(enum_value_doc) = "The format progress event is supported and will be "
+    "sent during format operation."];
+  FEATURE_ENCRYPTION_SUPPORTED = 3 [(enum_value_doc) = "SD card encryption is supported."];
+
+  option(enum_doc) = "Feature.";
+}
+
+enum StorageType {
+  STORAGE_TYPE_INTERNAL = 0 [(enum_value_doc) = "The internal storage."];
+  STORAGE_TYPE_REMOVABLE = 1 [(enum_value_doc) = "The SD card."];
+
+  option(enum_doc) = "Storage type.";
+}
+
+enum PhysicalState {
+  PHYSICAL_STATE_UNDETECTED = 0 [(enum_value_doc) = "The media is not detected."];
+  PHYSICAL_STATE_TOO_SMALL = 1 [(enum_value_doc) = "The media is too small for operation."];
+  PHYSICAL_STATE_TOO_SLOW = 2 [(enum_value_doc) = "The media is too slow for operation."];
+  PHYSICAL_STATE_AVAILABLE = 3 [(enum_value_doc) = "The media is detected."];
+  PHYSICAL_STATE_USB_MASS_STORAGE = 4 [(enum_value_doc) = "TThe media is used by mass-storage gadget."];
+
+  option(enum_doc) = "Physical state.";
+}
+
+enum FileSystemState {
+  FILE_SYSTEM_STATE_UNKNOWN = 0 [(enum_value_doc) = "The media file system state is not known (yet)."];
+  FILE_SYSTEM_STATE_FORMAT_NEEDED = 1 [(enum_value_doc) = "The media file system is not supported, unformatted, has "
+    "check errors or capacity is too low."];
+  FILE_SYSTEM_STATE_FORMATTING = 2 [(enum_value_doc) = "The media file system is getting formatted."];
+  FILE_SYSTEM_STATE_READY = 3 [(enum_value_doc) = "The media file system is ready to be used."];
+  FILE_SYSTEM_STATE_ERROR = 4 [(enum_value_doc) = "The media file system is not available."];
+  FILE_SYSTEM_STATE_PASSPHRASE_NEEDED = 5 [(enum_value_doc) = "The media file system needs a passphrase for "
+    "decryption."];
+  FILE_SYSTEM_STATE_CHECKING = 6 [(enum_value_doc) = "The media file system is being checked."];
+  FILE_SYSTEM_STATE_FORMAT_EXTERNAL_ACCESS_OK = 7 [(enum_value_doc) = "The media file system is not managed by the "
+    "drone itself but accessible by external means."];
+
+  option(enum_doc) = "File system state.";
+}
+
+enum Attribute {
+  ATTRIBUTE_LOW_PERFORMANCE = 0 [(enum_value_doc) = "The media has low performance."];
+  ATTRIBUTE_ENCRYPTED = 1 [(enum_value_doc) = "The media is encrypted."];
+  ATTRIBUTE_CHECK_ERROR = 2 [(enum_value_doc) = "There were errors during file system checking."];
+
+  option(enum_doc) = "Attribute.";
+}
+
+enum FormattingStatus {
+  FORMATTING_STATUS_ERROR = 0 [(enum_value_doc) = "The last formatting command failed."];
+  FORMATTING_STATUS_DENIED = 1 [(enum_value_doc) = "The last formatting command was denied."];
+  FORMATTING_STATUS_SUCCESS = 2 [(enum_value_doc) = "The last formatting command succeeded."];
+
+  option(enum_doc) = "Formatting status.";
+}
+
+enum FormattingStep {
+  FORMATTING_STEP_PARTITIONING = 0 [(enum_value_doc) = "The drone is currently partitioning the media."];
+  FORMATTING_STEP_CLEARING_DATA = 1 [(enum_value_doc) = "The drone is currently wiping data on the media in order "
+    "to optimize performance."];
+  FORMATTING_STEP_CREATING_FILE_SYSTEM = 2 [(enum_value_doc) = "The drone is creating a file system on the media."];
+
+  option(enum_doc) = "Formatting step.";
+}
+
+enum UnlockStatus {
+  UNLOCK_STATUS_RESULT_WRONG_PASSPHRASE = 0 [(enum_value_doc) = "The transmitted passphrase is wrong."];
+  UNLOCK_STATUS_RESULT_SUCCESS = 1 [(enum_value_doc) = "The transmitted passphrase is correct."];
+
+  option(enum_doc) = "Unlock status.";
+}
+
+enum PassphraseErrorCode {
+  PASSPHRASE_ERROR_CODE_OK = 0 [(enum_value_doc) = "There is no error, passphrase was accepted."];
+  PASSPHRASE_ERROR_CODE_TOO_SHORT = 1 [(enum_value_doc) = "The passphrase is too short."];
+  PASSPHRASE_ERROR_CODE_UNSUPPORTED_CHARS = 2 [(enum_value_doc) = "The passphrase contains unsupported characters."];
+  PASSPHRASE_ERROR_CODE_UNSUPPORTED_OPERATION = 3 [(enum_value_doc) = "The drone does not support passphrase "
+    "operation."];
+  PASSPHRASE_ERROR_CODE_UNKNOWN = 4 [(enum_value_doc) = "Unknown error."];
+
+  option(enum_doc) = "The passphrase error code.";
+}
+
+enum EncryptionType {
+  ENCRYPTION_TYPE_NONE = 0 [(enum_value_doc) = "There is no encryption, the data are in plaintext, not secure."];
+  ENCRYPTION_TYPE_LEGACY = 1 [(enum_value_doc) = "Encrypted with legacy encryption."];
+  ENCRYPTION_TYPE_SECURE_STORAGE_V1 = 2 [(enum_value_doc) = "Encrypted with secure storage, "
+    "which supports passphrase change and automatic unlocking."];
+
+  option(enum_doc) = "Encryption type.";
+}

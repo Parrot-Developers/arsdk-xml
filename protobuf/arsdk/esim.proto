@@ -20,32 +20,33 @@ message Command {
     EnableProfile enable_profile = 18;
     DeleteProfile delete_profile = 19;
     HttpResponse http_response = 20;
+    RenameProfile rename_profile = 21;
   }
 
   message GetState {
     bool include_default_capabilities = 1;
 
-    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
   }
 
   message DownloadProfile {
-     string activation_code = 1; // activation code (SGP.22), from QR code or user input
-     google.protobuf.StringValue confirmation_code = 2; // optional confirmation code, from user input
+    string activation_code = 1; // activation code (SGP.22), from QR code or user input
+    google.protobuf.StringValue confirmation_code = 2; // optional confirmation code, from user input
 
-     option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
   }
 
   message EnableProfile {
-     string iccid = 1;
-     bool enable = 2;
+    string iccid = 1;
+    bool enable = 2;
 
-     option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
   }
 
   message DeleteProfile {
-     string iccid = 1;
+    string iccid = 1;
 
-     option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
   }
 
   message HttpResponse {
@@ -55,7 +56,14 @@ message Command {
     string message = 4; // http response message
     bytes data = 5; // response data
 
-    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
+  }
+
+  message RenameProfile {
+    string iccid = 1;
+    string nickname = 2;
+
+    option (support) = "0920:8.4.2;0925:8.4.2;0926:8.4.2";
   }
 }
 
@@ -75,7 +83,7 @@ message Event {
     ProfileList profile_list = 4;
     ProfileOperationStatus profile_operation_status = 5;
 
-    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
   }
 
   message HttpRequest {
@@ -84,7 +92,7 @@ message Event {
     repeated string headers = 3; // list of request headers
     bytes data = 4; // request data
 
-    option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+    option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
   }
 }
 
@@ -92,8 +100,10 @@ message Profile {
   string iccid = 1;
   string provider = 2;
   bool enabled = 3;
+  string name = 4; // default profile name
+  string nickname = 5; // nickname set by user
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
 }
 
 message ProfileOperationStatus {
@@ -102,40 +112,48 @@ message ProfileOperationStatus {
     DownloadProfileStatus download_profile_status = 2;
     EnableProfileStatus enable_profile_status = 3;
     DeleteProfileStatus delete_profile_status = 4;
+    RenameProfileStatus rename_profile_status = 5;
   }
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
 }
 
 message DownloadProfileStatus {
   Profile profile = 1; // created profile
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
 }
 
 message EnableProfileStatus {
   string iccid = 1;
   bool enabled = 2;
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
 }
 
 message DeleteProfileStatus {
   string iccid = 1;
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
+}
+
+message RenameProfileStatus {
+  string iccid = 1;
+  string nickname = 2;
+
+  option (support) = "0920:8.4.2;0925:8.4.2;0926:8.4.2";
 }
 
 message ProfileList {
   repeated Profile profiles = 1;
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
 }
 
 message SimStatusValue {
   SimStatus value = 1;
 
-  option (support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0";
+  option (support) = "0920:8.4.0;0925:8.4.0;0926:8.4.0";
 }
 
 enum SimStatus {
@@ -158,4 +176,8 @@ enum ErrorCode {
   ERROR_CODE_CONFIRMATION_CODE_REQUIRED = 10;
   ERROR_CODE_SERVER_AUTHENTICATION_FAILURE = 11;
   ERROR_CODE_CLIENT_AUTHENTICATION_FAILURE = 12;
+  ERROR_CODE_ICCID_ALREADY_EXISTS = 13;
+  ERROR_CODE_EID_REFUSED = 14;
+  ERROR_CODE_NOT_ENOUGH_MEMORY = 15;
+  ERROR_CODE_INSTALL_FAILED = 16;
 }

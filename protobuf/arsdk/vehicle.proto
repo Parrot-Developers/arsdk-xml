@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+package arsdk.vehicle;
+
+import "google/protobuf/empty.proto";
+import "parrot/protobuf/extensions.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.parrot.drone.arsdk.vehicle";
+option java_outer_classname = "Vehicle";
+
+option (olympe_package) = "vehicle";
+
+message Command {
+  reserved 1 to 15; // reserved for non-acknowledged commands
+
+  oneof id {
+    GetState get_state = 16;
+    Enable enable = 17;
+    EnableRelativeGuidance enable_relative_guidance = 18;
+    EnablePreciseCalibration enable_precise_calibration = 19;
+    google.protobuf.Empty wipe_precise_calibration = 20 [(field_doc) = "Wipe the files linked to the precise "
+      "calibration."];
+    SetPlatformType set_plateform_type = 21;
+  }
+
+  message GetState {
+    bool include_default_capabilities = 1;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State()";
+  }
+
+  message Enable {
+    bool value = 1;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State(is_enabled=this.value)";
+    option (on_failure) = "Event.State(is_enabled=NotEqual(this.value)";
+    option (message_doc) = "Enable vehicle.";
+  }
+
+  message EnableRelativeGuidance {
+    bool value = 1;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State(relative_guidance=RelativeGuidance(is_enabled=this.value))";
+    option (on_failure) = "Event.State(relative_guidance=RelativeGuidance("
+      "is_enabled=NotEqual(this.value)))";
+    option (message_doc) = "Enable relative guidance.";
+  }
+
+  message EnablePreciseCalibration {
+    bool value = 1;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State(is_precise_calibration_enabled=this.value)";
+    option (on_failure) = "Event.State(is_precise_calibration_enabled= NotEqual(this.value))";
+    option (message_doc) = "Enable precise calibration.";
+  }
+
+  message SetPlatformType {
+    PlatformType value = 1;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (on_success) = "Event.State(platform_type=PlatformTypeValue(value=this.value))";
+    option (on_failure) = "Event.State(platform_type=PlatformTypeValue(value=NotEqual(this.value)))";
+    option (message_doc) = "Set platform type.";
+  }
+
+  option (message_doc) = "This is the entry point to send messages to the device.";
+}
+
+message Event {
+  reserved 1 to 15; // reserved for non-acknowledged events
+
+  oneof id {
+    State state = 16;
+  }
+
+  message State {
+    Capabilities default_capabilities = 1;
+    google.protobuf.BoolValue is_enabled = 2 [(field_doc) = "Whether or not vehicle is enabled."];
+    ReadyStateValue ready_state = 3;
+    MissingRequirements missing_requirements = 4;
+    Improvements improvements = 5;
+    Notifications notifications = 6;
+    RelativeGuidance relative_guidance = 7;
+    google.protobuf.BoolValue is_precise_calibration_enabled = 8 [(field_doc) = "Whether or not precise calibration is "
+      "enabled."];
+    PlatformTypeValue platform_type = 9;
+
+    option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+    option (triggered_by) = "Command.GetState();Command.Enable();Command.SetPlatformType();"
+                            "Command.EnableRelativeGuidance();Command.EnablePreciseCalibration()"
+                            "Command.RemovePreciseCalibration();On changes";
+  }
+
+  option (message_doc) = "This is the entry point to receive messages from the device.";
+}
+
+message Capabilities {
+  double max_horizontal_distance = 1 [(field_doc) = "Maximum horizontal drone to vehicle distance in [m]."];
+  repeated PlatformType supported_platform_types = 2 [(field_doc) = "The supported platform types."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState(include_default_capabilities=true)";
+  option (message_doc) = "The capabilities.";
+}
+
+message ReadyStateValue {
+  ReadyState value = 1 [(field_doc) = "Ready to takeoff from vehicle value."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();on changes";
+  option (message_doc) = "The ready state for takeoff.";
+}
+
+message MissingRequirements {
+  repeated Requirement requirements = 1 [(field_doc) = "List of missing requirements for takeoff/relative move."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();on changes";
+  option (message_doc) = "The missing requierements for takeoff/relative move.";
+}
+
+message Improvements {
+  repeated Improvement improvements = 1 [(field_doc) = "List of possible improvements for takeoff/relative move."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();on changes";
+  option (message_doc) = "The possible improvements for takeoff/relative move.";
+}
+
+message Notifications {
+  repeated Notification notifications = 1 [(field_doc) = "List of notifications."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();On changes";
+  option (message_doc) = "The notifications.";
+}
+
+message RelativeGuidance {
+  bool is_enabled = 1 [(field_doc) = "Whether relative guidance is enabled or not."
+                                     "Only available if is_modifiable is at true."];
+  bool is_modifiable = 2 [(field_doc) = "Whether or not relative guidance is modifiable."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.EnableRelativeGuidance();On changes";
+  option (message_doc) = "The relative guidance state.";
+}
+
+message PlatformTypeValue {
+  PlatformType value = 1 [(field_doc) = "The platform type."];
+
+  option (support) = "0920:8.5.0;0925:8.5.0;0926:8.5.0";
+  option (triggered_by) = "Command.GetState();Command.SetPlatformType()";
+  option (message_doc) = "The platform type.";
+}
+
+enum ReadyState {
+  READY_STATE_NOT_READY = 0 [(enum_value_doc) = "Not all requirements are met, the drone is "
+    "not ready to takeoff."];
+  READY_STATE_OFF_BOARD = 1 [(enum_value_doc) = "All requirements are met but the drone is not "
+    "on a moving vehicle."];
+  READY_STATE_ON_BOARD = 2 [(enum_value_doc) = "All requirements are met and the drone is on "
+    "a moving vehicle."];
+
+  option(enum_doc) = "Ready state for takeoff.";
+}
+
+enum Requirement {
+  REQUIREMENT_DRONE_GNSS = 0 [(enum_value_doc) = "GNSS of the drone."];
+  REQUIREMENT_PILOT_GNSS = 1 [(enum_value_doc) = "GNSS of the vehicle."];
+  REQUIREMENT_DRONE_MAGNETOMETER = 2 [(enum_value_doc) = "Magnetometer of the drone."];
+
+  option(enum_doc) = "Requirement.";
+}
+
+enum Improvement {
+  IMPROVEMENT_PILOT_BAROMETER = 0 [(enum_value_doc) = "Barometer of the pilot in the vehicle."];
+  IMPROVEMENT_DRONE_LOCK_COMPUTER_VISION = 1 [(enum_value_doc) = "Vehicle localization is locked from computer vision, "
+    "to provide a stable reference used to maintain alignment before or without active tracking mode."];
+  IMPROVEMENT_DRONE_PRECISE_COMPUTER_VISION = 2 [(enum_value_doc) = "High-accuracy vehicle position from a reference "
+    "image (used for precise landing)."];
+  IMPROVEMENT_DRONE_TRACKING_COMPUTER_VISION = 3 [(enum_value_doc) = "Vehicle direction is continuously updated by "
+    "computer vision tracking, allowing the drone to follow the moving vehicule."];
+
+  option(enum_doc) = "Improvement.";
+}
+
+enum Notification {
+  NOTIFICATION_COMPUTER_VISION_USED = 0 [(enum_value_doc) = "Computer vision module has found vehicle."];
+  NOTIFICATION_VEHICLE_IS_TOO_FAST = 1 [(enum_value_doc) = "Vehicle is too fast."];
+  NOTIFICATION_VEHICLE_IS_TOO_FAR = 2 [(enum_value_doc) = "Vehicle is too far."];
+  NOTIFICATION_STOP_VEHICLE_REQUIRED = 3 [(enum_value_doc) = "Stop vehicle required."];
+  NOTIFICATION_RTV_MANUAL_REQUIRED = 4 [(enum_value_doc) = "Return to vehicle with manual descent is required."];
+  NOTIFICATION_LANDING_MANUAL_REQUIRED = 5 [(enum_value_doc) = "Landing with manual correction is required."];
+  NOTIFICATION_RTV_COMPUTER_VISION_SEARCHING = 6 [(enum_value_doc) = "Return to vehicle, computer vision searching."];
+  NOTIFICATION_LANDING_COMPUTER_VISION_SEARCHING = 7 [(enum_value_doc) = "Landing, computer vision searching."];
+  NOTIFICATION_LANDING_VEHICLE_NOT_FOUND = 8 [(enum_value_doc) = "The vehicle was not found while landing."];
+  NOTIFICATION_LANDING_ZONE_NOT_FOUND = 9 [(enum_value_doc) = "The landing zone was not found while landing."];
+  NOTIFICATION_RTV_VEHICLE_FOUND = 10 [(enum_value_doc) = "The vehicle was found for the return to vehicle."];
+  NOTIFICATION_RTV_VEHICLE_NOT_FOUND = 11 [(enum_value_doc) = "Return to vehicle, the vehicle was not found."];
+  NOTIFICATION_RTV_LANDING_ZONE_NOT_FOUND = 12 [(enum_value_doc) = "Return to vehicle, the landing zone was not found."];
+
+  option(enum_doc) = "Notification.";
+}
+
+enum PlatformType {
+  PLATFORM_TYPE_LAND = 0 [(enum_value_doc) = "On land platform."];
+  PLATFORM_TYPE_WATER = 1 [(enum_value_doc) = "On water platform."];
+
+  option(enum_doc) = "Platform type.";
+}

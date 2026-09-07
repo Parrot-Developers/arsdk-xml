@@ -9,6 +9,7 @@ option java_package = "com.parrot.drone.arsdk.unguardedflight";
 option java_outer_classname = "UnguardedFlight";
 
 option (olympe_package) = "unguardedflight";
+option (deprecated_version) = "8.4.0";
 
 /* This is the entry point to send messages to the drone */
 message Command {

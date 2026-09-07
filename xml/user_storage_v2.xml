@@ -37,7 +37,7 @@
 				The internal storage.
 			</value>
 			<value name="removable_storage">
-				The SDcard.
+				The SD card.
 			</value>
 		</enum>
 		<enum name="phy_state">
@@ -77,7 +77,7 @@
 				The media file system needs a password for decryption.
 			</value>
 			<value name="checking">
-				The media file system is being checked
+				The media file system is being checked.
 			</value>
 			<value name="external_access_ok">
 				The media file system is not managed by the drone itself but accessible by external means.
@@ -96,24 +96,24 @@
 		</enum>
 		<enum name="formatting_result">
 			<value name="error">
-				The last formatting command failed
+				The last formatting command failed.
 			</value>
 			<value name="denied">
-				The last formatting command was denied
+				The last formatting command was denied.
 			</value>
 			<value name="success">
-				The last formatting command succeeded
+				The last formatting command succeeded.
 			</value>
 		</enum>
 		<enum name="password_result">
 			<value name="wrong_password">
-				The transmitted password is wrong
+				The transmitted password is wrong.
 			</value>
 			<value name="success">
-				The transmitted password is correct
+				The transmitted password is correct.
 			</value>
 			<value name="wrong_usage">
-				The usage specified with the password does not match with the current drone context (RECORD or MASS STORAGE)
+				The usage specified with the password does not match with the current drone context (RECORD or MASS STORAGE).
 			</value>
 		</enum>
 		<enum name="feature">
@@ -151,15 +151,15 @@
 		</enum>
 		<enum name="password_usage">
 			<value name="record">
-				Send password for record requirement
+				Send password for record requirement.
 			</value>
 			<value name="usb">
-				Send password for usb mass storage requirement
+				Send password for usb mass storage requirement.
 			</value>
 		</enum>
 	</enums>
 	<msgs>
-		<evt name="capabilities" id="8" type="MAP_ITEM:storage_id">
+		<evt name="capabilities" id="8" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="User storage capabilities"
 				desc="Describes user storage supported capabilities."
@@ -176,7 +176,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="supported_formatting_types" id="9" type="MAP_ITEM:storage_id">
+		<evt name="supported_formatting_types" id="9" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="User storage supported formatting types"
 				desc="Describes user storage supported formatting types. When sent, it indicates that the `format_with_type`
@@ -191,7 +191,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="info" id="1" type="MAP_ITEM:storage_id">
+		<evt name="info" id="1" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="Information on user-storage"
 				support="091A"
@@ -207,7 +207,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="monitor" id="2" buffer="NON_ACK" type="MAP_ITEM:storage_id">
+		<evt name="monitor" id="2" buffer="NON_ACK" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="Monitoring event advertising available space"
 				support="091A"
@@ -221,7 +221,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="state" id="3" type="MAP_ITEM:storage_id">
+		<evt name="state" id="3" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="State of user-storage"
 				support="091A"
@@ -249,7 +249,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="storage_uuid" id="15" type="MAP_ITEM:storage_id">
+		<evt name="storage_uuid" id="15" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="Storage encryption UUID"
 				support="091A"
@@ -263,7 +263,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<cmd name="format" id="4">
+		<cmd name="format" id="4" deprecated="true">
 			<comment
 				title="Start format operation"
 				desc="Start format operation on the media. This could imply its repartitioning if needed.
@@ -284,7 +284,7 @@
 				Label to set to the file system. If empty, label is set to the product name.
 			</arg>
 		</cmd>
-		<cmd name="format_with_type" id="10">
+		<cmd name="format_with_type" id="10" deprecated="true">
 			<comment
 				title="Start format operation with formatting type"
 				desc="Start format operation on the media given a formatting type. This could imply its repartitioning
@@ -310,7 +310,7 @@
 				Formatting type.
 			</arg>
 		</cmd>
-		<cmd name="format_with_encryption" id="13">
+		<cmd name="format_with_encryption" id="13" deprecated="true">
 			<comment
 				title="Start format operation with encryption"
 				desc="Start format operation for encryption of the media with the given password"
@@ -336,7 +336,7 @@
 				Formatting type.
 			</arg>
 		</cmd>
-		<cmd name="start_monitoring" id="5">
+		<cmd name="start_monitoring" id="5" deprecated="true">
 			<comment
 				title="Start monitoring operation"
 				desc="Start monitoring operation of the media."
@@ -354,7 +354,7 @@
 				Period in seconds to send monitor events. If set to 0, period is set to default value (one second).
 			</arg>
 		</cmd>
-		<cmd name="stop_monitoring" id="6">
+		<cmd name="stop_monitoring" id="6" deprecated="true">
 			<comment
 				title="Stop monitoring operation"
 				desc="Stop monitoring operation of the media."
@@ -364,7 +364,7 @@
 				Id of the storage.
 			</arg>
 		</cmd>
-		<cmd name="encryption_password" id="12">
+		<cmd name="encryption_password" id="12" deprecated="true">
 			<comment
 				title="Transmit password to unlock file system"
 				desc="Transmit password when needed for unlocking encrypted file system"
@@ -385,7 +385,7 @@
 				Reason of password requirement
 			</arg>
 		</cmd>
-		<evt name="format_result" id="7" type="MAP_ITEM:storage_id">
+		<evt name="format_result" id="7" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="Result of the formatting command"
 				support="091A"
@@ -400,7 +400,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="decryption" id="14" type="MAP_ITEM:storage_id">
+		<evt name="decryption" id="14" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="Result of the transmitted password"
 				support="091A"
@@ -413,7 +413,7 @@
 			</arg>
 			<arg name="list_flags" type="bitfield:u8:list_flags"/>
 		</evt>
-		<evt name="format_progress" id="11" type="MAP_ITEM:storage_id">
+		<evt name="format_progress" id="11" type="MAP_ITEM:storage_id" deprecated="true">
 			<comment
 				title="Progress of the formatting command"
 				support="091A"

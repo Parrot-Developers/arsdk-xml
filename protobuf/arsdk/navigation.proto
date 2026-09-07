@@ -67,7 +67,7 @@ message Event {
       int32 number_of_satellites = 1; // Number of satellites used in GNSS fix
 
       /* Whether the GNSS is fixed or not */
-      google.protobuf.BoolValue is_fixed = 2 [(field_doc) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
+      google.protobuf.BoolValue is_fixed = 2 [(field_support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
     }
     /* The gnss message must be absent when  no gnss constellation are used as a location source */
     Gnss gnss = 9;
@@ -82,10 +82,10 @@ message Event {
     bool location_uses_magnetometer = 11;
 
     /* Altitude above take off [meters] */
-    google.protobuf.DoubleValue altitude_ato = 12 [(field_doc) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
+    google.protobuf.DoubleValue altitude_ato = 12 [(field_support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
 
     /* Above ground level altitude [meters] */
-    google.protobuf.DoubleValue altitude_agl = 13 [(field_doc) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
+    google.protobuf.DoubleValue altitude_agl = 13 [(field_support) = "091f:8.4.0;0920:8.4.0;0924:8.4.0;0925:8.4.0"];
 
     // FUTURE : More details about sources used to compute a Location
     //message Source {

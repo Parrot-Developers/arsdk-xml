@@ -49,6 +49,9 @@
 			<value name="pilot">
 				The drone will return to the pilot position
 			</value>
+			<value name="vehicle">
+				The drone will return to the vehicle position
+			</value>
 		</enum>
 		<enum name="state">
 			State of return to home
@@ -105,6 +108,15 @@
 			</value>
 			<value name="battery_too_hot">
 				Return to home triggered by battery too hot event (available->in_progress)
+			</value>
+			<value name="vehicle_not_found">
+				Return to vehicle has been stopped since the vehicle was not found (in_progress->available)
+			</value>
+			<value name="landing_zone_not_found">
+				Return to vehicle has been stopped since the landing zone was not found (in_progress->available)
+			</value>
+			<value name="geofence_violation">
+				Return to home triggered by geofence violation event (available->in_progress)
 			</value>
 		</enum>
 		<enum name="home_reachability">

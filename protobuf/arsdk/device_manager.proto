@@ -278,10 +278,16 @@ enum ConnectionFailureReason {
 }
 
 enum Transport {
+  /* Drone is connected via Wi-Fi. */
   TRANSPORT_WIFI = 0;
+  /* Drone is connected via cellular connection through Parrot servers. */
   TRANSPORT_CELLULAR = 1;
+  /* Drone is connected via a Microhard radio. */
   TRANSPORT_MICROHARD = 2;
+  /* Drone is connected via a Mars radio. */
   TRANSPORT_MARS = 3;
+  /* Drone is connected using Backup link. */
+  TRANSPORT_BACKUP_LINK = 4;
 }
 
 enum WifiSecurity {
@@ -303,4 +309,6 @@ enum PairingFailureReason {
   PAIRING_FAILURE_REASON_RADIO_NOT_READY = 0;
   /* Controller is in remote antenna mode without a remote antenna connected. */
   PAIRING_FAILURE_REASON_NO_REMOTE_ANTENNA = 1;
+  /* Pairing has been refused by the drone because it's already paired with another remote control. */
+  PAIRING_FAILURE_REASON_UNAUTHORIZED = 2;
 }

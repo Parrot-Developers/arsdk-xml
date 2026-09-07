@@ -65,8 +65,10 @@ message Event {
   }
 
   message Capabilities {
-    /* Capabilities of this feature */
+    /* Capabilities of this feature. */
     repeated PowerSavingMode powersaving_modes = 1;
+    /* Calibration method that will be used. */
+    CalibrationMethod calibration_method = 2;
   }
 
   message UniformtiyCalibrationState {
@@ -114,6 +116,13 @@ enum UniformityCalibrationStep {
   CALIBRATED = 6;
 }
 
+/* Calibration method. */
+enum CalibrationMethod {
+  /* Calibration with a cover placed by the user on the camera. */
+  COVER = 0;
+  /* Calibration using the shutter embedded in the camera. */
+  SHUTTER = 1;
+}
 
 /*
  * For Anafi 3 Uniformity Calibration, the expected FSM is the following:

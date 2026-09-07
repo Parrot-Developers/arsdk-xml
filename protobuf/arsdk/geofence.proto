@@ -98,8 +98,14 @@ message FloatRange {
 
 // Geofence mode
 enum Mode {
-  // The drone flying zone is only bounded by the maximum altitude setting.
+  // The drone flying zone should only be bounded by the maximum altitude setting,
+  // but it is actually not bounded due to a drone issue.
+  // Deprecated in 8.5, replaced by NONE.
   ALTITUDE = 0;
   // The drone flying zone is bounded by the cylinder defined by the maximum altitude and distance settings.
   CYLINDER = 1;
+  // The drone flying zone is only bounded by the maximum altitude setting.
+  CEILING = 2;
+  // The drone flying zone is not bounded.
+  NONE = 3;
 }

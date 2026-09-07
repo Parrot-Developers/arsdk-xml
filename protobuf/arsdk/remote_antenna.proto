@@ -99,10 +99,18 @@ message Event {
 message GpsCoordinates {
   double latitude = 1;
   double longitude = 2;
+  google.protobuf.DoubleValue altitude = 3; // EGM96 amsl altitude [meters]
 }
 
 message Capabilities {
   bool cloud_antenna = 1;
+  SupportedFeatures supported_features = 2;
+}
+
+message SupportedFeatures {
+  repeated Feature features = 1;
+
+  option (support) = "0923:8.5.0";
 }
 
 message BatteryStateValue {
@@ -177,4 +185,10 @@ enum ProductVariant {
   STANDARD = 0;
   /* Remote antenna ranger variant (for remote antenna usage only). */
   RANGER = 1;
+}
+
+enum Feature {
+  TOGGLEABLE = 0 [(enum_value_doc) = "Whether the remote antenna supports the enable/disable feature."];
+
+  option(enum_doc) = "Feature.";
 }
